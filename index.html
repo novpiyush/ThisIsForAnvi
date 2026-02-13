@@ -1,270 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For Riya 💗</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-
-body{
-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-background:
-radial-gradient(circle at 20% 20%, #ffd6ec, transparent 40%),
-radial-gradient(circle at 80% 80%, #e9d5ff, transparent 40%),
-linear-gradient(135deg,#ffe4f1,#f3e8ff);
-overflow:hidden;
-}
-
-/* glass card */
-.card{
-backdrop-filter:blur(30px);
-background:rgba(255,255,255,0.35);
-border-radius:36px;
-padding:48px 34px;
-width:92%;
-max-width:520px;
-text-align:center;
-box-shadow:0 40px 120px rgba(255,105,180,.25), inset 0 1px 0 rgba(255,255,255,.6);
-animation:fadeIn 1.4s ease;
-}
-
-@keyframes fadeIn{
-from{opacity:0;transform:translateY(40px)}
-to{opacity:1;transform:translateY(0)}
-}
-
-button{
-padding:16px 32px;
-border:none;
-border-radius:999px;
-background:linear-gradient(135deg,#ff7ab6,#ff4d88);
-color:white;
-font-size:18px;
-cursor:pointer;
-transition:.35s;
-box-shadow:0 12px 35px rgba(255,77,136,.4);
-}
-button:hover{transform:scale(1.06)}
-
-.count{
-font-size:96px;
-display:none;
-color:#ff4d88;
-text-shadow:0 0 30px rgba(255,105,180,.6);
-animation:pulse 1s infinite;
-}
-@keyframes pulse{50%{transform:scale(1.15)}}
-
-.title{
-display:none;
-font-size:34px;
-margin-top:12px;
-color:#ff4d88;
-animation:fadeUp 1.5s forwards;
-}
-@keyframes fadeUp{from{opacity:0;transform:translateY(25px)}to{opacity:1}}
-
-/* cake */
-.cake-scene{display:none;margin-top:26px;animation:fadeUp 1.2s}
-
-.cake{
-width:190px;height:140px;margin:auto;
-border-radius:22px 22px 42px 42px;
-background:linear-gradient(#ffb3d6,#ff7ab6);
-box-shadow:0 22px 40px rgba(0,0,0,.18), inset 0 -10px 0 rgba(255,255,255,.35);
-position:relative;
-}
-
-.cake:before{
-content:"";position:absolute;top:-24px;left:0;right:0;height:42px;
-border-radius:24px;background:linear-gradient(#fff,#ffd6ec);
-box-shadow:0 6px 12px rgba(0,0,0,.08);
-}
-
-.candle{width:6px;height:28px;background:white;position:absolute;top:-46px;border-radius:2px}
-.flame{
-width:12px;height:12px;background:radial-gradient(circle,#fff,#ffb347);
-border-radius:50%;position:absolute;top:-14px;left:-3px;
-animation:flicker .15s infinite alternate;
-}
-@keyframes flicker{from{transform:scale(1)}to{transform:scale(1.25)}}
-
-/* letter */
-.letter{
-display:none;margin-top:26px;text-align:left;
-font-size:16px;line-height:1.9;white-space:pre-line;
-color:#4b5563;max-height:60vh;overflow:auto;
-animation:fadeIn 1.2s;
-}
-
-/* confetti */
-.confetti{
-position:fixed;width:10px;height:10px;top:-10px;border-radius:3px;
-animation:fall linear forwards;
-}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-</style>
-</head>
-
-<body>
-
-<div class="card">
-
-<button id="openBtn">Open Surprise ✨</button>
-
-<div id="count" class="count">3</div>
-
-<div id="title" class="title">Happiest Birthday Riya</div>
-
-<div id="cakeScene" class="cake-scene">
-  <div class="cake">
-    <div class="candle" style="left:45px"><div class="flame"></div></div>
-    <div class="candle" style="left:90px"><div class="flame"></div></div>
-    <div class="candle" style="left:135px"><div class="flame"></div></div>
-  </div>
-</div>
-
-<button id="blowBtn" style="display:none;margin-top:18px">Blow the Candles</button>
-
-<div id="letter" class="letter"></div>
-
-</div>
-
-<audio id="tick" src="https://cdn.pixabay.com/audio/2022/03/15/audio_401b9c6bdf.mp3"></audio>
-<audio id="blow" src="https://cdn.pixabay.com/audio/2021/08/04/audio_c0b3c0b3f7.mp3"></audio>
-<audio id="piano" src="https://cdn.pixabay.com/audio/2022/10/25/audio_946b6d8e1c.mp3" loop></audio>
-
-<script>
-const openBtn=document.getElementById("openBtn")
-const countEl=document.getElementById("count")
-const title=document.getElementById("title")
-const cakeScene=document.getElementById("cakeScene")
-const blowBtn=document.getElementById("blowBtn")
-const letter=document.getElementById("letter")
-
-const tick=document.getElementById("tick")
-const blow=document.getElementById("blow")
-const piano=document.getElementById("piano")
-
-const text=`Happiest Birthday My Sweetest Sister Riya 🎂🎉
-
-Aaj Ka Din Aapki Zindagi Ka
-Sabse Khoobsurat Aur Khushiyon Se Bhara Din Ho ✨
-
-Krishna Ji Aapki Har Prarthana Poori Karein
-Aur Aapki Zindagi Hamesha
-Pyaar Khushi Aur Success Se Chamakti Rahe 🌸💖
-
-Aap Hamesha
-Aise Hi Muskurati Raho
-Kyunki Aapki Smile Hi
-Meri Sabse Badi Khushi Hai 🥹✨
-
-Aapne Meri Zindagi Mein Har Mod Par
-Mera Saath Diya Hai
-Isliye Main Bhi Peeche Kaise Reh Sakta Hoon 🥹
-
-Main Aapse Thoda Door Hoon
-Isliye Aapko Koi Bada Gift Nahi De Sakta
-Lekin Sirf Aapke Liye Maine Ye
-Pyari Si Birthday Surprise Website
-7 Hours Coding Karke Banayi Hai 💝
-
-Umeed Hai Ye Chhota Sa Surprise
-Aapke Chehre Par Muskaan Le Aayega 😊
-
-Bas Aap Humesha Aise Hi
-Khush Rehna Aur Muskurate Rehna 💖✨
-
-Aap Soch Rahe Honge
-Maine Is Baar Sab Kuch English Mein Kyun Nahi Likha 😅
-
-Main English Mein Likh Toh Deta
-Par English Mein Read Karke
-Woh Feel Nahi Milta
-Jo Hindi Mein Karne Par Milta Hai 🥹💗
-
-Isi Baat Par
-Hindi Mein Aapko
-Janmadin Ki Bahut Bahut Shubhkamnaye 🎂✨
-
-Aur Aasha Karta Hoon
-Is Janam Ke Baad Bhi
-Agar Mujhe Phir Se Insaan Ka Janm Mile
-
-Toh Behen Sirf
-Aap Hi Mile 🥹💖
-
-Aur Main Aapko
-Zyada Pareshan Bhi Nahi Karunga 😌
-
-Bas Jab Bhi Aap
-Maggi Banaao
-Toh Mujhe Zaroor De Dena 🍜😂
-
-Is Janam Mein Toh
-Maine Ye Sab Khana Chhod Diya Hai
-Agle Janam Mein
-Kha Lunga 😭💞`
-
-function typeLetter(i=0){
-if(i<text.length){
-letter.textContent+=text[i]
-setTimeout(()=>typeLetter(i+1),28)
-}
-}
-
-function confetti(){
-for(let i=0;i<100;i++){
-let c=document.createElement("div")
-c.className="confetti"
-c.style.left=Math.random()*100+"vw"
-c.style.background=`hsl(${Math.random()*360},100%,60%)`
-c.style.animationDuration=2+Math.random()*2+"s"
-document.body.appendChild(c)
-setTimeout(()=>c.remove(),4000)
-}
-}
-
-openBtn.onclick=()=>{
-openBtn.style.display="none"
-countEl.style.display="block"
-let n=3
-
-let inter=setInterval(()=>{
-tick.currentTime=0
-tick.play()
-countEl.textContent=n
-
-if(n===0){
-clearInterval(inter)
-countEl.style.display="none"
-title.style.display="block"
-
-setTimeout(()=>{
-cakeScene.style.display="block"
-blowBtn.style.display="inline-block"
-},1500)
-}
-n--
-},1000)
-}
-
-blowBtn.onclick=()=>{
-blow.play()
-blowBtn.style.display="none"
-document.querySelectorAll(".flame").forEach(f=>f.remove())
-confetti()
-letter.style.display="block"
-piano.play()
-typeLetter()
-}
-</script>
-
-</body>
-</html>
+Subject: Create a Complete, Interactive, 2025-Modern Birthday Greeting Website
+Overall Vision & Goal:
+Your task is to generate a complete, self-contained HTML file for an immersive and highly impressive interactive birthday greeting website. The target audience for this greeting is someone very special (a crush, girlfriend, or best friend), so the tone should be heartfelt, personal, and visually stunning. The design must adhere to ultra-modern 2025 web trends, combining sophisticated animations, a dark-mode aesthetic, and a guided, emotional journey. The final output should be a single .html file that works out of the box.
+Core Design System & Global Styles (The "Look and Feel"):
+Background Layers: The background is the most important feature and has two layers:
+Layer 1: Animated Aurora Gradient: Create a full-screen, dark background (#0c0a09) with a mesmerizing, slowly shifting aurora effect. This should be a subtle, looping animation of soft, blended radial gradients in these colors: deep pink (hsla(333,70%,55%,.4)), purple (hsla(282, 82%, 54%, .3)), blue (hsla(210, 89%, 60%, .3)), and gold (hsla(35, 90%, 60%, .3)). The animation should make the lights feel like they are breathing and flowing.
+Layer 2: 3D Floating Hearts: Using Three.js, render 20-25 3D hearts that float gently in the background space. They should have a pink/red color palette, random sizes and rotations, and drift with a subtle sine-wave motion. They should have a slight sheen, as if lit.
+Main Content Cards (The "Steps"):
+Each step of the greeting is presented on a "glassmorphism" card.
+Style: These cards have a very dark, semi-transparent background, a heavy "frosted glass" effect (backdrop blur), and a thin, subtle white border to catch the light. They should have a soft shadow to make them feel like they are floating above the aurora.
+Typography:
+Headings: Use the elegant serif font "Playfair Display" for all main h1 and h2 titles. These titles should have a beautiful text gradient effect, clipping a gradient of light pinks and white to the text.
+Body Text: Use the modern and clean sans-serif font "Satoshi" for all paragraphs and button text. Body text should be a light gray/off-white.
+Buttons:
+Style: All buttons should be pill-shaped with a vibrant pink-to-red gradient background and bold white text. They need a soft glow effect around them.
+Interaction: On hover, the button should lift up slightly, scale up (e.g., to 105%), and its glow should become more intense. On click, it should have a subtle "pressed down" animation.
+Progress Bar:
+A thin, horizontal bar fixed at the top-center of the screen. It should sit on a semi-transparent glass-like track. The bar itself should be a pink-to-red gradient and must fill up smoothly from left to right as the user progresses through the steps.
+The 5-Step Interactive Journey:
+The website will guide the user through 5 distinct steps. Each new step should animate in by fading and sliding up, with its internal elements (text, buttons) also animating in with a slight stagger.
+Step 1: The Grand Welcome
+Icon: A large, glowing, gently beating heart emoji (❤️) with a pulsating glow effect.
+Headline: "Hey Beautiful,"
+Paragraph: "I built a little world for you, just to bring a smile to your face on your special day."
+Button: "Let's Begin"
+Step 2: The Core Message
+Icon: A large party popper emoji (🎉).
+Headline: "Happy Birthday!"
+Paragraph: "Another year of you making the world brighter. Your existence is a gift, and I'm so lucky to witness it."
+Button: "There's more..."
+Step 3: The Reasons Why (Bento Grid)
+Headline: "A Few Things I Adore About You"
+Layout: Display the reasons in a modern "bento grid" layout.
+Card 1 (Larger, spans two columns): Title: "✨ Your Unmatched Kindness", Text: "The genuine warmth you show to everyone is something truly rare and beautiful."
+Card 2 (Smaller): Title: "😊 That Smile", Text: "It's a work of art."
+Card 3 (Larger, spans two columns): Title: "🌟 Your Radiant Spirit", Text: "Your passion for life is infectious. Being around you makes everything feel more exciting and possible."
+Button: "Remember this?"
+Step 4: The Shared Memory
+Headline: "That One Time..."
+Visual: Do not just show an image. Display it inside a "floating polaroid." The polaroid should have a classic white border and a caption area. It should be slightly tilted in 3D space.
+Image: Use the placeholder https://i.ibb.co/6Z6XgCg/crush.webp.
+Caption: "Our favorite memory."
+Interaction: On hover, the polaroid should tilt towards the user's cursor with a subtle parallax effect.
+Paragraph: "Every moment with you feels like a scene from a movie I'd watch on repeat."
+Button: "One last thing..."
+Step 5: The Birthday Wish & Finale
+Icon: A large birthday cake emoji (🎂).
+Headline: "My Wish For You"
+Paragraph: "May the next year bring you all the love, success, and pure happiness you so rightfully deserve. May your dreams soar higher than ever."
+Final Text: A space is reserved for a final message that appears later.
+Button: "Celebrate!"
+Animation and Functionality Logic:
+Step Navigation: Clicking a button on any step (1-4) smoothly transitions to the next step. The current step fades and scales down while the next step fades in and scales up to its final position.
+The "Celebrate!" Button Grand Finale Sequence: This is the climax. When the user clicks "Celebrate!", a multi-stage animation sequence must occur:
+The "Celebrate!" button itself should fade out and become disabled.
+The final wish text, "Happy Birthday, my crush! ❤️", elegantly fades and slides up into view.
+A multi-layered confetti explosion begins and lasts for about 5 seconds.
+It starts with powerful bursts of confetti shooting up from the bottom corners of the screen.
+This is followed by a continuous, gentle shower of both standard colorful confetti and emoji confetti (❤️, 💖, ✨).
+Simultaneously, the background 3D hearts perform their final animation: they should all gracefully swirl outwards and float up off the screen before fading away completely.
+Final Output Requirements:
+The final output must be a single, self-contained HTML file.
+All CSS and JavaScript must be included directly within the HTML file in <style> and <script> tags.
+The <head> must include CDN links for all necessary libraries: Tailwind CSS, Three.js, GSAP (Core), and canvas-confetti.
+The website must be fully responsive, ensuring a beautiful and functional experience on both large desktop screens and mobile phones.
