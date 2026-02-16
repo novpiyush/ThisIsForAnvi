@@ -36,7 +36,12 @@ button{
 }
 #yesBtn{width:100%}
 
-/* DEFAULT NO (game ke baad bhagega) */
+#start{
+  position:relative;
+  padding-bottom:80px;
+}
+
+/* NO button – always absolute */
 #noBtn{
   position:absolute;
   background:#1f1f1f;
@@ -44,13 +49,11 @@ button{
   border:1px solid #2a2a2a;
 }
 
-/* 🔥 START ke time NO = YES ke neeche */
+/* start me NO = YES ke neeche */
 #start #noBtn{
-  position:relative;
-  bottom:auto;
-  right:auto;
-  margin:12px auto 0;
-  display:block;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:20px;
 }
 
 .option{
@@ -70,11 +73,11 @@ button{
   height:4px;
   background:white;
   opacity:0;
-  animation:spark 5s linear forwards;
+  animation:spark 6s linear forwards;
 }
 @keyframes spark{
   0%{transform:translateY(0) scale(1);opacity:1}
-  100%{transform:translateY(-420px) scale(0);opacity:0}
+  100%{transform:translateY(-500px) scale(0);opacity:0}
 }
 </style>
 </head>
@@ -99,7 +102,7 @@ button{
 
 <!-- INTRO -->
 <div id="intro" class="hidden">
-  <p>If you win the game,<br>you can give any dare.</p>
+  <p>If you win the game,<br>you can give me any dare.</p>
   <button onclick="rules()">OK</button>
 </div>
 
@@ -121,26 +124,34 @@ button{
 </div>
 
 <script>
-const noPositions=[
-  {top:"10%",left:"10%"},
-  {top:"10%",right:"10%"},
-  {bottom:"10%",left:"10%"},
-  {bottom:"10%",right:"10%"},
-  {top:"50%",left:"5%"},
-  {top:"50%",right:"5%"}
+let noClicks = 0;
+const hints = [
+  "Think carefully.",
+  "Only one option makes sense.",
+  "You already know.",
+  "Still pressing no?",
+  "The other button is waiting."
 ];
-let noIndex=0;
 
 function moveNo(){
-  const no=document.getElementById("noBtn");
-  no.style.position="absolute"; // start ke baad bhagega
-  no.style.top="";
-  no.style.bottom="";
-  no.style.left="";
-  no.style.right="";
-  Object.assign(no.style,noPositions[noIndex % noPositions.length]);
-  document.getElementById("hint").innerText="Only one option makes sense.";
-  noIndex++;
+  const no = document.getElementById("noBtn");
+  const container = document.querySelector(".container");
+
+  const maxX = container.offsetWidth - no.offsetWidth - 20;
+  const maxY = container.offsetHeight - no.offsetHeight - 20;
+
+  const x = Math.random() * maxX;
+  const y = Math.random() * maxY;
+
+  no.style.left = x + "px";
+  no.style.top = y + "px";
+  no.style.bottom = "auto";
+  no.style.transform = "none";
+
+  document.getElementById("hint").innerText =
+    hints[noClicks % hints.length];
+
+  noClicks++;
 }
 
 function goIntro(){
@@ -229,9 +240,11 @@ function end(){
   if(score>=7){
     result.innerHTML=`
       <h1>YOU WON THE GAME</h1>
-      <p>You have won.<br>
-      Now you can give me any dare you want,<br>
-      and I will complete it.</p>
+      <p>
+        You have won.<br>
+        Now you can give me any dare you want,<br>
+        and I will complete it.
+      </p>
       <p style="font-size:12px;color:#9a9a9a">
         You won by scoring ${score} out of ${questions.length}
       </p>
@@ -253,8 +266,8 @@ function sparkles(){
     s.style.left=Math.random()*100+"vw";
     s.style.bottom="0px";
     document.body.appendChild(s);
-    setTimeout(()=>s.remove(),5000);
-    if(++c>200)clearInterval(i);
+    setTimeout(()=>s.remove(),6000);
+    if(++c>220)clearInterval(i);
   },60);
 }
 </script>
