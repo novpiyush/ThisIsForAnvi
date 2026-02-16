@@ -95,7 +95,7 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 </head>
 
 <body>
-
+<audio id="clickSound" src="click.mp3" preload="auto"></audio>
 <div class="container" id="start">
   <h1>HEY PALAK</h1>
 
@@ -164,6 +164,7 @@ noBtn.addEventListener("click", () => {
 
 /* YES FLOW */
 yesBtn.onclick = () => {
+  document.getElementById("clickSound").play();
   start.classList.add("hidden");
   intro.classList.remove("hidden");
 };
