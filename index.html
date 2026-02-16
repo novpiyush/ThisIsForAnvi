@@ -1,179 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>A Small Game for Anvi</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>A Small Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #fdf2f8, #eef2ff);
-      font-family: system-ui, sans-serif;
-    }
-
-    .box {
-      background: white;
-      padding: 30px;
-      border-radius: 22px;
-      width: 92%;
-      max-width: 440px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-    }
-
-    h1 {
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-
-    p {
-      color: #555;
-      margin-bottom: 18px;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 14px;
-      background: #6366f1;
-      color: white;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #4f46e5;
-    }
-  </style>
-</head>
-<body>
-
-<div class="box" id="game">
-  <h1 id="question"></h1>
-  <p id="count"></p>
-  <div id="options"></div>
-</div>
-
-<script>
-const questions = [
-  {
-    q: "What is my favourite colour?",
-    options: ["Black", "White", "Grey", "Navy Blue"],
-    answer: 0
-  },
-  {
-    q: "Which song do I like the most?",
-    options: ["Samjhawan", "Tum Hi Ho", "Apna Bana Le", "Perfect"],
-    answer: 0
-  },
-  {
-    q: "Who is my favourite God?",
-    options: ["Krishna", "Shiva", "Ram", "Hanuman"],
-    answer: 0
-  },
-  {
-    q: "What is my dream career?",
-    options: [
-      "Cinematographer",
-      "Photographer",
-      "Editor",
-      "All of these"
-    ],
-    answer: 3
-  },
-  {
-    q: "What name did I give you?",
-    options: ["Anvi", "Anvika", "Anvisha", "Ananya"],
-    answer: 0
-  },
-  {
-    q: "Which parrot do I have?",
-    options: [
-      "Plum Headed",
-      "Alexandrine",
-      "Ringneck",
-      "Love Bird"
-    ],
-    answer: 0
-  },
-  {
-    q: "What is my height?",
-    options: ["5'6", "5'7", "5'8", "5'9"],
-    answer: 2
-  },
-  {
-    q: "What time do I usually sleep?",
-    options: ["1 AM", "2 AM", "3 AM", "4 AM"],
-    answer: 2
-  },
-  {
-    q: "Who do I talk to the most?",
-    options: ["Anvisha", "Friends", "Everyone", "No one"],
-    answer: 0
-  },
-  {
-    q: "Which game did we play together?",
-    options: [
-      "Name writing game",
-      "Truth or Dare",
-      "Ludo",
-      "Antakshari"
-    ],
-    answer: 0
-  },
-  {
-    q: "What is my favourite flower?",
-    options: ["Rose", "Lily", "Tulip", "Sunflower"],
-    answer: 0
-  }
-];
-
-let current = 0;
-let score = 0;
-
-function loadQuestion() {
-  document.getElementById("question").innerText = questions[current].q;
-  document.getElementById("count").innerText =
-    `Question ${current + 1} of ${questions.length}`;
-
-  const optDiv = document.getElementById("options");
-  optDiv.innerHTML = "";
-
-  questions[current].options.forEach((opt, i) => {
-    const btn = document.createElement("button");
-    btn.innerText = opt;
-    btn.onclick = () => {
-      if (i === questions[current].answer) score++;
-      current++;
-      current < questions.length ? loadQuestion() : showResult();
-    };
-    optDiv.appendChild(btn);
-  });
+<style>
+:root {
+  --bg: #0a0a0a;
+  --card: rgba(20,20,20,0.9);
+  --border: #262626;
+  --text: #e5e5e5;
+  --muted: #9ca3af;
 }
 
-function showResult() {
-  const box = document.getElementById("game");
-  const win = score >= 7;
+* { box-sizing: border-box; }
 
-  box.innerHTML = `
-    <h1>${win ? "You win" : "Nice try"}</h1>
-    <p>You scored ${score} out of ${questions.length}</p>
-    <p style="margin-top:15px;">
-      This game wasn’t about perfection.<br>
-      It was just something small,<br>
-      made thoughtfully.
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #111, #000);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
+}
+
+.card {
+  width: 92%;
+  max-width: 440px;
+  background: var(--card);
+  backdrop-filter: blur(14px);
+  padding: 38px 32px;
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  text-align: center;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.7);
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  background: #0f0f0f;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all .25s ease;
+}
+
+button:hover {
+  background: #161616;
+  border-color: #3f3f46;
+  transform: translateY(-1px);
+}
+</style>
+</head>
+
+<body>
+
+<div class="card" id="app"></div>
+
+<script>
+const app = document.getElementById("app");
+
+const questions = [
+  { q:"What is my favourite colour?", o:["Black","White","Grey","Navy Blue"], a:0 },
+  { q:"Which song do I like the most?", o:["Samjhawan","Tum Hi Ho","Apna Bana Le","Perfect"], a:0 },
+  { q:"Who is my favourite God?", o:["Krishna","Shiva","Ram","Hanuman"], a:0 },
+  { q:"What is my dream career?", o:["Cinematographer","Photographer","Editor","All of these"], a:3 },
+  { q:"What name did I give you?", o:["Anvi","Anvika","Anvisha","Ananya"], a:0 },
+  { q:"Which parrot do I have?", o:["Plum Headed","Alexandrine","Ringneck","Love Bird"], a:0 },
+  { q:"What is my height?", o:["5'6","5'7","5'8","5'9"], a:2 },
+  { q:"What time do I usually sleep?", o:["1 AM","2 AM","3 AM","4 AM"], a:2 },
+  { q:"Who do I talk to the most?", o:["Anvisha","Friends","Everyone","No one"], a:0 },
+  { q:"Which game did we play together?", o:["Name writing game","Truth or Dare","Ludo","Antakshari"], a:0 },
+  { q:"What is my favourite flower?", o:["Rose","Lily","Tulip","Sunflower"], a:0 }
+];
+
+let i = 0, score = 0;
+
+function intro() {
+  app.innerHTML = `
+    <h1>Before we begin</h1>
+    <p>
+      This is a small guessing game.<br>
+      No pressure, just curiosity.
+    </p>
+    <button onclick="start()">Yes, let’s play</button>
+    <button onclick="exit()">Maybe later</button>
+  `;
+}
+
+function exit() {
+  app.innerHTML = `
+    <h1>No worries</h1>
+    <p>
+      You can always come back when you feel like it.
     </p>
   `;
 }
 
-loadQuestion();
+function start() {
+  i = 0; score = 0;
+  load();
+}
+
+function load() {
+  const q = questions[i];
+  app.innerHTML = `
+    <h1>${q.q}</h1>
+    <p>Question ${i+1} of ${questions.length}</p>
+    ${q.o.map((x,idx)=>`<button onclick="answer(${idx})">${x}</button>`).join("")}
+  `;
+}
+
+function answer(x) {
+  if (x === questions[i].a) score++;
+  i++;
+  i < questions.length ? load() : result();
+}
+
+function result() {
+  const win = score >= 7;
+  app.innerHTML = `
+    <h1>${win ? "You won" : "That was nice"}</h1>
+    <p>You scored ${score} out of ${questions.length}</p>
+    <p>
+      ${win
+        ? "As promised — you get to give Piyush a dare.<br>And yes, he will complete it."
+        : "This game was never about winning.<br>Just something made with care."}
+    </p>
+  `;
+}
+
+intro();
 </script>
 
 </body>
