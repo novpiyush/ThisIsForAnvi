@@ -4,8 +4,15 @@
 <meta charset="UTF-8">
 <title>Memory Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
 body{
   background:#0d0d0d;
   color:#fff;
@@ -14,6 +21,7 @@ body{
   justify-content:center;
   align-items:center;
 }
+
 .container{
   width:90%;
   max-width:420px;
@@ -22,9 +30,21 @@ body{
   padding:25px;
   box-shadow:0 0 40px rgba(255,255,255,0.05);
   position:relative;
+  overflow:hidden;
 }
-h1{text-align:center;letter-spacing:1.5px;margin-bottom:15px}
-p{text-align:center;color:#b5b5b5;margin-bottom:20px;font-size:14px}
+
+h1{
+  text-align:center;
+  letter-spacing:1.5px;
+  margin-bottom:15px;
+}
+
+p{
+  text-align:center;
+  color:#b5b5b5;
+  margin-bottom:20px;
+  font-size:14px;
+}
 
 button{
   padding:12px;
@@ -38,21 +58,20 @@ button{
   width:100%;
   background:#fff;
   color:#000;
-}
-
-#start{
   position:relative;
+  z-index:2;
 }
 
-/* NO button */
 #noBtn{
-  position:absolute;
-  left:50%;
-  top:260px;              /* start me YES ke neeche */
-  transform:translateX(-50%);
+  width:100%;
+  margin-top:12px; /* 👈 YES ke neeche thoda gap */
   background:#1f1f1f;
   color:#fff;
   border:1px solid #2a2a2a;
+  position:absolute;
+  left:25px;
+  bottom:25px;
+  max-width:calc(100% - 50px);
 }
 
 .option{
@@ -62,21 +81,27 @@ button{
   border:1px solid #2a2a2a;
   color:#fff;
 }
-.option:hover{background:#fff;color:#000}
+
+.option:hover{
+  background:#fff;
+  color:#000;
+}
+
 .hidden{display:none}
 
-/* sparkles (pehle wala hi) */
+/* SPARKLES */
 .sparkle{
   position:fixed;
   width:4px;
   height:4px;
   background:white;
   opacity:0;
-  animation:spark 6s linear forwards;
+  animation:spark 4s linear forwards;
 }
+
 @keyframes spark{
   0%{transform:translateY(0) scale(1);opacity:1}
-  100%{transform:translateY(-500px) scale(0);opacity:0}
+  100%{transform:translateY(-320px) scale(0);opacity:0}
 }
 </style>
 </head>
@@ -87,7 +112,6 @@ button{
 <!-- START -->
 <div id="start">
   <h1>HEY PALAK</h1>
-
   <p>
     I made a small game.<br>
     If you want to play,<br>
@@ -96,19 +120,24 @@ button{
 
   <button id="yesBtn" onclick="goIntro()">YES</button>
   <button id="noBtn" onclick="moveNo()">NO</button>
-
-  <p id="hint" style="font-size:12px;color:#888;margin-top:120px"></p>
 </div>
 
 <!-- INTRO -->
 <div id="intro" class="hidden">
-  <p>If you win the game,<br>you can give me any dare.</p>
+  <p>
+    If you win the game,<br>
+    you can give me any dare.
+  </p>
   <button onclick="rules()">OK</button>
 </div>
 
 <!-- RULES -->
 <div id="rules" class="hidden">
-  <p>You need to win at least<br><b>7 points</b> to win the game.<br>So play carefully.</p>
+  <p>
+    You need to win at least<br>
+    <b>7 points</b> out of 11.<br>
+    So play carefully.
+  </p>
   <button onclick="startGame()">NOW START THE GAME</button>
 </div>
 
@@ -124,42 +153,28 @@ button{
 </div>
 
 <script>
-let noClicks = 0;
-
-const sweetMessages = [
-  "Think once more.",
-  "Take your time.",
-  "Are you sure?",
-  "Just give it a chance."
+let noMoves = 0;
+const cuteLines = [
+  "Take a moment and think.",
+  "Still not sure?",
+  "Maybe give it a chance.",
+  "One click can start something."
 ];
 
 function moveNo(){
-  noClicks++;
+  noMoves++;
 
   const no = document.getElementById("noBtn");
-  const hint = document.getElementById("hint");
+  const container = document.querySelector(".container");
 
-  /* SAFE AREA:
-     - YES + text approx top 0–240px
-     - NO sirf 260px se neeche move karega
-  */
-  const minTop = 260;
-  const maxTop = 360;
+  const maxX = container.clientWidth - no.clientWidth - 30;
+  const randomX = Math.random() * maxX;
 
-  const minLeft = 40;
-  const maxLeft = 260;
+  no.style.left = randomX + "px";
+  no.style.bottom = "25px"; // 👈 NEVER moves up/down
 
-  const top = Math.random() * (maxTop - minTop) + minTop;
-  const left = Math.random() * (maxLeft - minLeft) + minLeft;
-
-  no.style.top = top + "px";
-  no.style.left = left + "px";
-  no.style.transform = "none";
-
-  if(noClicks <= sweetMessages.length){
-    hint.innerText = sweetMessages[noClicks - 1];
-  }else{
-    hint.innerText = "There is only one right answer here.";
+  if(noMoves <= cuteLines.length){
+    document.querySelector("#start p").innerText = cuteLines[noMoves-1];
   }
 }
 
@@ -182,42 +197,19 @@ function startGame(){
 let score=0,index=0;
 
 const questions=[
-{q:"How did we meet for the first time?",
-o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],
-a:"You shared a post on Instagram"},
-
-{q:"What nickname did I give you?",
-o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
-
-{q:"When is my birthday?",
-o:["15 Nov","16 Nov","17 Nov","18 Nov"],a:"17 Nov"},
-
-{q:"My favourite colour is?",
-o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
-
-{q:"Favourite flower?",
-o:["Rose and Lotus","Rose","Lily","Sunflower"],a:"Rose and Lotus"},
-
-{q:"What nickname did you give me?",
-o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
-
-{q:"Did I ever wish bad for you?",
-o:["No","Yes","Maybe","Sometimes"],a:"No"},
-
-{q:"When we met, how old were you?",
-o:["15","16","17","18"],a:"17"},
-
-{q:"Did I ever use Snapchat for you?",
-o:["Yes","No","Sometimes","Never"],a:"Yes"},
-
-{q:"What is my dream?",
-o:["Cinematographer","Photographer","Editor","All of these"],a:"All of these"},
-
-{q:"After you left, did I miss you?",
-o:["Yes","No","Maybe","Not sure"],a:"Yes"}
+{q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
+{q:"What nickname did I give you?",o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
+{q:"When is my birthday?",o:["15 Nov","16 Nov","17 Nov","18 Nov"],a:"17 Nov"},
+{q:"My favourite colour is?",o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
+{q:"Favourite flower?",o:["Rose and Lotus","Rose","Lily","Sunflower"],a:"Rose and Lotus"},
+{q:"What nickname did you give me?",o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
+{q:"Did I ever wish bad for you?",o:["No","Yes","Maybe","Sometimes"],a:"No"},
+{q:"When we met, how old were you?",o:["15","16","17","18"],a:"17"},
+{q:"Did I ever use Snapchat for you?",o:["Yes","No","Sometimes","Never"],a:"Yes"},
+{q:"What is my dream?",o:["Cinematographer","Photographer","Editor","All of these"],a:"All of these"},
+{q:"After you left, did I miss you?",o:["Yes","No","Maybe","Not sure"],a:"Yes"}
 ];
 
-const start=document.getElementById("start");
 const intro=document.getElementById("intro");
 const rulesDiv=document.getElementById("rules");
 const game=document.getElementById("game");
@@ -247,24 +239,23 @@ function check(ans){
 function end(){
   game.classList.add("hidden");
   result.classList.remove("hidden");
+
   if(score>=7){
     result.innerHTML=`
       <h1>YOU WON THE GAME</h1>
-      <p>
-        You have won.<br>
-        Now you can give me any dare you want,<br>
-        and I will complete it.
-      </p>
+      <p>You won. Now you can give me any dare,<br>and I will complete it.</p>
       <p style="font-size:12px;color:#9a9a9a">
         You won by scoring ${score} out of ${questions.length}
       </p>
-      <button onclick="location.reload()">Restart Game</button>`;
+      <button onclick="location.reload()">Restart Game</button>
+    `;
     sparkles();
   }else{
     result.innerHTML=`
       <h1>GAME OVER</h1>
       <p>You scored ${score} out of ${questions.length}</p>
-      <button onclick="location.reload()">Restart Game</button>`;
+      <button onclick="location.reload()">Restart Game</button>
+    `;
   }
 }
 
@@ -276,9 +267,9 @@ function sparkles(){
     s.style.left=Math.random()*100+"vw";
     s.style.bottom="0px";
     document.body.appendChild(s);
-    setTimeout(()=>s.remove(),6000);
-    if(++c>220)clearInterval(i);
-  },60);
+    setTimeout(()=>s.remove(),4000);
+    if(++c>150)clearInterval(i);
+  },70);
 }
 </script>
 </body>
