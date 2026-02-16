@@ -25,25 +25,36 @@ body{
 }
 h1{text-align:center;letter-spacing:1.5px;margin-bottom:15px}
 p{text-align:center;color:#b5b5b5;margin-bottom:20px;font-size:14px}
+
 button{
   padding:12px;
-  background:#fff;
-  color:#000;
   border:none;
   border-radius:30px;
   font-weight:600;
   cursor:pointer;
 }
-#yesBtn{width:100%}
+
+#yesBtn{
+  width:100%;
+  background:#fff;
+  color:#000;
+}
+
+#start{
+  position:relative;
+}
+
+/* NO button */
 #noBtn{
   position:absolute;
-  top:72%;
   left:50%;
+  top:260px;              /* start me YES ke neeche */
   transform:translateX(-50%);
   background:#1f1f1f;
   color:#fff;
   border:1px solid #2a2a2a;
 }
+
 .option{
   width:100%;
   margin-top:10px;
@@ -54,18 +65,18 @@ button{
 .option:hover{background:#fff;color:#000}
 .hidden{display:none}
 
-/* sparkles */
+/* sparkles (pehle wala hi) */
 .sparkle{
   position:fixed;
   width:4px;
   height:4px;
   background:white;
   opacity:0;
-  animation:spark 5s linear forwards;
+  animation:spark 6s linear forwards;
 }
 @keyframes spark{
   0%{transform:translateY(0) scale(1);opacity:1}
-  100%{transform:translateY(-380px) scale(0);opacity:0}
+  100%{transform:translateY(-500px) scale(0);opacity:0}
 }
 </style>
 </head>
@@ -76,14 +87,17 @@ button{
 <!-- START -->
 <div id="start">
   <h1>HEY PALAK</h1>
+
   <p>
     I made a small game.<br>
     If you want to play,<br>
     will you play it?
   </p>
-  <p id="hint" style="font-size:12px;color:#888"></p>
+
   <button id="yesBtn" onclick="goIntro()">YES</button>
   <button id="noBtn" onclick="moveNo()">NO</button>
+
+  <p id="hint" style="font-size:12px;color:#888;margin-top:120px"></p>
 </div>
 
 <!-- INTRO -->
@@ -110,30 +124,40 @@ button{
 </div>
 
 <script>
-let noClicks=0;
+let noClicks = 0;
 
-const sweetMessages=[
+const sweetMessages = [
   "Think once more.",
+  "Take your time.",
   "Are you sure?",
-  "Give it a chance.",
-  "Just one tap away."
+  "Just give it a chance."
 ];
 
 function moveNo(){
   noClicks++;
 
-  const no=document.getElementById("noBtn");
-  const hint=document.getElementById("hint");
+  const no = document.getElementById("noBtn");
+  const hint = document.getElementById("hint");
 
-  const top = Math.random()*30 + 45;   // 45% - 75%
-  const left = Math.random()*50 + 15;  // 15% - 65%
+  /* SAFE AREA:
+     - YES + text approx top 0–240px
+     - NO sirf 260px se neeche move karega
+  */
+  const minTop = 260;
+  const maxTop = 360;
 
-  no.style.top = top + "%";
-  no.style.left = left + "%";
+  const minLeft = 40;
+  const maxLeft = 260;
+
+  const top = Math.random() * (maxTop - minTop) + minTop;
+  const left = Math.random() * (maxLeft - minLeft) + minLeft;
+
+  no.style.top = top + "px";
+  no.style.left = left + "px";
   no.style.transform = "none";
 
   if(noClicks <= sweetMessages.length){
-    hint.innerText = sweetMessages[noClicks-1];
+    hint.innerText = sweetMessages[noClicks - 1];
   }else{
     hint.innerText = "There is only one right answer here.";
   }
@@ -226,7 +250,11 @@ function end(){
   if(score>=7){
     result.innerHTML=`
       <h1>YOU WON THE GAME</h1>
-      <p>You won the game.<br>Now you can give me any dare and I will complete it.</p>
+      <p>
+        You have won.<br>
+        Now you can give me any dare you want,<br>
+        and I will complete it.
+      </p>
       <p style="font-size:12px;color:#9a9a9a">
         You won by scoring ${score} out of ${questions.length}
       </p>
@@ -248,8 +276,8 @@ function sparkles(){
     s.style.left=Math.random()*100+"vw";
     s.style.bottom="0px";
     document.body.appendChild(s);
-    setTimeout(()=>s.remove(),5000);
-    if(++c>180)clearInterval(i);
+    setTimeout(()=>s.remove(),6000);
+    if(++c>220)clearInterval(i);
   },60);
 }
 </script>
