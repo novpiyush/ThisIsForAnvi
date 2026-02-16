@@ -6,12 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial,Helvetica,sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
 
 body{
   background:#0d0d0d;
@@ -30,21 +25,10 @@ body{
   padding:25px;
   box-shadow:0 0 40px rgba(255,255,255,0.05);
   position:relative;
-  overflow:hidden;
 }
 
-h1{
-  text-align:center;
-  letter-spacing:1.5px;
-  margin-bottom:15px;
-}
-
-p{
-  text-align:center;
-  color:#b5b5b5;
-  margin-bottom:20px;
-  font-size:14px;
-}
+h1{text-align:center;letter-spacing:1.5px;margin-bottom:15px}
+p{text-align:center;color:#b5b5b5;margin-bottom:20px;font-size:14px}
 
 button{
   padding:12px;
@@ -58,20 +42,18 @@ button{
   width:100%;
   background:#fff;
   color:#000;
-  position:relative;
-  z-index:2;
 }
+
+#start{position:relative}
 
 #noBtn{
   width:100%;
-  margin-top:12px; /* 👈 YES ke neeche thoda gap */
+  margin-top:12px;
   background:#1f1f1f;
   color:#fff;
   border:1px solid #2a2a2a;
   position:absolute;
-  left:25px;
-  bottom:25px;
-  max-width:calc(100% - 50px);
+  left:0;
 }
 
 .option{
@@ -81,11 +63,7 @@ button{
   border:1px solid #2a2a2a;
   color:#fff;
 }
-
-.option:hover{
-  background:#fff;
-  color:#000;
-}
+.option:hover{background:#fff;color:#000}
 
 .hidden{display:none}
 
@@ -98,7 +76,6 @@ button{
   opacity:0;
   animation:spark 4s linear forwards;
 }
-
 @keyframes spark{
   0%{transform:translateY(0) scale(1);opacity:1}
   100%{transform:translateY(-320px) scale(0);opacity:0}
@@ -112,7 +89,7 @@ button{
 <!-- START -->
 <div id="start">
   <h1>HEY PALAK</h1>
-  <p>
+  <p id="startText">
     I made a small game.<br>
     If you want to play,<br>
     will you play it?
@@ -128,7 +105,7 @@ button{
     If you win the game,<br>
     you can give me any dare.
   </p>
-  <button onclick="rules()">OK</button>
+  <button onclick="showRules()">OK</button>
 </div>
 
 <!-- RULES -->
@@ -153,29 +130,30 @@ button{
 </div>
 
 <script>
-let noMoves = 0;
-const cuteLines = [
-  "Take a moment and think.",
-  "Still not sure?",
-  "Maybe give it a chance.",
-  "One click can start something."
+let noClicks = 0;
+const sweetLines = [
+  "Soch lo ek baar.",
+  "Itna bhi mushkil nahi.",
+  "Bas ek click hi toh hai.",
+  "Ab toh YES hi banta hai."
 ];
 
 function moveNo(){
-  noMoves++;
-
   const no = document.getElementById("noBtn");
-  const container = document.querySelector(".container");
+  const start = document.getElementById("start");
 
-  const maxX = container.clientWidth - no.clientWidth - 30;
-  const randomX = Math.random() * maxX;
+  const maxX = start.clientWidth - no.clientWidth;
+  const x = Math.random() * maxX;
 
-  no.style.left = randomX + "px";
-  no.style.bottom = "25px"; // 👈 NEVER moves up/down
+  no.style.left = x + "px";
 
-  if(noMoves <= cuteLines.length){
-    document.querySelector("#start p").innerText = cuteLines[noMoves-1];
+  if(noClicks < sweetLines.length){
+    document.getElementById("startText").innerText = sweetLines[noClicks];
+  }else{
+    document.getElementById("startText").innerText =
+      "There is only one right answer here.";
   }
+  noClicks++;
 }
 
 function goIntro(){
@@ -183,7 +161,7 @@ function goIntro(){
   intro.classList.remove("hidden");
 }
 
-function rules(){
+function showRules(){
   intro.classList.add("hidden");
   rulesDiv.classList.remove("hidden");
 }
@@ -194,20 +172,42 @@ function startGame(){
   loadQ();
 }
 
+/* GAME LOGIC */
 let score=0,index=0;
-
 const questions=[
-{q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
-{q:"What nickname did I give you?",o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
-{q:"When is my birthday?",o:["15 Nov","16 Nov","17 Nov","18 Nov"],a:"17 Nov"},
-{q:"My favourite colour is?",o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
-{q:"Favourite flower?",o:["Rose and Lotus","Rose","Lily","Sunflower"],a:"Rose and Lotus"},
-{q:"What nickname did you give me?",o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
-{q:"Did I ever wish bad for you?",o:["No","Yes","Maybe","Sometimes"],a:"No"},
-{q:"When we met, how old were you?",o:["15","16","17","18"],a:"17"},
-{q:"Did I ever use Snapchat for you?",o:["Yes","No","Sometimes","Never"],a:"Yes"},
-{q:"What is my dream?",o:["Cinematographer","Photographer","Editor","All of these"],a:"All of these"},
-{q:"After you left, did I miss you?",o:["Yes","No","Maybe","Not sure"],a:"Yes"}
+{q:"How did we meet for the first time?",
+o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],
+a:"You shared a post on Instagram"},
+
+{q:"What nickname did I give you?",
+o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
+
+{q:"When is my birthday?",
+o:["15 Nov","16 Nov","17 Nov","18 Nov"],a:"17 Nov"},
+
+{q:"My favourite colour is?",
+o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
+
+{q:"Favourite flower?",
+o:["Rose and Lotus","Rose","Lily","Sunflower"],a:"Rose and Lotus"},
+
+{q:"What nickname did you give me?",
+o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
+
+{q:"Did I ever wish bad for you?",
+o:["No","Yes","Maybe","Sometimes"],a:"No"},
+
+{q:"When we met, how old were you?",
+o:["15","16","17","18"],a:"17"},
+
+{q:"Did I ever use Snapchat for you?",
+o:["Yes","No","Sometimes","Maybe"],a:"Yes"},
+
+{q:"What is my dream?",
+o:["Cinematographer","Photographer","Editor","All of these"],a:"All of these"},
+
+{q:"After you left, did I miss you?",
+o:["Yes","No","Maybe","Not sure"],a:"Yes"}
 ];
 
 const intro=document.getElementById("intro");
@@ -243,9 +243,13 @@ function end(){
   if(score>=7){
     result.innerHTML=`
       <h1>YOU WON THE GAME</h1>
-      <p>You won. Now you can give me any dare,<br>and I will complete it.</p>
+      <p>You played it perfectly.</p>
       <p style="font-size:12px;color:#9a9a9a">
         You won by scoring ${score} out of ${questions.length}
+      </p>
+      <p style="margin-top:12px">
+        You won the game, now you can give me any dare<br>
+        and I will complete it.
       </p>
       <button onclick="location.reload()">Restart Game</button>
     `;
@@ -268,7 +272,7 @@ function sparkles(){
     s.style.bottom="0px";
     document.body.appendChild(s);
     setTimeout(()=>s.remove(),4000);
-    if(++c>150)clearInterval(i);
+    if(++c>160)clearInterval(i);
   },70);
 }
 </script>
