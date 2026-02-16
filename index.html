@@ -19,14 +19,21 @@ body{
   max-width:420px;
   background:#141414;
   border-radius:16px;
-  padding:25px;
+  padding:30px 25px 60px;
   box-shadow:0 0 40px rgba(255,255,255,0.05);
   position:relative;
+  overflow:hidden;
 }
 h1{text-align:center;letter-spacing:1.5px;margin-bottom:15px}
-p{text-align:center;color:#b5b5b5;margin-bottom:20px;font-size:14px}
+p{
+  text-align:center;
+  color:#b5b5b5;
+  margin-bottom:18px;
+  font-size:14px;
+  line-height:1.4;
+}
 button{
-  padding:12px;
+  padding:12px 18px;
   background:#fff;
   color:#000;
   border:none;
@@ -34,11 +41,12 @@ button{
   font-weight:600;
   cursor:pointer;
 }
-#yesBtn{width:100%}
+#yesBtn{
+  width:100%;
+  margin-top:10px;
+}
 #noBtn{
   position:absolute;
-  bottom:25px;
-  right:25px;
   background:#1f1f1f;
   color:#fff;
   border:1px solid #2a2a2a;
@@ -60,11 +68,11 @@ button{
   height:4px;
   background:white;
   opacity:0;
-  animation:spark 4s linear forwards;
+  animation:spark 5s linear forwards;
 }
 @keyframes spark{
   0%{transform:translateY(0) scale(1);opacity:1}
-  100%{transform:translateY(-320px) scale(0);opacity:0}
+  100%{transform:translateY(-360px) scale(0);opacity:0}
 }
 </style>
 </head>
@@ -95,7 +103,11 @@ button{
 
 <!-- RULES -->
 <div id="rules" class="hidden">
-  <p>You need to win at least<br><b>7 points</b> to win the game.<br>So play carefully.</p>
+  <p>
+    You need to win at least<br>
+    <b>7 points</b> to win the game.<br>
+    So play carefully.
+  </p>
   <button onclick="startGame()">NOW START THE GAME</button>
 </div>
 
@@ -111,49 +123,60 @@ button{
 </div>
 
 <script>
-let noClicks=0;
-const messages=[
-  "Why not?",
+/* ---------- START NO BUTTON LOGIC ---------- */
+let noIndex=0;
+const noPositions=[
+  {top:"15px",left:"15px"},
+  {top:"15px",right:"15px"},
+  {bottom:"15px",left:"15px"},
+  {bottom:"15px",right:"15px"},
+  {top:"50%",left:"10px"},
+  {top:"50%",right:"10px"}
+];
+const noMessages=[
+  "Are you sure?",
   "Think again.",
-  "You are still here.",
-  "Just press yes.",
-  "Only one option makes sense."
+  "Just try once.",
+  "Only one answer makes sense.",
+  "You know what to do."
 ];
 
 function moveNo(){
-  noClicks++;
   const no=document.getElementById("noBtn");
-  no.style.top=Math.random()*70+"%";
-  no.style.left=Math.random()*70+"%";
+  const pos=noPositions[noIndex % noPositions.length];
+  no.style.top="";
+  no.style.bottom="";
+  no.style.left="";
+  no.style.right="";
+  Object.assign(no.style,pos);
   document.getElementById("hint").innerText =
-    messages[noClicks % messages.length];
+    noMessages[noIndex % noMessages.length];
+  noIndex++;
 }
-
+/* ---------- FLOW ---------- */
 function goIntro(){
-  document.getElementById("start").classList.add("hidden");
-  document.getElementById("intro").classList.remove("hidden");
+  start.classList.add("hidden");
+  intro.classList.remove("hidden");
 }
-
 function rules(){
   intro.classList.add("hidden");
   rulesDiv.classList.remove("hidden");
 }
-
 function startGame(){
   rulesDiv.classList.add("hidden");
   game.classList.remove("hidden");
   loadQ();
 }
 
+/* ---------- GAME ---------- */
 let score=0,index=0;
-
 const questions=[
 {q:"How did we meet for the first time?",
 o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],
 a:"You shared a post on Instagram"},
 
 {q:"What nickname did I give you?",
-o:["Palku","Bubu","Sweety","Angel"],a:"Palku"},
+o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
 
 {q:"When is my birthday?",
 o:["15 Nov","16 Nov","17 Nov","18 Nov"],a:"17 Nov"},
@@ -165,7 +188,7 @@ o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
 o:["Rose and Lotus","Rose","Lily","Sunflower"],a:"Rose and Lotus"},
 
 {q:"What nickname did you give me?",
-o:["Piku","Piyu","Buddy","Hero"],a:"Piku"},
+o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
 
 {q:"Did I ever wish bad for you?",
 o:["No","Yes","Maybe","Sometimes"],a:"No"},
@@ -183,6 +206,7 @@ o:["Cinematographer","Photographer","Editor","All of these"],a:"All of these"},
 o:["Yes","No","Maybe","Not sure"],a:"Yes"}
 ];
 
+const start=document.getElementById("start");
 const intro=document.getElementById("intro");
 const rulesDiv=document.getElementById("rules");
 const game=document.getElementById("game");
@@ -202,20 +226,21 @@ function loadQ(){
     opts.appendChild(b);
   });
 }
-
 function check(ans){
   if(ans===questions[index].a)score++;
   index++;
   loadQ();
 }
 
+/* ---------- END ---------- */
 function end(){
   game.classList.add("hidden");
   result.classList.remove("hidden");
   if(score>=7){
     result.innerHTML=`
       <h1>YOU WON THE GAME</h1>
-      <p>You played it perfectly.</p>
+      <p>You have won the game.</p>
+      <p>Now you can give me any dare and I will complete it.</p>
       <p style="font-size:12px;color:#9a9a9a">
         You won by scoring ${score} out of ${questions.length}
       </p>
@@ -228,7 +253,6 @@ function end(){
       <button onclick="location.reload()">Restart Game</button>`;
   }
 }
-
 function sparkles(){
   let c=0;
   let i=setInterval(()=>{
@@ -237,8 +261,8 @@ function sparkles(){
     s.style.left=Math.random()*100+"vw";
     s.style.bottom="0px";
     document.body.appendChild(s);
-    setTimeout(()=>s.remove(),4000);
-    if(++c>150)clearInterval(i);
+    setTimeout(()=>s.remove(),5000);
+    if(++c>160)clearInterval(i);
   },70);
 }
 </script>
