@@ -99,13 +99,13 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 <div class="container" id="start">
   <h1>HEY PALAK</h1>
 
-  <!-- ORIGINAL MESSAGE (NEVER REMOVED) -->
+  <!-- ORIGINAL MESSAGE (STAYS ALWAYS) -->
   <p id="baseMsg">
     I made a small game.<br>
     If you want to play, will you play it?
   </p>
 
-  <!-- EXTRA LINES WILL APPEAR BELOW -->
+  <!-- ONLY ONE LINE AT A TIME -->
   <p id="extraMsg"></p>
 
   <div class="button-zone">
@@ -132,7 +132,7 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 <div class="container hidden" id="result"></div>
 
 <script>
-/* NO BUTTON + APPEND MESSAGES */
+/* NO BUTTON + ONE-BY-ONE MESSAGE */
 const noBtn = document.getElementById("noBtn");
 const zone = document.querySelector(".button-zone");
 const extraMsg = document.getElementById("extraMsg");
@@ -150,7 +150,7 @@ noBtn.addEventListener("click", () => {
   noClicks++;
 
   if(noClicks <= noMessages.length){
-    extraMsg.innerHTML += "<br>" + noMessages[noClicks - 1];
+    extraMsg.innerText = noMessages[noClicks - 1];
   }
 
   const minX = 20;
@@ -158,11 +158,8 @@ noBtn.addEventListener("click", () => {
   const minY = 90;
   const maxY = 145;
 
-  const x = Math.random() * (maxX - minX) + minX;
-  const y = Math.random() * (maxY - minY) + minY;
-
-  noBtn.style.left = x + "px";
-  noBtn.style.top = y + "px";
+  noBtn.style.left = (Math.random() * (maxX - minX) + minX) + "px";
+  noBtn.style.top  = (Math.random() * (maxY - minY) + minY) + "px";
 });
 
 /* YES FLOW */
@@ -176,7 +173,7 @@ function showRules(){
   rules.classList.remove("hidden");
 }
 
-/* GAME LOGIC */
+/* GAME */
 let index=0, score=0;
 const questions=[
  {q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
