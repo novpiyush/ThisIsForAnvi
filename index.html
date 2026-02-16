@@ -98,10 +98,15 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 
 <div class="container" id="start">
   <h1>HEY PALAK</h1>
-  <p id="startMsg">
+
+  <!-- ORIGINAL MESSAGE (NEVER REMOVED) -->
+  <p id="baseMsg">
     I made a small game.<br>
     If you want to play, will you play it?
   </p>
+
+  <!-- EXTRA LINES WILL APPEAR BELOW -->
+  <p id="extraMsg"></p>
 
   <div class="button-zone">
     <button id="yesBtn">YES</button>
@@ -127,15 +132,15 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 <div class="container hidden" id="result"></div>
 
 <script>
-/* NO BUTTON LOGIC + THINKING LINES */
+/* NO BUTTON + APPEND MESSAGES */
 const noBtn = document.getElementById("noBtn");
 const zone = document.querySelector(".button-zone");
-const msg = document.getElementById("startMsg");
+const extraMsg = document.getElementById("extraMsg");
 
 let noClicks = 0;
 
 const noMessages = [
-  "Take a moment. You can think again.",
+  "Take a moment and think again.",
   "It is just a small game.",
   "Maybe you should give it a try.",
   "I am still waiting for your yes."
@@ -145,7 +150,7 @@ noBtn.addEventListener("click", () => {
   noClicks++;
 
   if(noClicks <= noMessages.length){
-    msg.innerText = noMessages[noClicks - 1];
+    extraMsg.innerHTML += "<br>" + noMessages[noClicks - 1];
   }
 
   const minX = 20;
@@ -171,7 +176,7 @@ function showRules(){
   rules.classList.remove("hidden");
 }
 
-/* GAME */
+/* GAME LOGIC */
 let index=0, score=0;
 const questions=[
  {q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
