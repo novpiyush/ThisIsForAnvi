@@ -24,9 +24,10 @@ body{
   align-items:center;
   background:
     linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
-    url("bg.png") center center / cover no-repeat fixed;
-  color:#fff;
+    url("bg.png") center center / cover no-repeat;
+  background-attachment: fixed;
   overflow:hidden;
+  color:#fff;
 }
 
 /* GLASS UI */
@@ -40,20 +41,40 @@ body{
   border:1px solid rgba(255,255,255,0.25);
   box-shadow:0 20px 40px rgba(0,0,0,0.35);
   text-align:center;
-  opacity:1;
-  transform:none;
 }
 
 .hidden{display:none}
 
-/* SLIDE UP ANIMATION */
+/* COMMON SLIDE UP */
 .animate{
-  animation:slideUp .45s ease forwards;
+  animation:slideUp 0.9s cubic-bezier(.22,.61,.36,1) forwards;
 }
 
 @keyframes slideUp{
-  from{opacity:0;transform:translateY(40px)}
+  from{opacity:0;transform:translateY(80px)}
   to{opacity:1;transform:translateY(0)}
+}
+
+/* WIN ANIMATION */
+.win{
+  animation:winAnim 2.2s ease forwards;
+}
+@keyframes winAnim{
+  0%{opacity:0;transform:translateY(120px) scale(0.9)}
+  60%{opacity:1;transform:translateY(-10px) scale(1.03)}
+  100%{transform:translateY(0) scale(1)}
+}
+
+/* LOSE ANIMATION */
+.lose{
+  animation:loseAnim 2.2s ease forwards;
+}
+@keyframes loseAnim{
+  0%{opacity:0;transform:translateY(120px)}
+  50%{opacity:1;transform:translateY(-5px)}
+  70%{transform:translateY(0)}
+  85%{transform:translateX(-4px)}
+  100%{transform:translateX(0)}
 }
 
 p{font-size:14px;line-height:1.45;margin-bottom:20px}
@@ -161,49 +182,39 @@ const clickSound=document.getElementById("clickSound");
 const bgm=document.getElementById("bgm");
 bgm.volume=0.15;
 
-const extraMsg=document.getElementById("extraMsg");
 const noBtn=document.getElementById("noBtn");
 const yesBtn=document.getElementById("yesBtn");
+const extraMsg=document.getElementById("extraMsg");
 
 const noMessages=[
-  "Take a moment and think again.",
+  "Think once again.",
   "It is just a small game.",
-  "Maybe you should give it a try.",
-  "I am still waiting for your yes."
+  "Give it a try.",
+  "I am still waiting."
 ];
 
 let noClicks=0,noSide=1;
 
 noBtn.onclick=()=>{
-  clickSound.currentTime=0;
-  clickSound.play().catch(()=>{});
-
-  if(noClicks<noMessages.length){
-    extraMsg.innerText=noMessages[noClicks];
-  }
+  clickSound.currentTime=0; clickSound.play().catch(()=>{});
+  extraMsg.innerText=noMessages[Math.min(noClicks,noMessages.length-1)];
   noClicks++;
-
   noBtn.classList.add("active");
   setTimeout(()=>noBtn.classList.remove("active"),200);
-
   noSide*=-1;
-  noBtn.style.transform=`translateX(calc(-50% + ${noSide*30}px))`;
+  noBtn.style.transform=`translateX(calc(-50% + ${noSide*28}px))`;
 };
 
 yesBtn.onclick=()=>{
-  clickSound.currentTime=0;
-  clickSound.play().catch(()=>{});
+  clickSound.currentTime=0; clickSound.play().catch(()=>{});
   bgm.play().catch(()=>{});
-
   start.classList.add("hidden");
   intro.classList.remove("hidden");
   intro.classList.add("animate");
 };
 
 okBtn.onclick=()=>{
-  clickSound.currentTime=0;
-  clickSound.play().catch(()=>{});
-
+  clickSound.currentTime=0; clickSound.play().catch(()=>{});
   intro.classList.add("hidden");
   rules.classList.remove("hidden");
   rules.classList.add("animate");
@@ -239,7 +250,6 @@ function loadQ(){
   selected=null;
   question.innerText=questions[index].q;
   options.innerHTML="";
-
   questions[index].o.forEach(op=>{
     const b=document.createElement("button");
     b.className="option";
@@ -255,14 +265,10 @@ function loadQ(){
 
 nextBtn.onclick=()=>{
   if(!selected) return;
-
-  clickSound.currentTime=0;
-  clickSound.play().catch(()=>{});
+  clickSound.currentTime=0; clickSound.play().catch(()=>{});
 
   if(!answered[index]){
-    if(questions[index].a==="ALL" || selected===questions[index].a){
-      score++;
-    }
+    if(questions[index].a==="ALL" || selected===questions[index].a) score++;
     answered[index]=true;
   }
 
@@ -271,29 +277,33 @@ nextBtn.onclick=()=>{
 };
 
 prevBtn.onclick=()=>{
-  clickSound.currentTime=0;
-  clickSound.play().catch(()=>{});
-
-  if(index>0){
-    index--;
-    loadQ();
-  }
+  clickSound.currentTime=0; clickSound.play().catch(()=>{});
+  if(index>0){index--; loadQ();}
 };
 
 function endGame(){
   game.classList.add("hidden");
-
   result.classList.remove("hidden");
-  result.classList.remove("animate");
+  result.className="container";
   void result.offsetWidth;
-  result.classList.add("animate");
 
-  result.innerHTML=`
-    <h1>YOU WON THE GAME</h1>
-    <p>You won by scoring ${score} out of ${questions.length}</p>
-    <p>Now you can give me any dare and I will complete it.</p>
-    <button class="option" onclick="location.reload()">Restart game</button>
-  `;
+  if(score>=7){
+    result.classList.add("win");
+    result.innerHTML=`
+      <h1>YOU WON</h1>
+      <p>You scored ${score}/11</p>
+      <p>Now give me any dare.</p>
+      <button class="option" onclick="location.reload()">Restart</button>
+    `;
+  }else{
+    result.classList.add("lose");
+    result.innerHTML=`
+      <h1>YOU LOST</h1>
+      <p>You scored ${score}/11</p>
+      <p>Better luck next time.</p>
+      <button class="option" onclick="location.reload()">Retry</button>
+    `;
+  }
 }
 </script>
 
