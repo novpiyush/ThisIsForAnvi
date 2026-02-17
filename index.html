@@ -2,198 +2,196 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Memory Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game</title>
 
 <style>
 *{
+  margin:0;
+  padding:0;
   box-sizing:border-box;
-  font-family:Arial, sans-serif;
+  font-family:Segoe UI, Arial, sans-serif;
 }
 
 body{
-  margin:0;
-  height:100vh;
-  background:url("bg.png") center/cover no-repeat fixed;
+  min-height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
+  background:
+    linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),
+    url("bg.png") center/cover no-repeat;
+  color:#fff;
   overflow:hidden;
 }
 
-/* BACKGROUND LINE ANIMATION */
-.lines{
-  position:fixed;
-  inset:0;
-  z-index:0;
-}
-.lines span{
-  position:absolute;
-  width:2px;
-  height:100%;
-  background:rgba(255,255,255,0.08);
-  animation:move 6s linear infinite;
-}
-@keyframes move{
-  from{transform:translateY(-100%)}
-  to{transform:translateY(100%)}
-}
-.lines span:nth-child(1){left:20%}
-.lines span:nth-child(2){left:50%}
-.lines span:nth-child(3){left:80%}
-
-/* GLASS CARD */
-.card{
-  position:relative;
-  z-index:5;
-  width:320px;
-  padding:30px;
-  border-radius:20px;
-  background:rgba(255,255,255,0.15);
-  backdrop-filter:blur(15px);
-  border:1px solid rgba(255,255,255,0.3);
+.container{
+  width:90%;
+  max-width:420px;
+  padding:26px;
+  border-radius:22px;
+  background:rgba(255,182,193,.18);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
   text-align:center;
+}
+
+.hidden{display:none}
+
+.option,.navBtn{
+  width:100%;
+  padding:13px;
+  margin-top:10px;
+  border-radius:30px;
+  border:1px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.15);
   color:#fff;
 }
 
-h1{
-  margin-top:0;
-}
-
-p{
-  opacity:.9;
-}
-
-.button-zone{
-  margin-top:30px;
-  position:relative;
-  height:120px;
+.option:hover,.navBtn:hover{
+  background:#fff;
+  color:#000;
 }
 
 #yesBtn{
-  width:100%;
-  padding:14px;
-  border-radius:30px;
-  border:none;
   background:#fff;
   color:#000;
-  font-weight:bold;
-  cursor:pointer;
+  font-weight:700;
 }
 
-/* NO BUTTON FIXED */
+.button-zone{
+  position:relative;
+  height:180px;
+}
+
 #noBtn{
-  width:120px;
-  padding:12px;
-  border-radius:30px;
-  background:rgba(0,0,0,.45);
-  border:1px solid rgba(255,255,255,.3);
-  color:#fff;
   position:absolute;
   bottom:10px;
   left:50%;
   transform:translateX(-50%);
-  cursor:pointer;
+  width:120px;
+  background:rgba(0,0,0,.45);
 }
+
+.nav{
+  display:flex;
+  gap:12px;
+  margin-top:18px;
+}
+.navBtn{width:48%}
 </style>
 </head>
 
 <body>
 
-<div class="lines">
-  <span></span><span></span><span></span>
-</div>
+<audio id="clickSound" src="click.mp3"></audio>
+<audio id="okSound" src="ok.mp3"></audio>
+<audio id="bgm" src="pretty_bgm.mp3" loop></audio>
 
-<div class="card" id="card">
+<div class="container" id="start">
   <h1>HEY PALAK</h1>
-  <p>I made a small game.</p>
-  <p>If you want to play, will you play it?</p>
-  <p id="extra">I am still waiting for your yes.</p>
+  <p>I made a small game.<br>If you want to play, will you play it?</p>
+  <p id="extraMsg"></p>
 
   <div class="button-zone" id="zone">
-    <button id="yesBtn">YES</button>
-    <button id="noBtn">NO</button>
+    <button id="yesBtn" class="option">YES</button>
+    <button id="noBtn" class="option">NO</button>
   </div>
 </div>
 
-<audio id="yesSound" src="yes.mp3"></audio>
-<audio id="bgMusic" src="bg.mp3" loop></audio>
+<div class="container hidden" id="game">
+  <h2 id="question"></h2>
+  <div id="options"></div>
+
+  <div class="nav">
+    <button id="prevBtn" class="navBtn">PREVIOUS</button>
+    <button id="nextBtn" class="navBtn">OKAY</button>
+  </div>
+</div>
+
+<div class="container hidden" id="result"></div>
 
 <script>
+const bgm=document.getElementById("bgm");
+bgm.volume=0.12;
+
 const noBtn=document.getElementById("noBtn");
 const zone=document.getElementById("zone");
-const yesBtn=document.getElementById("yesBtn");
-const card=document.getElementById("card");
-const extra=document.getElementById("extra");
-const yesSound=document.getElementById("yesSound");
-const bgMusic=document.getElementById("bgMusic");
+const extraMsg=document.getElementById("extraMsg");
 
-bgMusic.volume=0.2;
-bgMusic.play();
-
-/* NO BUTTON ONLY LEFT RIGHT */
-noBtn.addEventListener("click",()=>{
-  const zoneWidth=zone.clientWidth;
-  const btnWidth=noBtn.clientWidth;
-  const min=10;
-  const max=zoneWidth-btnWidth-10;
-  const randomX=Math.floor(Math.random()*(max-min)+min);
-  noBtn.style.left=randomX+"px";
-});
-
-/* YES FLOW */
-yesBtn.addEventListener("click",()=>{
-  yesSound.play();
-  startGame();
-});
-
-let q=0;
-let score=0;
-
-const questions=[
-  {q:"When did we first talk?",a:["November","November","November","November"]},
-  {q:"Favourite flower?",a:["Rose And Lotus","Rose And Lotus","Rose And Lotus","Rose And Lotus"]},
-  {q:"Which app?",a:["Instagram","Instagram","Instagram","Instagram"]},
-  {q:"Age when we met?",a:["18","18","18","18"]},
-  {q:"Month special?",a:["November","November","November","November"]},
-  {q:"Favourite color?",a:["Black","Black","Black","Black"]},
-  {q:"Song vibe?",a:["Romantic","Romantic","Romantic","Romantic"]},
-  {q:"Short Nov?",a:["November","November","November","November"]},
-  {q:"Again month?",a:["November","November","November","November"]},
-  {q:"Still November?",a:["November","November","November","November"]},
-  {q:"Last one?",a:["November","November","November","November"]}
+let noCount=0;
+const msgs=[
+ "Think once more.",
+ "It is just a game.",
+ "Give it a try.",
+ "Still waiting for yes."
 ];
 
-function startGame(){
-  showQuestion();
-}
+noBtn.onclick=()=>{
+  noCount++;
+  if(noCount<=msgs.length) extraMsg.innerText=msgs[noCount-1];
 
-function showQuestion(){
-  if(q>=questions.length){
-    card.innerHTML=`
-      <h1>YOU WON THE GAME</h1>
-      <p>Score: ${score}</p>
-      <p>Now you can give me any dare</p>
-      <button id="okBtn">OKAY</button>
-    `;
-    document.getElementById("okBtn").onclick=()=>yesSound.play();
-    return;
-  }
+  const z=zone.getBoundingClientRect();
+  const b=noBtn.getBoundingClientRect();
 
-  const cur=questions[q];
-  card.innerHTML=`
-    <h2>${cur.q}</h2>
-    ${cur.a.map(ans=>`<button class="opt">${ans}</button>`).join("")}
-  `;
+  const minX=20;
+  const maxX=z.width-b.width-20;
+  const minY=20;
+  const maxY=z.height-b.height-80;
 
-  document.querySelectorAll(".opt").forEach(btn=>{
-    btn.onclick=()=>{
-      score++;
-      q++;
-      showQuestion();
-    };
+  const x=Math.random()*(maxX-minX)+minX;
+  const y=Math.random()*(maxY-minY)+minY;
+
+  noBtn.style.left=x+"px";
+  noBtn.style.top=y+"px";
+};
+
+yesBtn.onclick=()=>{
+  bgm.play().catch(()=>{});
+  start.classList.add("hidden");
+  game.classList.remove("hidden");
+  loadQ();
+};
+
+let index=0,score=0,selected=null;
+
+const questions=[
+ {q:"When is my birthday?",o:["15 November","16 November","17 November","18 November"],a:"17 November"},
+ {q:"My favourite flower?",o:["Rose and Lotus","Sunflower","Lily","Jasmine"],a:"Rose and Lotus"}
+];
+
+function loadQ(){
+  selected=null;
+  question.innerText=questions[index].q;
+  options.innerHTML="";
+  questions[index].o.forEach(op=>{
+    const b=document.createElement("button");
+    b.className="option";
+    b.innerText=op;
+    b.onclick=()=>{selected=op};
+    options.appendChild(b);
   });
 }
+
+nextBtn.onclick=()=>{
+  if(!selected) return;
+  if(selected===questions[index].a) score++;
+  index++;
+  if(index>=questions.length){
+    game.classList.add("hidden");
+    result.classList.remove("hidden");
+    result.innerHTML=`
+      <h1>YOU WON THE GAME</h1>
+      <p>Score ${score}/${questions.length}</p>
+      <p>Now you can give me any dare</p>
+    `;
+  }else loadQ();
+};
+
+prevBtn.onclick=()=>{
+  if(index>0){index--;loadQ();}
+};
 </script>
 
 </body>
