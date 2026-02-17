@@ -15,7 +15,9 @@
 }
 
 html,body{
+  width:100%;
   height:100%;
+  overflow:hidden;
 }
 
 body{
@@ -24,12 +26,11 @@ body{
   align-items:center;
   background:
     linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
-    url("bg.png") center center / cover no-repeat fixed;
-  overflow:hidden;
+    url("bg.png") center center / cover no-repeat;
   color:#fff;
 }
 
-/* GLASS UI */
+/* ---------- GLASS UI (LOCKED) ---------- */
 .container{
   width:90%;
   max-width:420px;
@@ -40,49 +41,24 @@ body{
   border:1px solid rgba(255,255,255,0.25);
   box-shadow:0 20px 40px rgba(0,0,0,0.35);
   text-align:center;
+  position:relative;
 }
 
 .hidden{display:none}
 
-/* COMMON ANIMATION */
+/* ---------- LONG SLIDE UP ---------- */
 .animate{
-  animation:slideUp .9s cubic-bezier(.22,.61,.36,1) forwards;
+  animation:slideUp 1.2s cubic-bezier(.22,.61,.36,1) forwards;
 }
 
 @keyframes slideUp{
-  from{opacity:0;transform:translateY(80px)}
+  from{opacity:0;transform:translateY(120px)}
   to{opacity:1;transform:translateY(0)}
 }
 
-/* WIN */
-.win{
-  animation:winAnim 2.2s ease forwards;
-}
-@keyframes winAnim{
-  0%{opacity:0;transform:translateY(120px) scale(.9)}
-  60%{opacity:1;transform:translateY(-10px) scale(1.03)}
-  100%{transform:translateY(0) scale(1)}
-}
+p{font-size:14px;line-height:1.5;margin-bottom:18px}
 
-/* LOSE */
-.lose{
-  animation:loseAnim 2.2s ease forwards;
-}
-@keyframes loseAnim{
-  0%{opacity:0;transform:translateY(120px)}
-  60%{opacity:1;transform:translateY(0)}
-  80%{transform:translateX(-4px)}
-  100%{transform:translateX(0)}
-}
-
-/* TEXT */
-p{
-  font-size:14px;
-  line-height:1.45;
-  margin-bottom:18px;
-}
-
-/* BUTTONS */
+/* ---------- BUTTONS ---------- */
 .option,.navBtn{
   width:100%;
   padding:13px;
@@ -101,20 +77,21 @@ p{
   color:#000;
 }
 
-#yesBtn{
+#yesBtn,#noBtn{
   padding:16px;
   border-radius:40px;
-  border:none;
-  background:#fff;
-  color:#000;
   font-weight:700;
 }
 
+#yesBtn{
+  background:#fff;
+  color:#000;
+  border:none;
+}
+
 #noBtn{
-  padding:16px;
-  border-radius:40px;
-  border:1px solid rgba(255,255,255,.35);
   background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.35);
   color:#fff;
   position:absolute;
   bottom:15px;
@@ -122,32 +99,78 @@ p{
   transform:translateX(-50%);
 }
 
-.button-zone{
-  position:relative;
-  height:200px;
-}
-
-.nav{
-  display:flex;
-  gap:12px;
-}
-
+.button-zone{position:relative;height:200px}
+.nav{display:flex;gap:12px}
 .navBtn{width:48%}
 
-/* SPARKLERS */
-.sparkle{
+/* ---------- PARTICLES LAYER ---------- */
+#particles{
   position:fixed;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:10;
+}
+
+/* HEART / ROSE */
+.particle{
+  position:absolute;
+  bottom:-40px;
+  width:18px;
+  height:18px;
+  background:linear-gradient(145deg,#ff5f9e,#ff99c8);
+  transform:rotate(45deg);
+  animation:floatUp linear forwards;
+}
+
+.particle::before,
+.particle::after{
+  content:"";
+  position:absolute;
+  width:18px;
+  height:18px;
+  background:inherit;
+  border-radius:50%;
+}
+
+.particle::before{top:-9px;left:0}
+.particle::after{left:-9px;top:0}
+
+@keyframes floatUp{
+  to{
+    transform:translateY(-110vh) rotate(45deg);
+    opacity:0;
+  }
+}
+
+/* ---------- SPARKLER ---------- */
+.spark{
+  position:absolute;
   width:4px;
   height:4px;
-  background:white;
-  bottom:0;
-  opacity:0;
-  animation:spark 5s linear forwards;
+  background:#fff;
+  border-radius:50%;
+  animation:spark 1s ease-out forwards;
 }
 
 @keyframes spark{
-  0%{opacity:1;transform:translateY(0) scale(1)}
-  100%{opacity:0;transform:translateY(-360px) scale(0)}
+  to{
+    transform:translate(var(--x),var(--y));
+    opacity:0;
+  }
+}
+
+/* ---------- LOSE SHAKE ---------- */
+.shake{
+  animation:shake .5s ease;
+}
+
+@keyframes shake{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-8px)}
+  50%{transform:translateX(8px)}
+  75%{transform:translateX(-6px)}
+  100%{transform:translateX(0)}
 }
 </style>
 </head>
@@ -157,6 +180,9 @@ p{
 <audio id="clickSound" src="click.mp3"></audio>
 <audio id="bgm" src="pretty_bgm.mp3" loop></audio>
 
+<div id="particles"></div>
+
+<!-- ---------- START ---------- -->
 <div class="container animate" id="start">
   <h1>HEY PALAK</h1>
   <p>I made a small game.<br>If you want to play, will you play it?</p>
@@ -194,22 +220,20 @@ const clickSound=document.getElementById("clickSound");
 const bgm=document.getElementById("bgm");
 bgm.volume=0.15;
 
-const yesBtn=document.getElementById("yesBtn");
-const noBtn=document.getElementById("noBtn");
+const noBtn=yesBtn=document.getElementById("noBtn");
 const extraMsg=document.getElementById("extraMsg");
 
 const noMessages=[
-  "Think once again.",
+  "Take a moment and think again.",
   "It is just a small game.",
-  "Give it a try.",
-  "I am still waiting."
+  "Maybe you should give it a try.",
+  "I am still waiting for your yes."
 ];
 
 let noClicks=0,side=1;
-
 noBtn.onclick=()=>{
   clickSound.play().catch(()=>{});
-  extraMsg.innerText=noMessages[Math.min(noClicks,noMessages.length-1)];
+  extraMsg.innerText=noMessages[noClicks]||"";
   noClicks++;
   side*=-1;
   noBtn.style.transform=`translateX(calc(-50% + ${side*30}px))`;
@@ -219,7 +243,7 @@ yesBtn.onclick=()=>{
   clickSound.play().catch(()=>{});
   bgm.play().catch(()=>{});
   start.classList.add("hidden");
-  intro.classList.remove("hidden");
+  intro.classList.remove("hidden","animate");
   intro.classList.add("animate");
 };
 
@@ -230,22 +254,27 @@ okBtn.onclick=()=>{
   rules.classList.add("animate");
 };
 
+/* ---------- GAME ---------- */
 let index=0,score=0,selected=null;
 const answered=new Array(11).fill(false);
 
-const questions=[ /* SAME QUESTIONS AS BEFORE */ 
- {q:"How did we meet for the first time?",o:["Through a friend","Random chat","Comment section","You shared a post on Instagram"],a:"You shared a post on Instagram"},
- {q:"What nickname did I give you?",o:["Priya","Pihu","Pratibha","Palku"],a:"Palku"},
- {q:"When is my birthday?",o:["15 Nov","18 Nov","16 Nov","17 November"],a:"17 November"},
- {q:"My favourite colour is?",o:["Blue","Red","Grey","Black and White"],a:"Black and White"},
- {q:"My Favourite flower?",o:["Lotus","Lily","Sunflower","Rose"],a:"Rose"},
- {q:"What nickname did you give me?",o:["Prince","Piyu","Prem","Piku"],a:"Piku"},
- {q:"Did I ever wish bad for you?",o:["Yes","Maybe","Sometimes","No"],a:"No"},
- {q:"When we met, how old were you?",o:["15","16","18","17"],a:"ALL"},
- {q:"Did I ever use Snapchat for you?",o:["No","Maybe","Not Sure","Yes"],a:"Yes"},
- {q:"What is my dream?",o:["Photographer","Editor","All of these","Cinematographer"],a:"All of these"},
- {q:"After you left, did I miss you?",o:["No","Maybe","Not sure","Yes"],a:"Yes"}
+const questions=[
+ {q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
+ {q:"What nickname did I give you?",o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
+ {q:"When is my birthday?",o:["15 Nov","16 Nov","17 November","18 Nov"],a:"17 November"},
+ {q:"My favourite colour is?",o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
+ {q:"My Favourite flower?",o:["Rose","Lotus","Lily","Sunflower"],a:"Rose"},
+ {q:"What nickname did you give me?",o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
+ {q:"Did I ever wish bad for you?",o:["No","Yes","Maybe","Sometimes"],a:"No"},
+ {q:"When we met, how old were you?",o:["15","16","17","18"],a:"17"},
+ {q:"Did I ever use Snapchat for you?",o:["Yes","No","Not Sure","Maybe"],a:"Yes"},
+ {q:"What is my dream?",o:["Cinematographer","Photographer","Editor","All of these"],a:"All of these"},
+ {q:"After you left, did I miss you?",o:["Yes","No","Maybe","Not sure"],a:"Yes"}
 ];
+
+function shuffle(arr){
+  return arr.sort(()=>Math.random()-0.5);
+}
 
 function startGame(){
   rules.classList.add("hidden");
@@ -258,7 +287,7 @@ function loadQ(){
   selected=null;
   question.innerText=questions[index].q;
   options.innerHTML="";
-  questions[index].o.sort(()=>Math.random()-0.5).forEach(op=>{
+  shuffle([...questions[index].o]).forEach(op=>{
     const b=document.createElement("button");
     b.className="option";
     b.innerText=op;
@@ -274,14 +303,12 @@ function loadQ(){
 nextBtn.onclick=()=>{
   if(!selected) return;
   clickSound.play().catch(()=>{});
-
   if(!answered[index]){
-    if(questions[index].a==="ALL" || selected===questions[index].a) score++;
+    if(selected===questions[index].a) score++;
     answered[index]=true;
   }
-
   index++;
-  index>=questions.length ? endGame() : loadQ();
+  index>=questions.length?endGame():loadQ();
 };
 
 prevBtn.onclick=()=>{
@@ -289,38 +316,68 @@ prevBtn.onclick=()=>{
   if(index>0){index--;loadQ();}
 };
 
-function sparkles(){
-  let i=0;
-  const t=setInterval(()=>{
-    const s=document.createElement("div");
-    s.className="sparkle";
-    s.style.left=Math.random()*100+"vw";
-    document.body.appendChild(s);
-    setTimeout(()=>s.remove(),5000);
-    if(++i>180) clearInterval(t);
-  },80);
-}
-
+/* ---------- RESULT ---------- */
 function endGame(){
   game.classList.add("hidden");
   result.classList.remove("hidden");
-  result.className="container";
+  result.classList.add("animate");
 
   if(score>=7){
-    result.classList.add("win");
-    sparkles();
+    winAnimation();
     result.innerHTML=`
       <h1>YOU WON THE GAME</h1>
       <p>Now give me any dare and I'll complete it</p>
-      <button class="option" onclick="location.reload()">Restart</button>
+      <button class="option" onclick="location.reload()">Restart game</button>
     `;
   }else{
-    result.classList.add("lose");
+    loseAnimation();
+    result.classList.add("shake");
     result.innerHTML=`
       <h1>YOU LOST</h1>
-      <p>Better luck next time</p>
-      <button class="option" onclick="location.reload()">Retry</button>
+      <p>You scored ${score}/11</p>
+      <button class="option" onclick="location.reload()">Try again</button>
     `;
+  }
+}
+
+/* ---------- WIN ---------- */
+function winAnimation(){
+  const layer=document.getElementById("particles");
+
+  // hearts
+  for(let i=0;i<30;i++){
+    const p=document.createElement("div");
+    p.className="particle";
+    p.style.left=Math.random()*100+"vw";
+    p.style.animationDuration=3+Math.random()*2+"s";
+    layer.appendChild(p);
+    setTimeout(()=>p.remove(),5000);
+  }
+
+  // sparkler
+  for(let i=0;i<60;i++){
+    const s=document.createElement("div");
+    s.className="spark";
+    s.style.left="50%";
+    s.style.top="60%";
+    s.style.setProperty("--x",(Math.random()*300-150)+"px");
+    s.style.setProperty("--y",(Math.random()*300-150)+"px");
+    layer.appendChild(s);
+    setTimeout(()=>s.remove(),1000);
+  }
+}
+
+/* ---------- LOSE ---------- */
+function loseAnimation(){
+  const layer=document.getElementById("particles");
+  for(let i=0;i<15;i++){
+    const p=document.createElement("div");
+    p.className="particle";
+    p.style.background="linear-gradient(145deg,#888,#555)";
+    p.style.left=Math.random()*100+"vw";
+    p.style.animationDuration=4+"s";
+    layer.appendChild(p);
+    setTimeout(()=>p.remove(),5000);
   }
 }
 </script>
