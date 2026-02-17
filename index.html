@@ -96,6 +96,7 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 
 <body>
 <audio id="clickSound" src="click.mp3" preload="auto"></audio>
+  <audio id="okSound" src="ok.mp3" preload="auto"></audio>
 <div class="container" id="start">
   <h1>HEY PALAK</h1>
 
@@ -130,15 +131,18 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 </div>
 
 <div class="container hidden" id="result"></div>
-
+<audio id="okSound" src="ok.mp3"></audio>
+<audio id="clickSound" src="click.mp3"></audio>
 <script>
 /* NO BUTTON + ONE-BY-ONE MESSAGE */
 const noBtn = document.getElementById("noBtn");
 const zone = document.querySelector(".button-zone");
 const extraMsg = document.getElementById("extraMsg");
-
+const okBtn = document.getElementById("okBtn");
+  okBtn.addEventListener("click", () => {
+  document.getElementById("okSound").play();
+});
 let noClicks = 0;
-
 const noMessages = [
   "Take a moment and think again.",
   "It is just a small game.",
@@ -168,7 +172,9 @@ yesBtn.onclick = () => {
   start.classList.add("hidden");
   intro.classList.remove("hidden");
 };
-
+okBtn.onclick = () => {
+  document.getElementById("okSound").play();
+};
 function showRules(){
   intro.classList.add("hidden");
   rules.classList.remove("hidden");
