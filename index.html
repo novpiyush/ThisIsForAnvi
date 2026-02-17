@@ -117,7 +117,7 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 
 <div class="container hidden" id="intro">
   <p>If you win the game,<br>you can give me any dare.</p>
-  <button class="option" onclick="showRules()">OK</button>
+<button id="okBtn" class="option" onclick="showRules()">OK</button>
 </div>
 
 <div class="container hidden" id="rules">
@@ -139,8 +139,10 @@ const noBtn = document.getElementById("noBtn");
 const zone = document.querySelector(".button-zone");
 const extraMsg = document.getElementById("extraMsg");
 const okBtn = document.getElementById("okBtn");
-  okBtn.addEventListener("click", () => {
-  document.getElementById("okSound").play();
+okBtn.addEventListener("click", () => {
+  const sound = document.getElementById("okSound");
+  sound.currentTime = 0;
+  sound.play();
 });
 let noClicks = 0;
 const noMessages = [
