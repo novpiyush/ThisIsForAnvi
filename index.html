@@ -10,7 +10,8 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body{
@@ -45,14 +46,7 @@ body{
   to{opacity:1;transform:translateY(0)}
 }
 
-h1,h2{margin-bottom:14px;letter-spacing:1px}
-
-p{
-  font-size:14px;
-  color:#f1f1f1;
-  margin-bottom:20px;
-  line-height:1.45;
-}
+p{font-size:14px;line-height:1.45;margin-bottom:20px}
 
 .option,.navBtn{
   width:100%;
@@ -64,9 +58,13 @@ p{
   color:#fff;
   cursor:pointer;
   transition:.25s;
+  font-weight:600;
+  text-transform:uppercase;
 }
 
-.option.active{
+.option.active,
+.option:active,
+.navBtn:active{
   background:#fff;
   color:#000;
 }
@@ -79,19 +77,28 @@ p{
   background:#fff;
   color:#000;
   font-weight:700;
+  text-transform:uppercase;
 }
 
 #noBtn{
-  width:120px;
-  padding:12px;
-  border-radius:30px;
-  background:rgba(0,0,0,.45);
-  border:1px solid rgba(255,255,255,.3);
+  width:100%;
+  padding:16px;
+  border-radius:40px;
+  border:1px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.15);
   color:#fff;
+  font-weight:600;
   position:absolute;
   bottom:15px;
   left:50%;
   transform:translateX(-50%);
+  transition:transform .35s ease,background .25s,color .25s;
+  overflow:hidden;
+}
+
+#noBtn.active{
+  background:#fff;
+  color:#000;
 }
 
 .button-zone{
@@ -101,9 +108,7 @@ p{
 
 .nav{
   display:flex;
-  justify-content:space-between;
   gap:12px;
-  margin-top:18px;
 }
 
 .navBtn{width:48%}
@@ -145,14 +150,13 @@ p{
 </div>
 
 <div class="container hidden" id="rules">
-  <p>You need to win at least<br>7 out of 11 questions.<br>So play carefully.</p>
+  <p>You need to win at least<br>7 out of 11 questions.</p>
   <button class="option" onclick="startGame()">NOW START THE GAME</button>
 </div>
 
 <div class="container hidden" id="game">
   <h2 id="question"></h2>
   <div id="options"></div>
-
   <div class="nav">
     <button class="navBtn" id="prevBtn">PREVIOUS</button>
     <button class="navBtn" id="nextBtn">OKAY</button>
@@ -167,27 +171,20 @@ const okSound=document.getElementById("okSound");
 const bgm=document.getElementById("bgm");
 bgm.volume=.15;
 
+let noSide=1,noClicks=0;
 const noBtn=document.getElementById("noBtn");
 const extraMsg=document.getElementById("extraMsg");
-let noClicks=0;
-const noMessages=[
-  "Take a moment and think again.",
-  "It is just a small game.",
-  "Maybe you should give it a try.",
-  "I am still waiting for your yes."
-];
 
 noBtn.onclick=()=>{
-  clickSound.currentTime=0;
   clickSound.play().catch(()=>{});
   noClicks++;
-  if(noClicks<=noMessages.length)
-    extraMsg.innerText=noMessages[noClicks-1];
-  noBtn.style.left=Math.random()*60+"%";
+  noBtn.classList.add("active");
+  setTimeout(()=>noBtn.classList.remove("active"),200);
+  noSide*=-1;
+  noBtn.style.transform=`translateX(calc(-50% + ${noSide*30}px))`;
 };
 
 yesBtn.onclick=()=>{
-  clickSound.currentTime=0;
   clickSound.play().catch(()=>{});
   bgm.play().catch(()=>{});
   start.classList.add("hidden");
@@ -195,13 +192,12 @@ yesBtn.onclick=()=>{
 };
 
 okBtn.onclick=()=>{
-  okSound.currentTime=0;
   okSound.play().catch(()=>{});
   intro.classList.add("hidden");
   rules.classList.remove("hidden");
 };
 
-let index=0,score=0,selected=null;
+let index=0,score=0,selected=null,answered=false;
 
 const questions=[
  {q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
@@ -211,7 +207,7 @@ const questions=[
  {q:"My Favourite flower?",o:["Rose","Lotus","Lily","Sunflower"],a:"Rose"},
  {q:"What nickname did you give me?",o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
  {q:"Did I ever wish bad for you?",o:["No","Yes","Maybe","Sometimes"],a:"No"},
- {q:"When we met, how old were you?",o:["15","16","17","18"],a:"17"},
+ {q:"When we met, how old were you?",o:["15","16","17","18"],a:"ALL"},
  {q:"Did I ever use Snapchat for you?",o:["Yes","No","Not Sure","Maybe"],a:"Yes"},
  {q:"What is my dream?",o:["Cinematographer","Photographer","Editor","All of these"],a:"All of these"},
  {q:"After you left, did I miss you?",o:["Yes","No","Maybe","Not sure"],a:"Yes"}
@@ -224,6 +220,7 @@ function startGame(){
 }
 
 function loadQ(){
+  answered=false;
   selected=null;
   question.innerText=questions[index].q;
   options.innerHTML="";
@@ -240,50 +237,25 @@ function loadQ(){
   });
 }
 
-prevBtn.onclick=()=>{
-  clickSound.currentTime=0;
-  clickSound.play().catch(()=>{});
-  if(index>0){index--;loadQ();}
-};
-
 nextBtn.onclick=()=>{
-  if(!selected)return;
-  clickSound.currentTime=0;
-  clickSound.play().catch(()=>{});
-  if(selected===questions[index].a)score++;
+  if(!selected||answered)return;
+  answered=true;
+  if(questions[index].a==="ALL"||selected===questions[index].a)score++;
   index++;
   index>=questions.length?endGame():loadQ();
+};
+
+prevBtn.onclick=()=>{
+  if(index>0){index--;loadQ();}
 };
 
 function endGame(){
   game.classList.add("hidden");
   result.classList.remove("hidden");
-  if(score>=7){
-    result.innerHTML=`
-      <h1>YOU WON THE GAME</h1>
-      <p>You won by scoring ${score} out of ${questions.length}</p>
-      <p>Now you can give me any dare<br>and I will complete it.</p>
-      <button class="option" onclick="location.reload()">RESTART GAME</button>`;
-    sparkles();
-  }else{
-    result.innerHTML=`
-      <h1>GAME OVER</h1>
-      <p>You scored ${score} out of ${questions.length}</p>
-      <button class="option" onclick="location.reload()">RESTART GAME</button>`;
-  }
-}
-
-function sparkles(){
-  let c=0;
-  let i=setInterval(()=>{
-    const s=document.createElement("div");
-    s.className="sparkle";
-    s.style.left=Math.random()*100+"vw";
-    s.style.bottom="0";
-    document.body.appendChild(s);
-    setTimeout(()=>s.remove(),4000);
-    if(++c>140)clearInterval(i);
-  },70);
+  result.innerHTML=`
+    <h1>${score>=7?"YOU WON":"GAME OVER"}</h1>
+    <p>You scored ${score} out of ${questions.length}</p>
+    <button class="option" onclick="location.reload()">RESTART GAME</button>`;
 }
 </script>
 </body>
