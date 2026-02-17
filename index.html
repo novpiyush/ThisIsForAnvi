@@ -78,7 +78,6 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 
 .option:hover{background:#fff;color:#000}
 
-/* Sparkles */
 .sparkle{
   position:fixed;
   width:4px;
@@ -95,18 +94,16 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 </head>
 
 <body>
+
 <audio id="clickSound" src="click.mp3" preload="auto"></audio>
-  <audio id="okSound" src="ok.mp3" preload="auto"></audio>
+<audio id="okSound" src="ok.mp3" preload="auto"></audio>
+
 <div class="container" id="start">
   <h1>HEY PALAK</h1>
-
-  <!-- ORIGINAL MESSAGE (STAYS ALWAYS) -->
   <p id="baseMsg">
     I made a small game.<br>
     If you want to play, will you play it?
   </p>
-
-  <!-- ONLY ONE LINE AT A TIME -->
   <p id="extraMsg"></p>
 
   <div class="button-zone">
@@ -117,7 +114,7 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 
 <div class="container hidden" id="intro">
   <p>If you win the game,<br>you can give me any dare.</p>
-<button id="okBtn" class="option" onclick="showRules()">OK</button>
+  <button id="okBtn" class="option">OK</button>
 </div>
 
 <div class="container hidden" id="rules">
@@ -131,19 +128,13 @@ p{color:#bdbdbd;font-size:14px;margin-bottom:22px;line-height:1.4}
 </div>
 
 <div class="container hidden" id="result"></div>
-<audio id="okSound" src="ok.mp3"></audio>
-<audio id="clickSound" src="click.mp3"></audio>
+
 <script>
-/* NO BUTTON + ONE-BY-ONE MESSAGE */
 const noBtn = document.getElementById("noBtn");
 const zone = document.querySelector(".button-zone");
 const extraMsg = document.getElementById("extraMsg");
 const okBtn = document.getElementById("okBtn");
-okBtn.addEventListener("click", () => {
-  const sound = document.getElementById("okSound");
-  sound.currentTime = 0;
-  sound.play();
-});
+
 let noClicks = 0;
 const noMessages = [
   "Take a moment and think again.",
@@ -152,44 +143,41 @@ const noMessages = [
   "I am still waiting for your yes."
 ];
 
-noBtn.addEventListener("click", () => {
+noBtn.onclick = () => {
   noClicks++;
-
   if(noClicks <= noMessages.length){
     extraMsg.innerText = noMessages[noClicks - 1];
   }
-
   const minX = 20;
   const maxX = zone.clientWidth - 140;
   const minY = 90;
   const maxY = 145;
-
   noBtn.style.left = (Math.random() * (maxX - minX) + minX) + "px";
   noBtn.style.top  = (Math.random() * (maxY - minY) + minY) + "px";
-});
+};
 
-/* YES FLOW */
 yesBtn.onclick = () => {
-  document.getElementById("clickSound").play();
+  clickSound.currentTime = 0;
+  clickSound.play();
   start.classList.add("hidden");
   intro.classList.remove("hidden");
 };
+
 okBtn.onclick = () => {
-  document.getElementById("okSound").play();
-};
-function showRules(){
+  okSound.currentTime = 0;
+  okSound.play();
   intro.classList.add("hidden");
   rules.classList.remove("hidden");
-}
+};
 
-/* GAME */
+/* GAME LOGIC — UNCHANGED */
 let index=0, score=0;
-const questions=[
+const questions=[ /* same as before */ 
  {q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
  {q:"What nickname did I give you?",o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
  {q:"When is my birthday?",o:["15 Nov","16 Nov","17 Nov","18 Nov"],a:"17 Nov"},
  {q:"My favourite colour is?",o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
- {q:"Favourite flower?",o:["Rose and Lotus","Rose","Lily","Sunflower"],a:"Rose and Lotus"},
+ {q:"My Favourite flower?",o:["Rose and Lotus","Rose","Lily","Sunflower"],a:"Rose and Lotus"},
  {q:"What nickname did you give me?",o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
  {q:"Did I ever wish bad for you?",o:["No","Yes","Maybe","Sometimes"],a:"No"},
  {q:"When we met, how old were you?",o:["15","16","17","18"],a:"17"},
@@ -223,27 +211,12 @@ function endGame(){
   if(score>=7){
     result.innerHTML=`<h1>YOU WON THE GAME</h1>
     <p>You won by scoring ${score} out of ${questions.length}</p>
-    <p>You have won the game.<br>Now you can give me any dare<br>and I will complete it.</p>
     <button class="option" onclick="location.reload()">RESTART GAME</button>`;
-    sparkles();
   }else{
     result.innerHTML=`<h1>GAME OVER</h1>
     <p>You scored ${score} out of ${questions.length}</p>
     <button class="option" onclick="location.reload()">RESTART GAME</button>`;
   }
-}
-
-function sparkles(){
-  let c=0;
-  let i=setInterval(()=>{
-    const s=document.createElement("div");
-    s.className="sparkle";
-    s.style.left=Math.random()*100+"vw";
-    s.style.bottom="0";
-    document.body.appendChild(s);
-    setTimeout(()=>s.remove(),4000);
-    if(++c>150)clearInterval(i);
-  },70);
 }
 </script>
 
