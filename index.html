@@ -10,7 +10,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family:"Segoe UI", Arial, sans-serif;
 }
 
 body{
@@ -18,11 +18,15 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  background:
-    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
-    url("bg.png") center/cover no-repeat;
   color:#fff;
   overflow:hidden;
+
+  background-image:
+    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+    url("./bg.png");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
 }
 
 /* Glass container */
@@ -31,9 +35,9 @@ body{
   max-width:420px;
   padding:26px;
   border-radius:22px;
-  background:rgba(255, 182, 193, 0.18);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background:rgba(255,182,193,0.18);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
   border:1px solid rgba(255,255,255,0.25);
   box-shadow:0 20px 40px rgba(0,0,0,0.35);
   text-align:center;
@@ -60,7 +64,7 @@ p{
 }
 
 /* Buttons */
-.option, .navBtn{
+.option,.navBtn{
   width:100%;
   padding:13px;
   margin-top:10px;
@@ -72,7 +76,7 @@ p{
   transition:0.25s;
 }
 
-.option:hover, .navBtn:hover{
+.option:hover,.navBtn:hover{
   background:rgba(255,255,255,0.85);
   color:#000;
 }
@@ -105,7 +109,6 @@ p{
   height:180px;
 }
 
-/* Game nav */
 .nav{
   display:flex;
   justify-content:space-between;
@@ -113,9 +116,7 @@ p{
   margin-top:18px;
 }
 
-.navBtn{
-  width:48%;
-}
+.navBtn{width:48%}
 
 /* Sparkles */
 .sparkle{
@@ -135,18 +136,13 @@ p{
 
 <body>
 
-<!-- Sounds -->
 <audio id="clickSound" src="click.mp3"></audio>
 <audio id="okSound" src="ok.mp3"></audio>
 <audio id="bgm" src="pretty_bgm.mp3" loop></audio>
 
-<!-- START -->
 <div class="container" id="start">
   <h1>HEY PALAK</h1>
-  <p id="baseMsg">
-    I made a small game.<br>
-    If you want to play, will you play it?
-  </p>
+  <p>I made a small game.<br>If you want to play, will you play it?</p>
   <p id="extraMsg"></p>
 
   <div class="button-zone">
@@ -155,19 +151,16 @@ p{
   </div>
 </div>
 
-<!-- INTRO -->
 <div class="container hidden" id="intro">
   <p>If you win the game,<br>you can give me any dare.</p>
   <button id="okBtn" class="option">OK</button>
 </div>
 
-<!-- RULES -->
 <div class="container hidden" id="rules">
   <p>You need to win at least<br>7 out of 11 questions.<br>So play carefully.</p>
   <button class="option" onclick="startGame()">NOW START THE GAME</button>
 </div>
 
-<!-- GAME -->
 <div class="container hidden" id="game">
   <h2 id="question"></h2>
   <div id="options"></div>
@@ -178,60 +171,53 @@ p{
   </div>
 </div>
 
-<!-- RESULT -->
 <div class="container hidden" id="result"></div>
 
 <script>
-const clickSound = document.getElementById("clickSound");
-const okSound = document.getElementById("okSound");
-const bgm = document.getElementById("bgm");
+const clickSound=document.getElementById("clickSound");
+const okSound=document.getElementById("okSound");
+const bgm=document.getElementById("bgm");
+bgm.volume=0.15;
 
-bgm.volume = 0.15;
-
-/* NO button logic */
-const noBtn = document.getElementById("noBtn");
-const extraMsg = document.getElementById("extraMsg");
-let noClicks = 0;
-const noMessages = [
+const noBtn=document.getElementById("noBtn");
+const extraMsg=document.getElementById("extraMsg");
+let noClicks=0;
+const noMessages=[
   "Take a moment and think again.",
   "It is just a small game.",
   "Maybe you should give it a try.",
   "I am still waiting for your yes."
 ];
 
-noBtn.onclick = ()=>{
+noBtn.onclick=()=>{
   noClicks++;
-  if(noClicks <= noMessages.length){
-    extraMsg.innerText = noMessages[noClicks-1];
+  if(noClicks<=noMessages.length){
+    extraMsg.innerText=noMessages[noClicks-1];
   }
-  noBtn.style.left = Math.random()*60 + "%";
+  noBtn.style.left=Math.random()*60+"%";
 };
 
-/* Flow buttons */
-yesBtn.onclick = ()=>{
+yesBtn.onclick=()=>{
   clickSound.play().catch(()=>{});
   bgm.play().catch(()=>{});
   start.classList.add("hidden");
   intro.classList.remove("hidden");
 };
 
-okBtn.onclick = ()=>{
+okBtn.onclick=()=>{
   okSound.play().catch(()=>{});
   intro.classList.add("hidden");
   rules.classList.remove("hidden");
 };
 
-/* GAME LOGIC */
-let index = 0;
-let score = 0;
-let selected = null;
+let index=0,score=0,selected=null;
 
-const questions = [
+const questions=[
  {q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
  {q:"What nickname did I give you?",o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
  {q:"When is my birthday?",o:["15 Nov","16 Nov","17 Nov","18 Nov"],a:"17 Nov"},
  {q:"My favourite colour is?",o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
- {q:"My Favourite flower?",o:["Rose and Lotus","Lotus","Lily","Sunflower"],a:"Rose"},
+ {q:"My Favourite flower?",o:["Rose And Lotus","Lotus","Lily","Sunflower"],a:"Rose"},
  {q:"What nickname did you give me?",o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
  {q:"Did I ever wish bad for you?",o:["No","Yes","Maybe","Sometimes"],a:"No"},
  {q:"When we met, how old were you?",o:["15","16","17","18"],a:"17"},
@@ -247,16 +233,15 @@ function startGame(){
 }
 
 function loadQ(){
-  selected = null;
-  question.innerText = questions[index].q;
-  options.innerHTML = "";
-
+  selected=null;
+  question.innerText=questions[index].q;
+  options.innerHTML="";
   questions[index].o.forEach(op=>{
-    const b = document.createElement("button");
-    b.className = "option";
-    b.innerText = op;
-    b.onclick = ()=>{
-      selected = op;
+    const b=document.createElement("button");
+    b.className="option";
+    b.innerText=op;
+    b.onclick=()=>{
+      selected=op;
       document.querySelectorAll(".option").forEach(x=>x.style.opacity="0.6");
       b.style.opacity="1";
     };
@@ -264,60 +249,45 @@ function loadQ(){
   });
 }
 
-/* PREVIOUS */
-prevBtn.onclick = ()=>{
+prevBtn.onclick=()=>{
   clickSound.play().catch(()=>{});
-  if(index>0){
-    index--;
-    loadQ();
-  }
+  if(index>0){index--;loadQ();}
 };
 
-/* NEXT / OKAY */
-nextBtn.onclick = ()=>{
-  if(!selected) return;
+nextBtn.onclick=()=>{
+  if(!selected)return;
   okSound.play().catch(()=>{});
-  if(selected === questions[index].a) score++;
+  if(selected===questions[index].a)score++;
   index++;
-  if(index >= questions.length){
-    endGame();
-  }else{
-    loadQ();
-  }
+  index>=questions.length?endGame():loadQ();
 };
 
 function endGame(){
   game.classList.add("hidden");
   result.classList.remove("hidden");
-
-  if(score >= 7){
-    result.innerHTML = `
-      <h1>YOU WON THE GAME</h1>
-      <p>You won by scoring ${score} out of ${questions.length}</p>
-      <p>Now you can give me any dare<br>and I will complete it.</p>
-      <button class="option" onclick="location.reload()">RESTART GAME</button>
-    `;
+  if(score>=7){
+    result.innerHTML=`<h1>YOU WON THE GAME</h1>
+    <p>You won by scoring ${score} out of ${questions.length}</p>
+    <p>Now you can give me any dare<br>and I will complete it.</p>
+    <button class="option" onclick="location.reload()">RESTART GAME</button>`;
     sparkles();
   }else{
-    result.innerHTML = `
-      <h1>GAME OVER</h1>
-      <p>You scored ${score} out of ${questions.length}</p>
-      <button class="option" onclick="location.reload()">RESTART GAME</button>
-    `;
+    result.innerHTML=`<h1>GAME OVER</h1>
+    <p>You scored ${score} out of ${questions.length}</p>
+    <button class="option" onclick="location.reload()">RESTART GAME</button>`;
   }
 }
 
-/* Sparkle animation */
 function sparkles(){
-  let c = 0;
-  let i = setInterval(()=>{
-    const s = document.createElement("div");
-    s.className = "sparkle";
-    s.style.left = Math.random()*100 + "vw";
-    s.style.bottom = "0";
+  let c=0;
+  let i=setInterval(()=>{
+    const s=document.createElement("div");
+    s.className="sparkle";
+    s.style.left=Math.random()*100+"vw";
+    s.style.bottom="0";
     document.body.appendChild(s);
     setTimeout(()=>s.remove(),4000);
-    if(++c > 140) clearInterval(i);
+    if(++c>140)clearInterval(i);
   },70);
 }
 </script>
