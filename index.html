@@ -10,7 +10,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:"Segoe UI",Arial,sans-serif;
+  font-family:"Segoe UI", Arial, sans-serif;
 }
 
 body{
@@ -51,16 +51,14 @@ body{
   padding:13px;
   margin-top:10px;
   border-radius:30px;
-  border:1px solid rgba(255,255,255,.35);
-  background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,0.35);
+  background:rgba(255,255,255,0.15);
   color:#fff;
   cursor:pointer;
-  transition:.25s;
-  outline:none;
 }
 
 .option:hover,.navBtn:hover{
-  background:rgba(255,255,255,.9);
+  background:#fff;
   color:#000;
 }
 
@@ -69,6 +67,8 @@ body{
   color:#000;
   font-weight:700;
   border:none;
+  border-radius:40px;
+  padding:14px;
 }
 
 .button-zone{
@@ -77,17 +77,16 @@ body{
 }
 
 #noBtn{
+  position:absolute;
   width:120px;
   padding:12px;
   border-radius:30px;
-  background:rgba(0,0,0,.45);
-  border:1px solid rgba(255,255,255,.3);
+  background:rgba(0,0,0,0.45);
+  border:1px solid rgba(255,255,255,0.3);
   color:#fff;
-  position:absolute;
-  top:90px;
   left:50%;
+  top:100px;
   transform:translateX(-50%);
-  z-index:10;
 }
 
 .nav{
@@ -95,22 +94,20 @@ body{
   gap:12px;
   margin-top:18px;
 }
-
 .navBtn{width:48%}
 
-/* Sparkle / line animation */
+/* Sparkles unchanged */
 .sparkle{
   position:fixed;
-  width:3px;
-  height:40px;
-  background:rgba(255,255,255,.6);
-  bottom:-50px;
+  width:4px;
+  height:4px;
+  background:white;
+  opacity:0;
   animation:spark 4s linear forwards;
 }
-
 @keyframes spark{
-  from{transform:translateY(0);opacity:1}
-  to{transform:translateY(-120vh);opacity:0}
+  0%{transform:translateY(0);opacity:1}
+  100%{transform:translateY(-320px);opacity:0}
 }
 </style>
 </head>
@@ -121,72 +118,66 @@ body{
 <audio id="okSound" src="ok.mp3"></audio>
 <audio id="bgm" src="pretty_bgm.mp3" loop></audio>
 
-<!-- START -->
 <div class="container" id="start">
   <h1>HEY PALAK</h1>
   <p>I made a small game.<br>If you want to play, will you play it?</p>
   <p id="extraMsg"></p>
-
-  <div class="button-zone" id="zone">
+  <div class="button-zone">
     <button id="yesBtn">YES</button>
     <button id="noBtn">NO</button>
   </div>
 </div>
 
-<!-- INTRO -->
 <div class="container hidden" id="intro">
   <p>If you win the game,<br>you can give me any dare.</p>
   <button id="okBtn" class="option">OK</button>
 </div>
 
-<!-- RULES -->
 <div class="container hidden" id="rules">
   <p>You need to win at least<br>7 out of 11 questions.</p>
   <button class="option" onclick="startGame()">NOW START THE GAME</button>
 </div>
 
-<!-- GAME -->
 <div class="container hidden" id="game">
   <h2 id="question"></h2>
   <div id="options"></div>
-
   <div class="nav">
     <button class="navBtn" id="prevBtn">PREVIOUS</button>
     <button class="navBtn" id="nextBtn">OKAY</button>
   </div>
 </div>
 
-<!-- RESULT -->
 <div class="container hidden" id="result"></div>
 
 <script>
-const clickSound = document.getElementById("clickSound");
-const okSound = document.getElementById("okSound");
-const bgm = document.getElementById("bgm");
+const clickSound=document.getElementById("clickSound");
+const okSound=document.getElementById("okSound");
+const bgm=document.getElementById("bgm");
 
-bgm.volume = 0.06;
+bgm.volume=0.08;
 
-/* NO button */
-const noBtn = document.getElementById("noBtn");
-const zone = document.getElementById("zone");
-const extraMsg = document.getElementById("extraMsg");
-let noClicks = 0;
+/* NO button fixed */
+const noBtn=document.getElementById("noBtn");
+const zone=document.querySelector(".button-zone");
+const extraMsg=document.getElementById("extraMsg");
+let noClicks=0;
 
-noBtn.addEventListener("click",()=>{
+noBtn.onclick=()=>{
+  noClicks++;
   extraMsg.innerText=[
     "Think again.",
-    "It is just a small game.",
+    "Just a small game.",
     "Give it a try.",
     "Still waiting for yes."
   ][noClicks%4];
-  noClicks++;
 
-  const maxX = zone.clientWidth - noBtn.offsetWidth - 10;
-  const maxY = zone.clientHeight - noBtn.offsetHeight - 10;
-
-  noBtn.style.left = Math.random()*maxX + "px";
-  noBtn.style.top  = Math.random()*maxY + "px";
-});
+  const maxX=zone.clientWidth-140;
+  const maxY=140;
+  const x=Math.random()*maxX;
+  const y=80+Math.random()*(maxY-80);
+  noBtn.style.left=x+"px";
+  noBtn.style.top=y+"px";
+};
 
 /* Flow */
 yesBtn.onclick=()=>{
@@ -202,21 +193,21 @@ okBtn.onclick=()=>{
   rules.classList.remove("hidden");
 };
 
-/* GAME */
-let index=0, score=0, selected=null;
+/* Game */
+let index=0,score=0,selected=null;
 
 const questions=[
- {q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
- {q:"What nickname did I give you?",o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
- {q:"When is my birthday?",o:["15 Nov","16 Nov","17 Nov","18 Nov"],a:"17 Nov"},
- {q:"My favourite colour is?",o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
- {q:"My Favourite flower?",o:["Rose and Lotus","Lily","Tulip","Sunflower"],a:"Rose and Lotus"},
- {q:"What nickname did you give me?",o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
- {q:"Did I ever wish bad for you?",o:["No","Yes","Maybe","Sometimes"],a:"No"},
- {q:"When we met, how old were you?",o:["15","16","17","18"],a:null},
- {q:"Did I ever use Snapchat for you?",o:["Yes","No","Not Sure","Maybe"],a:"Yes"},
- {q:"What is my dream?",o:["Cinematographer","Photographer","Editor","All of these"],a:"All of these"},
- {q:"After you left, did I miss you?",o:["Yes","No","Maybe","Not sure"],a:"Yes"}
+{q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
+{q:"What nickname did I give you?",o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
+{q:"When is my birthday?",o:["15 November","16 November","17 November","18 November"],a:"17 November"},
+{q:"My favourite colour is?",o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
+{q:"My Favourite flower?",o:["Rose And Lotus","Tulip","Lily","Sunflower"],a:"Rose And Lotus"},
+{q:"What nickname did you give me?",o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
+{q:"Did I ever wish bad for you?",o:["No","No","No","No"],a:"No"},
+{q:"When we met, how old were you?",o:["15","16","17","18"],a:"15"},
+{q:"Did I ever use Snapchat for you?",o:["Yes","Yes","Yes","Yes"],a:"Yes"},
+{q:"What is my dream?",o:["Cinematographer","Photographer","Editor","All of these"],a:"All of these"},
+{q:"After you left, did I miss you?",o:["Yes","Yes","Yes","Yes"],a:"Yes"}
 ];
 
 function startGame(){
@@ -235,28 +226,24 @@ function loadQ(){
     b.innerText=op;
     b.onclick=()=>{
       selected=op;
-      document.querySelectorAll(".option").forEach(x=>x.style.opacity=".6");
-      b.style.opacity="1";
+      document.querySelectorAll(".option").forEach(x=>x.style.opacity=.5);
+      b.style.opacity=1;
     };
     options.appendChild(b);
   });
 }
 
 prevBtn.onclick=()=>{
+  clickSound.play();
   if(index>0){index--;loadQ();}
 };
 
 nextBtn.onclick=()=>{
   if(!selected)return;
   clickSound.play();
-
-  if(questions[index].a===null || selected===questions[index].a){
-    score++;
-  }
-
+  if(selected===questions[index].a)score++;
   index++;
-  if(index>=questions.length) endGame();
-  else loadQ();
+  index>=questions.length?endGame():loadQ();
 };
 
 function endGame(){
@@ -264,21 +251,24 @@ function endGame(){
   result.classList.remove("hidden");
   result.innerHTML=`
     <h1>YOU WON THE GAME</h1>
+    <p>Kitne me se kitne laake jeeti: ${score} / ${questions.length}</p>
     <p>Now you can give me any dare</p>
-    <p>Score: ${score} / ${questions.length}</p>
+    <button class="option" onclick="location.reload()">RESTART GAME</button>
   `;
   sparkles();
 }
 
 function sparkles(){
+  let c=0;
   let i=setInterval(()=>{
     const s=document.createElement("div");
     s.className="sparkle";
     s.style.left=Math.random()*100+"vw";
+    s.style.bottom="0";
     document.body.appendChild(s);
     setTimeout(()=>s.remove(),4000);
-  },80);
-  setTimeout(()=>clearInterval(i),3500);
+    if(++c>140)clearInterval(i);
+  },70);
 }
 </script>
 
