@@ -59,7 +59,6 @@ p{font-size:14px;line-height:1.45;margin-bottom:20px}
   cursor:pointer;
   transition:.25s;
   font-weight:600;
-  text-transform:uppercase;
 }
 
 .option.active,
@@ -69,25 +68,23 @@ p{font-size:14px;line-height:1.45;margin-bottom:20px}
   color:#000;
 }
 
-#yesBtn{
+#yesBtn,#noBtn{
   width:100%;
   padding:16px;
   border-radius:40px;
-  border:none;
+  font-weight:700;
+}
+
+#yesBtn{
   background:#fff;
   color:#000;
-  font-weight:700;
-  text-transform:uppercase;
+  border:none;
 }
 
 #noBtn{
-  width:100%;
-  padding:16px;
-  border-radius:40px;
-  border:1px solid rgba(255,255,255,.35);
   background:rgba(255,255,255,.15);
   color:#fff;
-  font-weight:600;
+  border:1px solid rgba(255,255,255,.35);
   position:absolute;
   bottom:15px;
   left:50%;
@@ -95,21 +92,9 @@ p{font-size:14px;line-height:1.45;margin-bottom:20px}
   transition:.35s;
 }
 
-#noBtn.active{
-  background:#fff;
-  color:#000;
-}
+.button-zone{position:relative;height:200px}
 
-.button-zone{
-  position:relative;
-  height:200px;
-}
-
-.nav{
-  display:flex;
-  gap:12px;
-}
-
+.nav{display:flex;gap:12px}
 .navBtn{width:48%}
 
 .sparkle{
@@ -136,7 +121,6 @@ p{font-size:14px;line-height:1.45;margin-bottom:20px}
   <h1>HEY PALAK</h1>
   <p>I made a small game.<br>If you want to play, will you play it?</p>
   <p id="extraMsg"></p>
-
   <div class="button-zone">
     <button id="yesBtn">YES</button>
     <button id="noBtn">NO</button>
@@ -158,7 +142,7 @@ p{font-size:14px;line-height:1.45;margin-bottom:20px}
   <div id="options"></div>
   <div class="nav">
     <button class="navBtn" id="prevBtn">PREVIOUS</button>
-    <button class="navBtn" id="nextBtn">OKAY</button>
+    <button class="navBtn" id="nextBtn">NEXT</button>
   </div>
 </div>
 
@@ -172,108 +156,111 @@ bgm.volume=.15;
 
 const extraMsg=document.getElementById("extraMsg");
 const noMessages=[
-  "Take a moment and think again.",
-  "It is just a small game.",
-  "Maybe you should give it a try.",
-  "I am still waiting for your yes."
+ "Take a moment and think again.",
+ "It is just a small game.",
+ "Maybe you should give it a try.",
+ "I am still waiting for your yes."
 ];
 
 let noClicks=0,noSide=1;
 
 noBtn.onclick=()=>{
-  clickSound.currentTime=0;
-  clickSound.play().catch(()=>{});
-
-  noClicks++;
-  if(noClicks<=noMessages.length){
-    extraMsg.innerText=noMessages[noClicks-1];
-  }
-
-  noBtn.classList.add("active");
-  setTimeout(()=>noBtn.classList.remove("active"),200);
-
-  noSide*=-1;
-  noBtn.style.transform=`translateX(calc(-50% + ${noSide*30}px))`;
+ clickSound.currentTime=0;
+ clickSound.play().catch(()=>{});
+ noClicks++;
+ if(noClicks<=noMessages.length){
+   extraMsg.innerText=noMessages[noClicks-1];
+ }
+ noSide*=-1;
+ noBtn.style.transform=`translateX(calc(-50% + ${noSide*30}px))`;
 };
 
 yesBtn.onclick=()=>{
-  clickSound.currentTime=0;
-  clickSound.play().catch(()=>{});
-
-  yesBtn.classList.add("active");
-  setTimeout(()=>yesBtn.classList.remove("active"),150);
-
-  bgm.play().catch(()=>{});
-  start.classList.add("hidden");
-  intro.classList.remove("hidden");
+ clickSound.currentTime=0;
+ clickSound.play().catch(()=>{});
+ bgm.play().catch(()=>{});
+ start.classList.add("hidden");
+ intro.classList.remove("hidden");
 };
 
 okBtn.onclick=()=>{
-  okSound.currentTime=0;
-  okSound.play().catch(()=>{});
-  intro.classList.add("hidden");
-  rules.classList.remove("hidden");
+ okSound.currentTime=0;
+ okSound.play().catch(()=>{});
+ intro.classList.add("hidden");
+ rules.classList.remove("hidden");
 };
 
-let index=0,score=0,selected=null,answered=false;
+let index=0,score=0,selected=null;
 
 const questions=[
- {q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
+ {q:"How did we meet for the first time?",o:["You shared a post on instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on instagram"},
  {q:"What nickname did I give you?",o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
- {q:"When is my birthday?",o:["15 Nov","16 Nov","17 November","18 Nov"],a:"17 November"},
- {q:"My favourite colour is?",o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
- {q:"My Favourite flower?",o:["Rose","Lotus","Lily","Sunflower"],a:"Rose"},
+ {q:"When is my birthday?",o:["15 nov","16 nov","17 november","18 nov"],a:"17 november"},
+ {q:"My favourite colour is?",o:["Black and white","Blue","Red","Grey"],a:"Black and white"},
+ {q:"My favourite flower?",o:["Rose","Lotus","Lily","Sunflower"],a:"Rose"},
  {q:"What nickname did you give me?",o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
  {q:"Did I ever wish bad for you?",o:["No","Yes","Maybe","Sometimes"],a:"No"},
- {q:"When we met, how old were you?",o:["15","16","17","18"],a:"ALL"},
- {q:"Did I ever use Snapchat for you?",o:["Yes","No","Not Sure","Maybe"],a:"Yes"},
+ {q:"When we met, how old were you?",o:["15","16","17","18"],a:"17"},
+ {q:"Did I ever use snapchat for you?",o:["Yes","No","Not sure","Maybe"],a:"Yes"},
  {q:"What is my dream?",o:["Cinematographer","Photographer","Editor","All of these"],a:"All of these"},
  {q:"After you left, did I miss you?",o:["Yes","No","Maybe","Not sure"],a:"Yes"}
 ];
 
 function startGame(){
-  rules.classList.add("hidden");
-  game.classList.remove("hidden");
-  loadQ();
+ rules.classList.add("hidden");
+ game.classList.remove("hidden");
+ loadQ();
 }
+
+function capFirst(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 
 function loadQ(){
-  answered=false;
-  selected=null;
-  question.innerText=questions[index].q;
-  options.innerHTML="";
-  questions[index].o.forEach(op=>{
-    const b=document.createElement("button");
-    b.className="option";
-    b.innerText=op;
-    b.onclick=()=>{
-      selected=op;
-      document.querySelectorAll(".option").forEach(x=>x.classList.remove("active"));
-      b.classList.add("active");
-    };
-    options.appendChild(b);
-  });
+ selected=null;
+ question.innerText=questions[index].q;
+ options.innerHTML="";
+ questions[index].o.forEach(op=>{
+   const b=document.createElement("button");
+   b.className="option";
+   b.innerText=capFirst(op);
+   b.onclick=()=>{
+     selected=op;
+     document.querySelectorAll(".option").forEach(x=>x.classList.remove("active"));
+     b.classList.add("active");
+   };
+   options.appendChild(b);
+ });
 }
 
-nextBtn.onclick=()=>{
-  if(!selected||answered)return;
-  answered=true;
-  if(questions[index].a==="ALL"||selected===questions[index].a)score++;
-  index++;
-  index>=questions.length?endGame():loadQ();
+prevBtn.onclick=()=>{
+ clickSound.currentTime=0;
+ clickSound.play().catch(()=>{});
+ if(index>0){index--;loadQ();}
 };
 
-prevBtn.onclick=()=>{
-  if(index>0){index--;loadQ();}
+nextBtn.onclick=()=>{
+ if(!selected)return;
+ okSound.currentTime=0;
+ okSound.play().catch(()=>{});
+ if(selected===questions[index].a)score++;
+ index++;
+ index>=questions.length?endGame():loadQ();
 };
 
 function endGame(){
-  game.classList.add("hidden");
-  result.classList.remove("hidden");
-  result.innerHTML=`
-    <h1>${score>=7?"YOU WON":"GAME OVER"}</h1>
-    <p>You scored ${score} out of ${questions.length}</p>
-    <button class="option" onclick="location.reload()">RESTART GAME</button>`;
+ game.classList.add("hidden");
+ result.classList.remove("hidden");
+ if(score>=7){
+   result.innerHTML=`
+     <h1>YOU WON THE GAME</h1>
+     <p>You won by scoring ${score} out of ${questions.length}</p>
+     <p>Now you can give me any dare<br>and I will complete it.</p>
+     <button class="option" onclick="location.reload()">RESTART GAME</button>`;
+ }else{
+   result.innerHTML=`
+     <h1>GAME OVER</h1>
+     <p>You scored ${score} out of ${questions.length}</p>
+     <button class="option" onclick="location.reload()">RESTART GAME</button>`;
+ }
 }
 </script>
 </body>
