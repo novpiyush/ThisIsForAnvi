@@ -169,7 +169,32 @@ const okSound=document.getElementById("okSound");
 const bgm=document.getElementById("bgm");
 
 bgm.volume=.15;
+/* GLOBAL BUTTON SOUNDS */
 
+document.addEventListener("click",function(e){
+
+if(e.target.id==="yesBtn")
+clickSound.currentTime=0,clickSound.play().catch(()=>{});
+
+if(e.target.id==="noBtn")
+clickSound.currentTime=0,clickSound.play().catch(()=>{});
+
+if(e.target.id==="prevBtn")
+clickSound.currentTime=0,clickSound.play().catch(()=>{});
+
+if(e.target.id==="nextBtn")
+clickSound.currentTime=0,clickSound.play().catch(()=>{});
+
+if(e.target.id==="okBtn")
+okSound.currentTime=0,okSound.play().catch(()=>{});
+
+if(e.target.innerText==="Restart")
+clickSound.currentTime=0,clickSound.play().catch(()=>{});
+
+if(e.target.innerText==="Try Again")
+clickSound.currentTime=0,clickSound.play().catch(()=>{});
+
+});
 const noBtn=document.getElementById("noBtn");
 const yesBtn=document.getElementById("yesBtn");
 const extraMsg=document.getElementById("extraMsg");
