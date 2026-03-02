@@ -299,112 +299,129 @@ let selected=null;
 const answered=new Array(11).fill(false);
 
 
-<!-- Question 1 -->
-<p>1. Which action shows someone truly pays attention to you over time?</p>
-<label><input type="radio" name="q1"> A) Replying quickly</label><br>
-<label><input type="radio" name="q1"> B) Remembering small details about you</label><br>
-<label><input type="radio" name="q1"> C) Sending messages daily</label><br>
-<label><input type="radio" name="q1"> D) Liking your posts</label>
+const questions=[
 
+{
+q:"Which action shows someone truly pays attention to you over time?",
+o:[
+"Replying quickly",
+"Remembering small details about you",
+"Sending messages daily",
+"Liking your posts"
+],
+a:"Remembering small details about you"
+},
 
-<br><br>
+{
+q:"When a person becomes quieter than usual, what is the most likely reason?",
+o:[
+"They are tired",
+"They are thinking deeply",
+"They are bored",
+"They are distracted"
+],
+a:"They are thinking deeply"
+},
 
-<!-- Question 2 -->
-<p>2. When a person becomes quieter than usual, what is the most likely reason?</p>
-<label><input type="radio" name="q2"> A) They are tired</label><br>
-<label><input type="radio" name="q2"> B) They are thinking deeply</label><br>
-<label><input type="radio" name="q2"> C) They are bored</label><br>
-<label><input type="radio" name="q2"> D) They are distracted</label>
+{
+q:"Second letter of SUN + Last letter of MOON + First letter of STAR makes what?",
+o:[
+"URS",
+"UNS",
+"SNS",
+"NNS"
+],
+a:"UNS"
+},
 
+{
+q:"Which situation shows the strongest level of comfort between two people?",
+o:[
+"Talking for hours",
+"Sharing secrets",
+"Sitting silently without awkwardness",
+"Sending long messages"
+],
+a:"Sitting silently without awkwardness"
+},
 
-<br><br>
+{
+q:"What makes a person more memorable after meeting only a few times?",
+o:[
+"Expensive clothes",
+"Unique behavior or habits",
+"Height or looks",
+"Their phone"
+],
+a:"Unique behavior or habits"
+},
 
-<!-- Question 3 -->
-<p>3. Second letter of SUN + Last letter of MOON + First letter of STAR makes what?</p>
-<label><input type="radio" name="q3"> A) URS</label><br>
-<label><input type="radio" name="q3"> B) UNS</label><br>
-<label><input type="radio" name="q3"> C) SNS</label><br>
-<label><input type="radio" name="q3"> D) NNS</label>
+{
+q:"If someone notices changes in your mood before you say anything, what does it most likely show?",
+o:[
+"Curiosity",
+"Observation",
+"Care and attention",
+"Habit"
+],
+a:"Care and attention"
+},
 
+{
+q:"Which thing usually becomes stronger only after a long time?",
+o:[
+"Interest",
+"Trust",
+"Attraction",
+"Curiosity"
+],
+a:"Trust"
+},
 
-<br><br>
+{
+q:"When two people talk less but still stay close, what does it usually mean?",
+o:[
+"Boredom",
+"Distance",
+"Understanding",
+"Habit"
+],
+a:"Understanding"
+},
 
-<!-- Question 4 -->
-<p>4. Which situation shows the strongest level of comfort between two people?</p>
-<label><input type="radio" name="q4"> A) Talking for hours</label><br>
-<label><input type="radio" name="q4"> B) Sharing secrets</label><br>
-<label><input type="radio" name="q4"> C) Sitting silently without awkwardness</label><br>
-<label><input type="radio" name="q4"> D) Sending long messages</label>
+{
+q:"What makes a small moment stay in memory for a long time?",
+o:[
+"Music",
+"Emotions felt in that moment",
+"Time of day",
+"Location"
+],
+a:"Emotions felt in that moment"
+},
 
+{
+q:"Which thing usually makes people feel closer without saying much?",
+o:[
+"Long chats",
+"Shared experiences",
+"Phone calls",
+"Text messages"
+],
+a:"Shared experiences"
+},
 
-<br><br>
+{
+q:"What usually reveals a person’s real nature the most?",
+o:[
+"First impression",
+"Social media",
+"Behavior over time",
+"Appearance"
+],
+a:"Behavior over time"
+}
 
-<!-- Question 5 -->
-<p>5. What makes a person more memorable after meeting only a few times?</p>
-<label><input type="radio" name="q5"> A) Expensive clothes</label><br>
-<label><input type="radio" name="q5"> B) Unique behavior or habits</label><br>
-<label><input type="radio" name="q5"> C) Height or looks</label><br>
-<label><input type="radio" name="q5"> D) Their phone</label>
-
-
-<br><br>
-
-<!-- Question 6 -->
-<p>6. If someone notices changes in your mood before you say anything, what does it most likely show?</p>
-<label><input type="radio" name="q6"> A) Curiosity</label><br>
-<label><input type="radio" name="q6"> B) Observation</label><br>
-<label><input type="radio" name="q6"> C) Care and attention</label><br>
-<label><input type="radio" name="q6"> D) Habit</label>
-
-
-<br><br>
-
-<!-- Question 7 -->
-<p>7. Which thing usually becomes stronger only after a long time?</p>
-<label><input type="radio" name="q7"> A) Interest</label><br>
-<label><input type="radio" name="q7"> B) Trust</label><br>
-<label><input type="radio" name="q7"> C) Attraction</label><br>
-<label><input type="radio" name="q7"> D) Curiosity</label>
-
-
-<br><br>
-
-<!-- Question 8 -->
-<p>8. When two people talk less but still stay close, what does it usually mean?</p>
-<label><input type="radio" name="q8"> A) Boredom</label><br>
-<label><input type="radio" name="q8"> B) Distance</label><br>
-<label><input type="radio" name="q8"> C) Understanding</label><br>
-<label><input type="radio" name="q8"> D) Habit</label>
-
-
-<br><br>
-
-<!-- Question 9 -->
-<p>9. What makes a small moment stay in memory for a long time?</p>
-<label><input type="radio" name="q9"> A) Music</label><br>
-<label><input type="radio" name="q9"> B) Emotions felt in that moment</label><br>
-<label><input type="radio" name="q9"> C) Time of day</label><br>
-<label><input type="radio" name="q9"> D) Location</label>
-
-
-<br><br>
-
-<!-- Question 10 -->
-<p>10. Which thing usually makes people feel closer without saying much?</p>
-<label><input type="radio" name="q10"> A) Long chats</label><br>
-<label><input type="radio" name="q10"> B) Shared experiences</label><br>
-<label><input type="radio" name="q10"> C) Phone calls</label><br>
-<label><input type="radio" name="q10"> D) Text messages</label>
-
-
-<br><br>
-
-<!-- Question 11 -->
-<p>11. What usually reveals a person’s real nature the most?</p>
-<label><input type="radio" name="q11"> A) First impression</label><br>
-<label><input type="radio" name="q11"> B) Social media</label><br>
-<label><input type="radio" name="q11"> C) Behavior over time</label><br>
-<label><input type="radio" name="q11"> D) Appearance</label>
 ];
 
 function shuffle(arr){return arr.sort(()=>Math.random()-0.5)}
