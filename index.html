@@ -299,30 +299,112 @@ let selected=null;
 const answered=new Array(11).fill(false);
 
 
-const questions=[
+<!-- Question 1 -->
+<p>1. Which action shows someone truly pays attention to you over time?</p>
+<label><input type="radio" name="q1"> A) Replying quickly</label><br>
+<label><input type="radio" name="q1"> B) Remembering small details about you</label><br>
+<label><input type="radio" name="q1"> C) Sending messages daily</label><br>
+<label><input type="radio" name="q1"> D) Liking your posts</label>
 
-{q:"How did we meet for the first time?",o:["You shared a post on Instagram","Through a friend","Random chat","Comment section"],a:"You shared a post on Instagram"},
 
-{q:"What nickname did I give you?",o:["Palku","Priya","Pihu","Pratibha"],a:"Palku"},
+<br><br>
 
-{q:"When is my birthday?",o:["15 Nov","16 Nov","17 November","18 Nov"],a:"17 November"},
+<!-- Question 2 -->
+<p>2. When a person becomes quieter than usual, what is the most likely reason?</p>
+<label><input type="radio" name="q2"> A) They are tired</label><br>
+<label><input type="radio" name="q2"> B) They are thinking deeply</label><br>
+<label><input type="radio" name="q2"> C) They are bored</label><br>
+<label><input type="radio" name="q2"> D) They are distracted</label>
 
-{q:"My favourite colour is?",o:["Black and White","Blue","Red","Grey"],a:"Black and White"},
 
-{q:"My Favourite flower?",o:["Rose","Lotus","Lily","Sunflower"],a:"Rose"},
+<br><br>
 
-{q:"What nickname did you give me?",o:["Piku","Prince","Piyu","Prem"],a:"Piku"},
+<!-- Question 3 -->
+<p>3. Second letter of SUN + Last letter of MOON + First letter of STAR makes what?</p>
+<label><input type="radio" name="q3"> A) URS</label><br>
+<label><input type="radio" name="q3"> B) UNS</label><br>
+<label><input type="radio" name="q3"> C) SNS</label><br>
+<label><input type="radio" name="q3"> D) NNS</label>
 
-{q:"Did I ever wish bad for you?",o:["No","Yes","Maybe","Sometimes"],a:"No"},
 
-{q:"When we met, how old were you?",o:["15","16","17","18"],a:"17"},
+<br><br>
 
-{q:"Did I ever use Snapchat for you?",o:["Yes","No","Not Sure","Maybe"],a:"Yes"},
+<!-- Question 4 -->
+<p>4. Which situation shows the strongest level of comfort between two people?</p>
+<label><input type="radio" name="q4"> A) Talking for hours</label><br>
+<label><input type="radio" name="q4"> B) Sharing secrets</label><br>
+<label><input type="radio" name="q4"> C) Sitting silently without awkwardness</label><br>
+<label><input type="radio" name="q4"> D) Sending long messages</label>
 
-{q:"What is my dream?",o:["Cinematographer","Photographer","Editor","All of these"],a:"All of these"},
 
-{q:"After you left, did I miss you?",o:["Yes","No","Maybe","Not sure"],a:"Yes"}
+<br><br>
 
+<!-- Question 5 -->
+<p>5. What makes a person more memorable after meeting only a few times?</p>
+<label><input type="radio" name="q5"> A) Expensive clothes</label><br>
+<label><input type="radio" name="q5"> B) Unique behavior or habits</label><br>
+<label><input type="radio" name="q5"> C) Height or looks</label><br>
+<label><input type="radio" name="q5"> D) Their phone</label>
+
+
+<br><br>
+
+<!-- Question 6 -->
+<p>6. If someone notices changes in your mood before you say anything, what does it most likely show?</p>
+<label><input type="radio" name="q6"> A) Curiosity</label><br>
+<label><input type="radio" name="q6"> B) Observation</label><br>
+<label><input type="radio" name="q6"> C) Care and attention</label><br>
+<label><input type="radio" name="q6"> D) Habit</label>
+
+
+<br><br>
+
+<!-- Question 7 -->
+<p>7. Which thing usually becomes stronger only after a long time?</p>
+<label><input type="radio" name="q7"> A) Interest</label><br>
+<label><input type="radio" name="q7"> B) Trust</label><br>
+<label><input type="radio" name="q7"> C) Attraction</label><br>
+<label><input type="radio" name="q7"> D) Curiosity</label>
+
+
+<br><br>
+
+<!-- Question 8 -->
+<p>8. When two people talk less but still stay close, what does it usually mean?</p>
+<label><input type="radio" name="q8"> A) Boredom</label><br>
+<label><input type="radio" name="q8"> B) Distance</label><br>
+<label><input type="radio" name="q8"> C) Understanding</label><br>
+<label><input type="radio" name="q8"> D) Habit</label>
+
+
+<br><br>
+
+<!-- Question 9 -->
+<p>9. What makes a small moment stay in memory for a long time?</p>
+<label><input type="radio" name="q9"> A) Music</label><br>
+<label><input type="radio" name="q9"> B) Emotions felt in that moment</label><br>
+<label><input type="radio" name="q9"> C) Time of day</label><br>
+<label><input type="radio" name="q9"> D) Location</label>
+
+
+<br><br>
+
+<!-- Question 10 -->
+<p>10. Which thing usually makes people feel closer without saying much?</p>
+<label><input type="radio" name="q10"> A) Long chats</label><br>
+<label><input type="radio" name="q10"> B) Shared experiences</label><br>
+<label><input type="radio" name="q10"> C) Phone calls</label><br>
+<label><input type="radio" name="q10"> D) Text messages</label>
+
+
+<br><br>
+
+<!-- Question 11 -->
+<p>11. What usually reveals a person’s real nature the most?</p>
+<label><input type="radio" name="q11"> A) First impression</label><br>
+<label><input type="radio" name="q11"> B) Social media</label><br>
+<label><input type="radio" name="q11"> C) Behavior over time</label><br>
+<label><input type="radio" name="q11"> D) Appearance</label>
 ];
 
 function shuffle(arr){return arr.sort(()=>Math.random()-0.5)}
