@@ -610,37 +610,15 @@ function wrongFx(){
     setTimeout(()=>{ osc.stop(); },120);
 }
 
-function add(x){
-    clickFx();
-    if(pass.length<3){
-        pass+=x;
-        update();
-    }
-}
-
-function del(){
-    clickFx();
-    pass=pass.slice(0,-1);
-    update();
-}
-
-function update(){
-    for(let i=1;i<=3;i++){
-        document.getElementById("d"+i).classList.remove("fill");
-    }
-    for(let i=0;i<pass.length;i++){
-        document.getElementById("d"+(i+1)).classList.add("fill");
-    }
-    if(pass.length==3){
-        setTimeout(check, 100);
-    }
-}
-
 function check(){
 
     if(pass.toLowerCase()=="uns"){
 
         if(navigator.vibrate){ navigator.vibrate(60); }
+
+        // STOP BACKGROUND MUSIC
+        bgm.pause();
+        bgm.currentTime = 0;
 
         document.getElementById("lock").classList.add("hidden");
 
@@ -650,23 +628,22 @@ function check(){
 
     } else {
 
-    alert("wrong password triggered");
+        wrongFx();
 
-    wrongFx();
+        let card = document.getElementById("lock");
 
-    let card=document.getElementById("lock");
-
-    card.classList.remove("shake");
-    void card.offsetWidth;
-
-    card.classList.add("shake");
-
-    setTimeout(()=>{
         card.classList.remove("shake");
-    },800);
+        void card.offsetWidth;
 
-    pass="";
-    update();
+        card.classList.add("shake");
+
+        setTimeout(()=>{
+            card.classList.remove("shake");
+        },800);
+
+        pass="";
+        update();
+    }
 }
 // --- SURPRISE RESULT PLAYER ---
 let audio=document.getElementById("audio");
