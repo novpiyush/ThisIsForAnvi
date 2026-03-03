@@ -2,19 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Memory Game</title>
+<title>Memory Game & Surprise</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+/* --- BASE STYLES --- */
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","SF Pro Text","Helvetica Neue",Arial,sans-serif;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden}
 
 body{
 display:flex;justify-content:center;align-items:center;
 background:linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),url("bg.png") center/cover no-repeat;
+background-color: #8a8a8a; /* Fallback from Surprise HTML */
 color:#fff;
 }
 
+/* --- GLASS UI (GAME) --- */
 .container{
 width:90%;max-width:420px;padding:26px;border-radius:22px;
 background:rgba(255,182,193,.18);backdrop-filter:blur(14px);
@@ -24,14 +27,15 @@ text-align:center;position:relative;z-index:2;
 overflow:hidden;
 }
 
-.hidden{display:none}
+.hidden{display:none !important;}
 p{font-size:14px;line-height:1.5;margin-bottom:18px}
 
 .option,.navBtn{
 width:100%;padding:13px;margin-top:10px;border-radius:30px;
 border:1px solid rgba(255,255,255,.35);
 background:rgba(255,255,255,.15);
-color:#fff;font-weight:600;cursor:pointer
+color:#fff;font-weight:600;cursor:pointer;
+transition: all 0.0s ease;
 }
 .option.active,.navBtn:active{background:#fff;color:#000}
 
@@ -49,10 +53,24 @@ transition:all .25s ease;
 }
 
 .button-zone{position:relative;height:260px}
-
-.nav{display:flex;gap:12px}
+.nav{display:flex;gap:12px; margin-top: 15px;}
 .navBtn{width:48%}
 
+/* --- GAME CARD LAYOUT (Ensures card never resizes) --- */
+#game {
+min-height: 420px;
+display: flex;
+flex-direction: column;
+}
+
+#qContent {
+flex: 1;
+display: flex;
+flex-direction: column;
+justify-content: center;
+}
+
+/* --- PARTICLES --- */
 #particles{position:fixed;inset:0;pointer-events:none;z-index:0}
 
 .particle{
@@ -61,16 +79,10 @@ background:linear-gradient(145deg,#ff5f9e,#ff99c8);
 transform:rotate(45deg);
 animation:floatUp linear forwards;
 }
-
 .particle::before,.particle::after{
-content:"";
-position:absolute;
-width:18px;
-height:18px;
-background:inherit;
-border-radius:50%;
+content:"";position:absolute;width:18px;height:18px;
+background:inherit;border-radius:50%;
 }
-
 .particle::before{top:-9px}
 .particle::after{left:-9px}
 
@@ -79,23 +91,92 @@ to{transform:translateY(-110vh) rotate(45deg);opacity:0}
 }
 
 .spark{
-position:absolute;
-width:4px;
-height:4px;
-background:#fff;
-border-radius:50%;
-animation:spark 1s ease-out forwards
+position:absolute;width:4px;height:4px;background:#fff;
+border-radius:50%;animation:spark 1s ease-out forwards
 }
-
 @keyframes spark{
 to{transform:translate(var(--x),var(--y));opacity:0}
 }
 
-.shake{animation:shake .5s ease}
+/* --- SURPRISE GLASS UI (KEYPAD & RESULT) --- */
+.card{
+width:300px;padding:24px 18px;border-radius:26px;
+background:rgba(255,255,255,0.18);backdrop-filter:blur(25px);
+border:1px solid rgba(255,255,255,0.35);box-shadow:0 25px 60px rgba(0,0,0,0.3);
+text-align:center;color:white;position:relative;overflow:hidden;
+}
 
+.title{font-size:24px;font-weight:600;margin-bottom:4px;}
+.subtitle{margin-bottom:12px;}
+
+.hintLabel{color:#FFD54F;font-weight:700;}
+
+.dots{display:flex;justify-content:center;gap:10px;margin-bottom:20px;}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid white;}
+.fill{background:white;}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;justify-items:center;}
+.key{
+width:70px;height:70px;border-radius:50%;border:1px solid rgba(255,255,255,.6);
+display:flex;align-items:center;justify-content:center;font-size:22px;
+background:rgba(255,255,255,.15);cursor:pointer;transition:.15s;
+-webkit-tap-highlight-color:transparent;outline:none;
+}
+.key:active{background:white;color:black;}
+
+.shake{animation:shake .35s;}
 @keyframes shake{
-25%{transform:translateX(-8px)}
-50%{transform:translateX(8px)}
+0%{transform:translateX(0)}
+25%{transform:translateX(-6px)}
+50%{transform:translateX(6px)}
+75%{transform:translateX(-5px)}
+100%{transform:translateX(0)}
+}
+
+.photo{width:150px;height:150px;margin:auto;border-radius:22px;overflow:hidden;}
+.photo img{width:100%;height:100%;object-fit:cover;}
+
+.voice{font-size:22px;font-weight:600;margin-top:14px;}
+.from{opacity:.8;margin-bottom:14px;}
+
+.player{
+height:65px;border-radius:35px;background:rgba(255,255,255,0.15);
+border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;
+padding:0 10px;gap:10px;
+}
+.progress{flex:1;height:6px;border-radius:5px;background:rgba(255,255,255,.45);overflow:hidden;}
+.bar{height:100%;width:0%;background:white;}
+
+.play-btn{
+width:50px;height:50px;border-radius:50%;border:1px solid rgba(255,255,255,.6);
+display:flex;align-items:center;justify-content:center;font-size:22px;
+background:rgba(255,255,255,0.15);cursor:pointer;
+-webkit-tap-highlight-color:transparent;outline:none;transition:.15s;
+}
+.play-btn:active{background:white;color:black;}
+
+.download{
+margin-top:15px;padding:12px;border-radius:25px;border:1px solid rgba(255,255,255,.5);
+cursor:pointer;background:rgba(255,255,255,.15);transition:.15s;
+-webkit-tap-highlight-color:transparent;
+}
+.download:active{background:white;color:black;}
+
+/* --- ANIMATIONS --- */
+.anim-slide {
+animation: slideFade 0.4s ease-out forwards;
+}
+@keyframes slideFade {
+0% { opacity: 0; transform: translateX(15px); }
+100% { opacity: 1; transform: translateX(0); }
+}
+
+.fade-enter {
+animation: smoothEnter 0.5s ease-out forwards;
+}
+@keyframes smoothEnter {
+0% { opacity: 0; transform: translateY(15px) scale(0.98); }
+100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 </style>
 </head>
@@ -108,6 +189,10 @@ to{transform:translate(var(--x),var(--y));opacity:0}
 
 <div id="particles"></div>
 
+<!-- ========================================== -->
+<!-- GAME SECTIONS                              -->
+<!-- ========================================== -->
+
 <div class="container" id="start">
 <h1>HEY ANVI</h1>
 <p>I made a small game.<br>If you want to play, will you play it?</p>
@@ -117,470 +202,496 @@ to{transform:translate(var(--x),var(--y));opacity:0}
 <button id="yesBtn">YES</button>
 <button id="noBtn">NO</button>
 </div>
-
 </div>
 
 <div class="container hidden" id="intro">
-
 <p>If you win the Game.</p>
-</p>You can unlock your Surprise.</p>
-
-<button id="okBtn" class="option">
-OK
-</button>
-
+<p>You can unlock your Surprise.</p>
+<button id="okBtn" class="option">OK</button>
 </div>
 
 <div class="container hidden" id="rules">
-
 <p>You need to win at least<br>7 out of 11 questions.</p>
-</p>To unlock your Surprise</p>
-
-<button class="option" onclick="startGame()">
-Now start the game
-</button>
-
+<p>To unlock your Surprise</p>
+<button class="option" onclick="startGame()">Now start the game</button>
 </div>
 
 <div class="container hidden" id="game">
-
+<!-- Wrapper for smooth question animation without resizing card -->
+<div id="qContent">
 <h2 id="question"></h2>
-
 <div id="options"></div>
-
-<div class="nav">
-
-<button class="navBtn" id="prevBtn">
-Previous
-</button>
-
-<button class="navBtn" id="nextBtn">
-Okay
-</button>
-
 </div>
 
+<div class="nav">
+<button class="navBtn" id="prevBtn">Previous</button>
+<button class="navBtn" id="nextBtn">Okay</button>
+</div>
 </div>
 
 <div class="container hidden" id="result"></div>
 
-<script>
+<!-- ========================================== -->
+<!-- UNLOCK SECTION                             -->
+<!-- ========================================== -->
 
+<div class="container hidden" id="unlockSection">
+<h1 style="font-size:24px; margin-bottom: 25px;">🔓 Surprise Unlocked</h1>
+<button class="option" id="tapToEnterBtn" style="padding: 16px; font-size: 16px;">
+Tap To Enter
+</button>
+</div>
+
+<!-- ========================================== -->
+<!-- SURPRISE PASSWORD KEYPAD                   -->
+<!-- ========================================== -->
+
+<div class="card hidden" id="lock">
+<div class="title">CONGRATULATIONS</div>
+<div class="subtitle">Password Protected Surprise</div>
+
+<div style="font-size:14px; margin-bottom: 15px;">
+<span class="hintLabel">Hint:</span>
+You pressed this before everything started
+<span style="display:block; margin-top:8px;">You have already seen the key once.</span>
+</div>
+
+<div class="dots">
+<div class="dot" id="d1"></div>
+<div class="dot" id="d2"></div>
+<div class="dot" id="d3"></div>
+</div>
+
+<div class="grid">
+<div class="key" onclick="add('P')">P</div>
+<div class="key" onclick="add('H')">H</div>
+<div class="key" onclick="add('Y')">Y</div>
+
+<div class="key" onclick="add('V')">V</div>
+<div class="key" onclick="add('A')">A</div>
+<div class="key" onclick="add('I')">I</div>
+
+<div class="key" onclick="add('S')">S</div>
+<div class="key" onclick="add('U')">U</div>
+<div class="key" onclick="add('N')">N</div>
+
+<div class="key" onclick="add('E')">E</div>
+<div class="key" onclick="add('O')">O</div>
+<div class="key" onclick="del()">⌫</div>
+</div>
+</div>
+
+<!-- ========================================== -->
+<!-- SURPRISE RESULT SECTION                    -->
+<!-- ========================================== -->
+
+<div class="card hidden" id="surpriseResult">
+<div class="title">CONGRATULATIONS</div>
+<div class="subtitle">You unlocked your surprise</div>
+
+<div class="photo">
+<img src="photo.jpg">
+</div>
+
+<div class="voice">Voice Note</div>
+<div class="from">From Piyush</div>
+
+<div class="player">
+<div class="progress">
+<div class="bar" id="bar"></div>
+</div>
+<div class="play-btn" id="playBtn">▶</div>
+</div>
+
+<audio id="audio">
+<source src="voice.mp3">
+</audio>
+
+<div class="download" onclick="downloadVoice()">
+Download Voice
+</div>
+</div>
+
+
+<!-- ========================================== -->
+<!-- SCRIPTS                                    -->
+<!-- ========================================== -->
+<script>
+// --- AUDIO & GLOBAL EVENT LISTENERS ---
 const clickSound=document.getElementById("clickSound");
 const okSound=document.getElementById("okSound");
 const bgm=document.getElementById("bgm");
-
 bgm.volume=.15;
-/* GLOBAL BUTTON SOUNDS */
 
 document.addEventListener("click",function(e){
-
-if(e.target.id==="yesBtn")
-clickSound.currentTime=0,clickSound.play().catch(()=>{});
-
-if(e.target.id==="noBtn")
-clickSound.currentTime=0,clickSound.play().catch(()=>{});
-
-if(e.target.id==="prevBtn")
-clickSound.currentTime=0,clickSound.play().catch(()=>{});
-
-if(e.target.id==="nextBtn")
-clickSound.currentTime=0,clickSound.play().catch(()=>{});
-
-if(e.target.id==="okBtn")
-okSound.currentTime=0,okSound.play().catch(()=>{});
-
-if(e.target.innerText==="Restart")
-clickSound.currentTime=0,clickSound.play().catch(()=>{});
-
-if(e.target.innerText==="Try Again")
-clickSound.currentTime=0,clickSound.play().catch(()=>{});
-
+    if(e.target.id==="yesBtn") clickSound.currentTime=0,clickSound.play().catch(()=>{});
+    if(e.target.id==="noBtn") clickSound.currentTime=0,clickSound.play().catch(()=>{});
+    if(e.target.id==="prevBtn") clickSound.currentTime=0,clickSound.play().catch(()=>{});
+    if(e.target.id==="nextBtn") clickSound.currentTime=0,clickSound.play().catch(()=>{});
+    if(e.target.id==="okBtn") okSound.currentTime=0,okSound.play().catch(()=>{});
+    if(e.target.id==="tapToEnterBtn") okSound.currentTime=0,okSound.play().catch(()=>{});
+    if(e.target.innerText==="Restart") clickSound.currentTime=0,clickSound.play().catch(()=>{});
+    if(e.target.innerText==="Try Again") clickSound.currentTime=0,clickSound.play().catch(()=>{});
 });
+
+// --- NO BUTTON LOGIC ---
 const noBtn=document.getElementById("noBtn");
 const yesBtn=document.getElementById("yesBtn");
 const extraMsg=document.getElementById("extraMsg");
 const buttonZone=document.querySelector(".button-zone");
 
 const noMessages=[
-"I can wait...",
-"Take your time, I’m not going anywhere.",
-"I’ll still be right here.",
-"Maybe you just need a little more time.",
-"I believe you’ll choose differently.",
-"I know there’s a Yes hiding somewhere.",
-"Don’t worry, I’m patient.",
-"I’ll wait as long as it takes.",
-"Your Yes will be worth it.",
-"I’m still hopeful.",
-"I’ll keep choosing you.",
-"It feels like you’re close to saying it.",
-"I’ll be here when you’re ready.",
-"No rush… just don’t forget me.",
-"I have faith in your answer.",
-"You can say it softly… I’ll hear it.",
-"I’m waiting for that one word.",
-"I know you want to press it.",
+"I can wait...", "Take your time, I’m not going anywhere.", "I’ll still be right here.",
+"Maybe you just need a little more time.", "I believe you’ll choose differently.",
+"I know there’s a Yes hiding somewhere.", "Don’t worry, I’m patient.",
+"I’ll wait as long as it takes.", "Your Yes will be worth it.", "I’m still hopeful.",
+"I’ll keep choosing you.", "It feels like you’re close to saying it.",
+"I’ll be here when you’re ready.", "No rush… just don’t forget me.",
+"I have faith in your answer.", "You can say it softly… I’ll hear it.",
+"I’m waiting for that one word.", "I know you want to press it.",
 "I’ll stop moving when you say Yes."
 ];
 
 let noClicks=0;
 
 noBtn.onclick=()=>{
+    clickSound.play().catch(()=>{});
+    if(noClicks<noMessages.length){
+        extraMsg.innerText=noMessages[noClicks++];
+    }else{
+        extraMsg.innerText="I’m still waiting for your Yes.";
+    }
 
-clickSound.play().catch(()=>{});
+    const btnWidth=noBtn.offsetWidth;
+    const btnHeight=noBtn.offsetHeight;
+    const zoneRect=buttonZone.getBoundingClientRect();
+    const yesRect=yesBtn.getBoundingClientRect();
+    const maxX=buttonZone.clientWidth-btnWidth;
+    const maxY=buttonZone.clientHeight-btnHeight-20;
 
-if(noClicks<noMessages.length){
-extraMsg.innerText=noMessages[noClicks++];
-}else{
-extraMsg.innerText="I’m still waiting for your Yes.";
-}
+    let randomX,randomY,safe=false;
+    while(!safe){
+        randomX=Math.random()*maxX;
+        randomY=Math.random()*maxY;
+        const newLeft=zoneRect.left+randomX;
+        const newTop=zoneRect.top+randomY;
 
-const btnWidth=noBtn.offsetWidth;
-const btnHeight=noBtn.offsetHeight;
-const zoneRect=buttonZone.getBoundingClientRect();
-const yesRect=yesBtn.getBoundingClientRect();
-
-const maxX=buttonZone.clientWidth-btnWidth;
-const maxY=buttonZone.clientHeight-btnHeight-20;
-
-let randomX,randomY,safe=false;
-
-while(!safe){
-randomX=Math.random()*maxX;
-randomY=Math.random()*maxY;
-
-const newLeft=zoneRect.left+randomX;
-const newTop=zoneRect.top+randomY;
-
-if(
-newLeft+btnWidth<yesRect.left-10||
-newLeft>yesRect.right+10||
-newTop+btnHeight<yesRect.top-10||
-newTop>yesRect.bottom+10
-){
-safe=true;
-}
-}
-
-noBtn.style.left=randomX+"px";
-noBtn.style.top=randomY+"px";
-noBtn.style.bottom="auto";
-noBtn.style.transform="none";
-
+        if(
+            newLeft+btnWidth<yesRect.left-10||
+            newLeft>yesRect.right+10||
+            newTop+btnHeight<yesRect.top-10||
+            newTop>yesRect.bottom+10
+        ){
+            safe=true;
+        }
+    }
+    noBtn.style.left=randomX+"px";
+    noBtn.style.top=randomY+"px";
+    noBtn.style.bottom="auto";
+    noBtn.style.transform="none";
 };
 
-
+// --- START GAME FLOW ---
 yesBtn.onclick=()=>{
-
-clickSound.play().catch(()=>{});
-bgm.play().catch(()=>{});
-
-start.classList.add("hidden");
-intro.classList.remove("hidden");
-
+    clickSound.play().catch(()=>{});
+    bgm.play().catch(()=>{});
+    start.classList.add("hidden");
+    intro.classList.remove("hidden");
+    intro.classList.add("fade-enter");
 };
-
 
 okBtn.onclick=()=>{
-
-okSound.play().catch(()=>{});
-
-intro.classList.add("hidden");
-rules.classList.remove("hidden");
-
+    okSound.play().catch(()=>{});
+    intro.classList.add("hidden");
+    rules.classList.remove("hidden");
+    rules.classList.add("fade-enter");
 };
 
-
-/* QUIZ */
-
+// --- QUIZ LOGIC ---
 let index=0;
 let score=0;
 let selected=null;
-
 const answered=new Array(11).fill(false);
 
-
 const questions=[
-
-{
-q:"Which action shows someone truly pays attention to you over time?",
-o:[
-"Replying quickly",
-"Remembering small details about you",
-"Sending messages daily",
-"Liking your posts"
-],
-a:"Remembering small details about you"
-},
-
-{
-q:"When a person becomes quieter than usual, what is the most likely reason?",
-o:[
-"They are tired",
-"They are thinking deeply",
-"They are bored",
-"They are distracted"
-],
-a:"They are thinking deeply"
-},
-
-{
-q:"Second letter of SUN + Last letter of MOON + First letter of STAR makes what?",
-o:[
-"URS",
-"UNS",
-"SNS",
-"NNS"
-],
-a:"UNS"
-},
-
-{
-q:"Which situation shows the strongest level of comfort between two people?",
-o:[
-"Talking for hours",
-"Sharing secrets",
-"Sitting silently without awkwardness",
-"Sending long messages"
-],
-a:"Sitting silently without awkwardness"
-},
-
-{
-q:"What makes a person more memorable after meeting only a few times?",
-o:[
-"Expensive clothes",
-"Unique behavior or habits",
-"Height or looks",
-"Their phone"
-],
-a:"Unique behavior or habits"
-},
-
-{
-q:"If someone notices changes in your mood before you say anything, what does it most likely show?",
-o:[
-"Curiosity",
-"Observation",
-"Care and attention",
-"Habit"
-],
-a:"Care and attention"
-},
-
-{
-q:"Which thing usually becomes stronger only after a long time?",
-o:[
-"Interest",
-"Trust",
-"Attraction",
-"Curiosity"
-],
-a:"Trust"
-},
-
-{
-q:"When two people talk less but still stay close, what does it usually mean?",
-o:[
-"Boredom",
-"Distance",
-"Understanding",
-"Habit"
-],
-a:"Understanding"
-},
-
-{
-q:"What makes a small moment stay in memory for a long time?",
-o:[
-"Music",
-"Emotions felt in that moment",
-"Time of day",
-"Location"
-],
-a:"Emotions felt in that moment"
-},
-
-{
-q:"Which thing usually makes people feel closer without saying much?",
-o:[
-"Long chats",
-"Shared experiences",
-"Phone calls",
-"Text messages"
-],
-a:"Shared experiences"
-},
-
-{
-q:"What usually reveals a person’s real nature the most?",
-o:[
-"First impression",
-"Social media",
-"Behavior over time",
-"Appearance"
-],
-a:"Behavior over time"
-}
-
+    {
+        q:"Which action shows someone truly pays attention to you over time?",
+        o:["Replying quickly","Remembering small details about you","Sending messages daily","Liking your posts"],
+        a:"Remembering small details about you"
+    },
+    {
+        q:"When a person becomes quieter than usual, what is the most likely reason?",
+        o:["They are tired","They are thinking deeply","They are bored","They are distracted"],
+        a:"They are thinking deeply"
+    },
+    {
+        q:"Second letter of SUN + Last letter of MOON + First letter of STAR makes what?",
+        o:["URS","UNS","SNS","NNS"],
+        a:"UNS"
+    },
+    {
+        q:"Which situation shows the strongest level of comfort between two people?",
+        o:["Talking for hours","Sharing secrets","Sitting silently without awkwardness","Sending long messages"],
+        a:"Sitting silently without awkwardness"
+    },
+    {
+        q:"What makes a person more memorable after meeting only a few times?",
+        o:["Expensive clothes","Unique behavior or habits","Height or looks","Their phone"],
+        a:"Unique behavior or habits"
+    },
+    {
+        q:"If someone notices changes in your mood before you say anything, what does it most likely show?",
+        o:["Curiosity","Observation","Care and attention","Habit"],
+        a:"Care and attention"
+    },
+    {
+        q:"Which thing usually becomes stronger only after a long time?",
+        o:["Interest","Trust","Attraction","Curiosity"],
+        a:"Trust"
+    },
+    {
+        q:"When two people talk less but still stay close, what does it usually mean?",
+        o:["Boredom","Distance","Understanding","Habit"],
+        a:"Understanding"
+    },
+    {
+        q:"What makes a small moment stay in memory for a long time?",
+        o:["Music","Emotions felt in that moment","Time of day","Location"],
+        a:"Emotions felt in that moment"
+    },
+    {
+        q:"Which thing usually makes people feel closer without saying much?",
+        o:["Long chats","Shared experiences","Phone calls","Text messages"],
+        a:"Shared experiences"
+    },
+    {
+        q:"What usually reveals a person’s real nature the most?",
+        o:["First impression","Social media","Behavior over time","Appearance"],
+        a:"Behavior over time"
+    }
 ];
 
 function shuffle(arr){return arr.sort(()=>Math.random()-0.5)}
 
 function startGame(){
-
-rules.classList.add("hidden");
-game.classList.remove("hidden");
-
-loadQ();
-
+    rules.classList.add("hidden");
+    game.classList.remove("hidden");
+    game.classList.add("fade-enter");
+    loadQ();
 }
 
 function loadQ(){
+    selected=null;
+    const qContent = document.getElementById("qContent");
+    
+    // Smooth question entry animation
+    qContent.classList.remove("anim-slide");
+    void qContent.offsetWidth; // Trigger reflow
+    qContent.classList.add("anim-slide");
 
-selected=null;
+    document.getElementById("question").innerText=questions[index].q;
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML="";
 
-question.innerText=questions[index].q;
-
-options.innerHTML="";
-
-shuffle([...questions[index].o]).forEach(op=>{
-
-const b=document.createElement("button");
-
-b.className="option";
-
-b.innerText=op;
-
-b.onclick=()=>{
-
-selected=op;
-
-document.querySelectorAll(".option")
-.forEach(x=>x.classList.remove("active"));
-
-b.classList.add("active");
-
-};
-
-options.appendChild(b);
-
-});
-
+    shuffle([...questions[index].o]).forEach(op=>{
+        const b=document.createElement("button");
+        b.className="option";
+        b.innerText=op;
+        b.onclick=()=>{
+            selected=op;
+            document.querySelectorAll(".option").forEach(x=>x.classList.remove("active"));
+            b.classList.add("active");
+        };
+        optionsDiv.appendChild(b);
+    });
 }
 
 nextBtn.onclick=()=>{
-
-if(!selected)return;
-
-if(!answered[index]){
-
-if(selected===questions[index].a)
-score++;
-
-answered[index]=true;
-
-}
-
-index++;
-
-index>=questions.length?endGame():loadQ();
-
+    if(!selected)return;
+    if(!answered[index]){
+        if(selected===questions[index].a) score++;
+        answered[index]=true;
+    }
+    index++;
+    index>=questions.length ? endGame() : loadQ();
 };
 
 prevBtn.onclick=()=>{
-if(index>0){index--;loadQ();}
+    if(index>0){index--;loadQ();}
 };
 
 function endGame(){
+    game.classList.add("hidden");
 
-game.classList.add("hidden");
-
-result.classList.remove("hidden");
-
-if(score>=7){
-
-winAnimation();
-
-result.innerHTML=
-`
-<h1>YOU WON</h1>
-<p>You scored ${score} out of 11.</p>
-<p>You won, now give me a dare and I will complete it.</p>
-<button class="option" onclick="location.reload()">
-Restart
-</button>
-`;
-
+    if(score>=7){
+        winAnimation();
+        // Unlock Section System
+        const unlock = document.getElementById("unlockSection");
+        unlock.classList.remove("hidden");
+        unlock.classList.add("fade-enter");
+    }
+    else{
+        loseAnimation();
+        result.classList.remove("hidden");
+        result.classList.add("fade-enter");
+        result.innerHTML=`
+            <h1>YOU LOST</h1>
+            <p>You scored ${score} out of 11.</p>
+            <button class="option" onclick="location.reload()">Try Again</button>
+        `;
+    }
 }
-else{
-
-loseAnimation();
-
-result.innerHTML=
-`
-<h1>YOU LOST</h1>
-<p>You scored ${score} out of 11.</p>
-<button class="option" onclick="location.reload()">
-Try Again
-</button>
-`;
-
-}
-
-}
-
-
+// Tap To Enter -> Password Section Animation
+document.getElementById("tapToEnterBtn").onclick = () => {
+    const unlock = document.getElementById("unlockSection");
+    unlock.classList.add("hidden");
+    
+    const lock = document.getElementById("lock");
+    lock.classList.remove("hidden");
+    lock.classList.add("fade-enter");
+};
 
 function winAnimation(){
-
-const layer=document.getElementById("particles");
-
-for(let i=0;i<30;i++){
-
-const p=document.createElement("div");
-
-p.className="particle";
-
-p.style.left=Math.random()*100+"vw";
-
-p.style.animationDuration=3+Math.random()*2+"s";
-
-layer.appendChild(p);
-
-setTimeout(()=>p.remove(),5000);
-
+    const layer=document.getElementById("particles");
+    for(let i=0;i<30;i++){
+        const p=document.createElement("div");
+        p.className="particle";
+        p.style.left=Math.random()*100+"vw";
+        p.style.animationDuration=3+Math.random()*2+"s";
+        layer.appendChild(p);
+        setTimeout(()=>p.remove(),5000);
+    }
 }
-
-}
-
 
 function loseAnimation(){
-
-const layer=document.getElementById("particles");
-
-for(let i=0;i<20;i++){
-
-const p=document.createElement("div");
-
-p.className="particle";
-
-p.style.background="linear-gradient(#444,#111)";
-
-p.style.left=Math.random()*100+"vw";
-
-p.style.animationDuration="4s";
-
-layer.appendChild(p);
-
-setTimeout(()=>p.remove(),5000);
-
+    const layer=document.getElementById("particles");
+    for(let i=0;i<20;i++){
+        const p=document.createElement("div");
+        p.className="particle";
+        p.style.background="linear-gradient(#444,#111)";
+        p.style.left=Math.random()*100+"vw";
+        p.style.animationDuration="4s";
+        layer.appendChild(p);
+        setTimeout(()=>p.remove(),5000);
+    }
 }
 
+
+// --- SURPRISE KEYPAD LOGIC ---
+let pass="";
+
+function clickFx(){
+    if(navigator.vibrate){ navigator.vibrate(10); }
+    let ctx=new (window.AudioContext||window.webkitAudioContext)();
+    let osc=ctx.createOscillator();
+    let gain=ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value=800;
+    gain.gain.value=0.02;
+    osc.start();
+    setTimeout(()=>{ osc.stop(); },30);
+}
+
+function wrongFx(){
+    if(navigator.vibrate){ navigator.vibrate([40,60,40]); }
+    let ctx=new (window.AudioContext||window.webkitAudioContext)();
+    let osc=ctx.createOscillator();
+    let gain=ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value=200;
+    gain.gain.value=0.05;
+    osc.start();
+    setTimeout(()=>{ osc.stop(); },120);
+}
+
+function add(x){
+    clickFx();
+    if(pass.length<3){
+        pass+=x;
+        update();
+    }
+}
+
+function del(){
+    clickFx();
+    pass=pass.slice(0,-1);
+    update();
+}
+
+function update(){
+    for(let i=1;i<=3;i++){
+        document.getElementById("d"+i).classList.remove("fill");
+    }
+    for(let i=0;i<pass.length;i++){
+        document.getElementById("d"+(i+1)).classList.add("fill");
+    }
+    if(pass.length==3){
+        setTimeout(check, 100);
+    }
+}
+
+function check(){
+    // Password Changed To: uns
+    if(pass.toLowerCase()=="uns"){
+        if(navigator.vibrate){ navigator.vibrate(60); }
+        document.getElementById("lock").classList.add("hidden");
+        
+        let sr = document.getElementById("surpriseResult");
+        sr.classList.remove("hidden");
+        sr.classList.add("fade-enter");
+    }
+    else{
+        wrongFx();
+        let card=document.getElementById("lock");
+        card.classList.add("shake");
+        setTimeout(()=>{
+            card.classList.remove("shake");
+        },300);
+        pass="";
+        update();
+    }
+}
+
+// --- SURPRISE RESULT PLAYER ---
+let audio=document.getElementById("audio");
+let playBtn=document.getElementById("playBtn");
+let bar=document.getElementById("bar");
+let playing=false;
+
+playBtn.onclick=function(){
+    clickFx();
+    if(playing){
+        audio.pause();
+        playBtn.innerHTML="▶";
+        playing=false;
+    }
+    else{
+        audio.play();
+        playBtn.innerHTML="❚❚";
+        playing=true;
+    }
+};
+
+audio.ontimeupdate=function(){
+    bar.style.width=(audio.currentTime/audio.duration)*100+"%";
+};
+
+audio.onended=function(){
+    playBtn.innerHTML="▶";
+    playing=false;
+    bar.style.width="0%";
+};
+
+function downloadVoice(){
+    clickFx();
+    let a=document.createElement("a");
+    a.href="voice.mp3";
+    a.download="VoiceNote.mp3";
+    a.click();
 }
 
 </script>
-
 </body>
-</html>
+</html>  
