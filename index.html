@@ -124,13 +124,17 @@ background:rgba(255,255,255,.15);cursor:pointer;transition:.15s;
 }
 .key:active{background:white;color:black;}
 
-.shake{animation:shake .35s;}
-@keyframes shake{
-0%{transform:translateX(0)}
-25%{transform:translateX(-6px)}
-50%{transform:translateX(6px)}
-75%{transform:translateX(-5px)}
-100%{transform:translateX(0)}
+/* ===== SMOOTH SOFT SHAKE ===== */
+@keyframes softShake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.shake {
+  animation: softShake 0.8s ease-in-out both;
 }
 
 .photo{width:150px;height:150px;margin:auto;border-radius:22px;overflow:hidden;}
@@ -633,27 +637,37 @@ function update(){
 }
 
 function check(){
-    // Password Changed To: uns
+
     if(pass.toLowerCase()=="uns"){
+
         if(navigator.vibrate){ navigator.vibrate(60); }
+
         document.getElementById("lock").classList.add("hidden");
-        
+
         let sr = document.getElementById("surpriseResult");
         sr.classList.remove("hidden");
         sr.classList.add("fade-enter");
-    }
-    else{
-        wrongFx();
-        let card=document.getElementById("lock");
-        card.classList.add("shake");
-        setTimeout(()=>{
-            card.classList.remove("shake");
-        },300);
-        pass="";
-        update();
-    }
-}
 
+    } else {
+
+    alert("wrong password triggered");
+
+    wrongFx();
+
+    let card=document.getElementById("lock");
+
+    card.classList.remove("shake");
+    void card.offsetWidth;
+
+    card.classList.add("shake");
+
+    setTimeout(()=>{
+        card.classList.remove("shake");
+    },800);
+
+    pass="";
+    update();
+}
 // --- SURPRISE RESULT PLAYER ---
 let audio=document.getElementById("audio");
 let playBtn=document.getElementById("playBtn");
