@@ -72,9 +72,9 @@ width:100%;padding:0 5px;
 }
 
 #qHeader {
-font-size:13px;color:#FFD54F;font-weight:700;margin:0 auto 12px auto;
-padding:4px 14px;background:rgba(255,213,79,0.15);border-radius:12px;
-border:1px solid rgba(255,213,79,0.3);letter-spacing:1px;width:max-content;
+font-size:13px;color:#FAFF00;font-weight:700;margin:0 auto 12px auto;
+padding:4px 14px;background:rgba(250,255,0,0.15);border-radius:12px;
+border:1px solid rgba(250,255,0,0.3);letter-spacing:1px;width:max-content;
 }
 
 #question {
@@ -103,7 +103,8 @@ transform:scale(1.2);
 }
 
 /* --- PARTICLES & FIREWORKS --- */
-#particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+/* Z-index changed to 3 so fireworks don't hide behind the card at all */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:3}
 
 .particle{
 position:absolute;bottom:-40px;width:18px;height:18px;
@@ -123,8 +124,8 @@ to{transform:translateY(-110vh) rotate(45deg);opacity:0}
 
 .rocket {
 position:fixed;bottom:-20px;width:3px;height:18px;
-background:#FFD54F;border-radius:5px;
-animation:shoot 1.2s ease-out forwards;z-index:1;
+background:#FAFF00;border-radius:5px;
+animation:shoot 1.2s ease-out forwards;
 }
 @keyframes shoot {
 0%{transform:translateY(0);opacity:1;}
@@ -133,7 +134,7 @@ animation:shoot 1.2s ease-out forwards;z-index:1;
 
 .spark {
 position:fixed;width:4px;height:4px;border-radius:50%;
-animation:explode 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;z-index:1;
+animation:explode 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
 }
 @keyframes explode {
 0%{transform:translate(0,0) scale(1);opacity:1;}
@@ -145,12 +146,12 @@ animation:explode 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;z-index:1;
 width:300px;padding:24px 18px;border-radius:26px;
 background:rgba(255,255,255,0.18);backdrop-filter:blur(25px);
 border:1px solid rgba(255,255,255,0.35);box-shadow:0 25px 60px rgba(0,0,0,0.3);
-text-align:center;color:white;position:relative;overflow:hidden;
+text-align:center;color:white;position:relative;overflow:hidden;z-index:2;
 }
 
 .title{font-size:24px;font-weight:600;margin-bottom:4px;}
 .subtitle{margin-bottom:12px;font-size:14px;}
-.hintLabel{color:#FFD54F;font-weight:700;}
+.hintLabel{color:#FAFF00;font-weight:700;}
 .dots{display:flex;justify-content:center;gap:10px;margin-bottom:20px;}
 .dot{width:14px;height:14px;border-radius:50%;border:2px solid white;}
 .fill{background:white;}
@@ -227,6 +228,8 @@ cursor:pointer;background:rgba(255,255,255,.15);transition:.15s;
 <audio id="clickSound" src="click.mp3"></audio>
 <audio id="okSound" src="ok.mp3"></audio>
 <audio id="bgm" src="pretty_bgm.mp3" loop></audio>
+<audio id="launchSound" src="launch.mp3" preload="auto"></audio>
+<audio id="explodeSound" src="explode.mp3" preload="auto"></audio>
 
 <div id="particles"></div>
 
@@ -282,8 +285,8 @@ cursor:pointer;background:rgba(255,255,255,.15);transition:.15s;
 <h1 style="font-size:28px; font-weight:800; margin-bottom: 8px; letter-spacing: 1px;">YOU WON!</h1>
 <p id="winScore" style="font-size:16px; margin-bottom:20px; color:#eee;"></p>
 
-<div style="background:rgba(255,213,79,0.15); border:1px solid rgba(255,213,79,0.3); border-radius:12px; padding:12px 20px; margin-bottom:25px; display:inline-block;">
-    <h2 style="color:#FFD54F; font-size:18px; letter-spacing:1px; font-weight: 700;">🔓 Surprise Unlocked</h2>
+<div style="background:rgba(250,255,0,0.15); border:1px solid rgba(250,255,0,0.3); border-radius:12px; padding:12px 20px; margin-bottom:25px; display:inline-block;">
+    <h2 style="color:#FAFF00; font-size:18px; letter-spacing:1px; font-weight: 700;">Surprise Unlocked</h2>
 </div>
 
 <button class="option" id="tapToEnterBtn" style="padding: 16px; font-size: 16px; width:100%;">
@@ -348,6 +351,388 @@ const clickSound=document.getElementById("clickSound");
 const okSound=document.getElementById("okSound");
 const bgm=document.getElementById("bgm");
 bgm.volume=.15;
+
+function playOverlapSound(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        const clone = el.cloneNode();
+        clone.play().catch(()=>{});
+    }
+}
+
+document.addEventListener("click",function(e){
+    if(["yesBtn","noBtn","prevBtn","nextBtn"].includes(e.target.id)) { clickSound.currentTime=0; clickSound.play().catch(()=>{}); }
+    if(["okBtn","tapToEnterBtn"].includes(e.target.id)) { okSound.currentTime=0; okSound.play().catch(()=>{}); }
+    if(e.target.innerText==="Try Again") { clickSound.currentTime=0; clickSound.play().catch(()=>{}); }
+});
+
+// --- NO BUTTON LOGIC ---
+const noBtn=document.getElementById("noBtn");
+const yesBtn=document.getElementById("yesBtn");
+const extraMsg=document.getElementById("extraMsg");
+const buttonZone=document.querySelector(".button-zone");
+
+const noMessages=["I can wait...","Take your time, I’m not going anywhere.","I’ll still be right here.","Maybe you just need a little more time.","I believe you’ll choose differently.","I know there’s a Yes hiding somewhere.","Don’t worry, I’m patient.","I’ll wait as long as it takes.","Your Yes will be worth it.","I’m still hopeful."];<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Memory Game & Surprise</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* --- BASE STYLES --- */
+*{margin:0;padding:0;box-sizing:border-box;font-family:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden}
+
+body{
+display:flex;justify-content:center;align-items:center;
+background:linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),url("bg.png") center/cover no-repeat;
+background-color: #8a8a8a;
+color:#fff;
+}
+
+/* --- GLASS UI (GAME) --- */
+.container{
+width:90%;max-width:420px;padding:26px 20px;border-radius:22px;
+background:rgba(255,182,193,.18);backdrop-filter:blur(14px);
+border:1px solid rgba(255,255,255,.25);
+box-shadow:0 20px 40px rgba(0,0,0,.35); 
+text-align:center;position:relative;z-index:2;
+overflow:hidden;
+display:flex;flex-direction:column;justify-content:center;align-items:center;
+}
+
+/* Sirf Game Card ka size fixed rahega */
+#game {
+height: 520px; 
+justify-content: space-between;
+}
+
+.hidden{display:none !important;}
+p{font-size:15px;line-height:1.5;margin-bottom:18px}
+
+.option,.navBtn{
+width:100%;padding:13px;border-radius:30px;
+border:1px solid rgba(255,255,255,.35);
+background:rgba(255,255,255,.15);
+color:#fff;font-weight:600;cursor:pointer;
+transition: all 0.0s ease;
+}
+.option.active,.navBtn:active{
+background:#fff;color:#000;
+}
+
+#yesBtn,#noBtn{
+padding:16px 40px;border-radius:40px;font-weight:700;min-width:140px;
+}
+#yesBtn{background:#fff;color:#000;border:none}
+
+#noBtn{
+background:rgba(255,255,255,.15);
+border:1px solid rgba(255,255,255,.35);
+color:#fff;position:absolute;bottom:20px;left:50%;
+transform:translateX(-50%);
+transition:all .25s ease;
+}
+
+.button-zone{position:relative;height:200px;width:100%;margin-top:20px;}
+.nav{display:flex;gap:12px;margin-top:15px;width:100%;}
+.navBtn{width:48%}
+
+/* --- GAME CARD LAYOUT --- */
+#qContent {
+flex:1;display:flex;flex-direction:column;justify-content:flex-start;
+width:100%;padding:0 5px;
+}
+
+#qHeader {
+font-size:13px;color:#FAFF00;font-weight:700;margin:0 auto 12px auto;
+padding:4px 14px;background:rgba(250,255,0,0.15);border-radius:12px;
+border:1px solid rgba(250,255,0,0.3);letter-spacing:1px;width:max-content;
+}
+
+#question {
+font-size:17px;font-weight:500;line-height:1.5;margin-bottom:20px;
+width:100%;text-align:center;word-wrap:break-word;
+}
+
+#options {
+display:flex;flex-direction:column;gap:10px;width:100%;
+}
+
+/* --- SLIDE PROGRESS INDICATORS --- */
+.prog-dots {
+display:flex;justify-content:center;gap:6px;margin-top:15px;
+padding:8px 12px;background:rgba(255,255,255,0.1);
+border-radius:20px;border:1px solid rgba(255,255,255,0.2);
+width:fit-content;margin-left:auto;margin-right:auto;
+}
+.prog-dot {
+width:7px;height:7px;border-radius:50%;
+background:rgba(255,255,255,0.3);transition:0.3s ease;
+}
+.prog-dot.active {
+background:#fff;
+transform:scale(1.2);
+}
+
+/* --- PARTICLES & FIREWORKS --- */
+/* Z-index changed to 3 so fireworks don't hide behind the card at all */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:3}
+
+.particle{
+position:absolute;bottom:-40px;width:18px;height:18px;
+background:linear-gradient(145deg,#ff5f9e,#ff99c8);
+transform:rotate(45deg);animation:floatUp linear forwards;
+}
+.particle::before,.particle::after{
+content:"";position:absolute;width:18px;height:18px;
+background:inherit;border-radius:50%;
+}
+.particle::before{top:-9px}
+.particle::after{left:-9px}
+
+@keyframes floatUp{
+to{transform:translateY(-110vh) rotate(45deg);opacity:0}
+}
+
+.rocket {
+position:fixed;bottom:-20px;width:3px;height:18px;
+background:#FAFF00;border-radius:5px;
+animation:shoot 1.2s ease-out forwards;
+}
+@keyframes shoot {
+0%{transform:translateY(0);opacity:1;}
+100%{transform:translateY(calc(-1 * var(--end-y)));opacity:0;}
+}
+
+.spark {
+position:fixed;width:4px;height:4px;border-radius:50%;
+animation:explode 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+@keyframes explode {
+0%{transform:translate(0,0) scale(1);opacity:1;}
+100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}
+}
+
+/* --- SURPRISE KEYPAD & RESULT --- */
+.card{
+width:300px;padding:24px 18px;border-radius:26px;
+background:rgba(255,255,255,0.18);backdrop-filter:blur(25px);
+border:1px solid rgba(255,255,255,0.35);box-shadow:0 25px 60px rgba(0,0,0,0.3);
+text-align:center;color:white;position:relative;overflow:hidden;z-index:2;
+}
+
+.title{font-size:24px;font-weight:600;margin-bottom:4px;}
+.subtitle{margin-bottom:12px;font-size:14px;}
+.hintLabel{color:#FAFF00;font-weight:700;}
+.dots{display:flex;justify-content:center;gap:10px;margin-bottom:20px;}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid white;}
+.fill{background:white;}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;justify-items:center;}
+.key{
+width:70px;height:70px;border-radius:50%;border:1px solid rgba(255,255,255,.6);
+display:flex;align-items:center;justify-content:center;font-size:22px;
+background:rgba(255,255,255,.15);cursor:pointer;transition:.15s;
+-webkit-tap-highlight-color:transparent;outline:none;
+}
+.key:active{background:white;color:black;}
+
+.shake{animation:shake .35s ease-in-out;}
+@keyframes shake{
+0%{transform:translateX(0)}
+25%{transform:translateX(-8px)}
+50%{transform:translateX(8px)}
+75%{transform:translateX(-8px)}
+100%{transform:translateX(0)}
+}
+
+.photo{width:150px;height:150px;margin:auto;border-radius:22px;overflow:hidden;}
+.photo img{width:100%;height:100%;object-fit:cover;}
+.voice{font-size:22px;font-weight:600;margin-top:14px;}
+.from{opacity:.8;margin-bottom:14px;}
+
+.player{
+height:65px;border-radius:35px;background:rgba(255,255,255,0.15);
+border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;
+padding:0 10px;gap:10px;
+}
+.progress{flex:1;height:6px;border-radius:5px;background:rgba(255,255,255,.45);overflow:hidden;}
+.bar{height:100%;width:0%;background:white;}
+
+.play-btn{
+width:50px;height:50px;border-radius:50%;border:1px solid rgba(255,255,255,.6);
+display:flex;align-items:center;justify-content:center;font-size:22px;
+background:rgba(255,255,255,0.15);cursor:pointer;
+-webkit-tap-highlight-color:transparent;outline:none;transition:.15s;
+}
+.play-btn:active{background:white;color:black;}
+
+.download{
+margin-top:15px;padding:12px;border-radius:25px;border:1px solid rgba(255,255,255,.5);
+cursor:pointer;background:rgba(255,255,255,.15);transition:.15s;
+-webkit-tap-highlight-color:transparent;
+}
+.download:active{background:white;color:black;}
+
+/* --- ANIMATIONS --- */
+.anim-slide {animation: slideFade 0.4s ease-out forwards;}
+@keyframes slideFade {
+0% { opacity: 0; transform: translateX(15px); }
+100% { opacity: 1; transform: translateX(0); }
+}
+
+.fade-enter {animation: smoothEnter 0.5s ease-out forwards;}
+@keyframes smoothEnter {
+0% { opacity: 0; transform: translateY(15px) scale(0.98); }
+100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.pop-in {animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;}
+@keyframes popIn {
+0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<audio id="clickSound" src="click.mp3"></audio>
+<audio id="okSound" src="ok.mp3"></audio>
+<audio id="bgm" src="pretty_bgm.mp3" loop></audio>
+<audio id="launchSound" src="launch.mp3" preload="auto"></audio>
+<audio id="explodeSound" src="explode.mp3" preload="auto"></audio>
+
+<div id="particles"></div>
+
+<!-- ========================================== -->
+<!-- GAME SECTIONS                              -->
+<!-- ========================================== -->
+
+<div class="container" id="start">
+<h1>HEY ANVI</h1>
+<p style="margin-top: 10px;">I made a small game.<br>If you want to play, will you play it?</p>
+<p id="extraMsg"></p>
+<div class="button-zone">
+<button id="yesBtn">YES</button>
+<button id="noBtn">NO</button>
+</div>
+</div>
+
+<div class="container hidden" id="intro">
+<p>If you win the Game.</p>
+<p>You can unlock your Surprise.</p>
+<button id="okBtn" class="option" style="margin-top: 20px;">OK</button>
+</div>
+
+<div class="container hidden" id="rules">
+<p>You need to win at least<br>7 out of 11 questions.</p>
+<p>To unlock your Surprise</p>
+<button class="option" onclick="startGame()" style="margin-top: 20px;">Now start the game</button>
+</div>
+
+<!-- Fix size card for questions -->
+<div class="container hidden" id="game">
+<div id="qContent">
+<div id="qHeader"></div>
+<h2 id="question"></h2>
+<div id="options"></div>
+</div>
+
+<div style="width: 100%;">
+<div class="nav">
+<button class="navBtn" id="prevBtn">Previous</button>
+<button class="navBtn" id="nextBtn">Okay</button>
+</div>
+<div id="progressDots" class="prog-dots"></div>
+</div>
+</div>
+
+<div class="container hidden" id="result"></div>
+
+<!-- ========================================== -->
+<!-- SURPRISE UNLOCKED CARD                     -->
+<!-- ========================================== -->
+<div class="container hidden" id="unlockSection">
+<h1 style="font-size:28px; font-weight:800; margin-bottom: 8px; letter-spacing: 1px;">YOU WON!</h1>
+<p id="winScore" style="font-size:16px; margin-bottom:20px; color:#eee;"></p>
+
+<div style="background:rgba(250,255,0,0.15); border:1px solid rgba(250,255,0,0.3); border-radius:12px; padding:12px 20px; margin-bottom:25px; display:inline-block;">
+    <h2 style="color:#FAFF00; font-size:18px; letter-spacing:1px; font-weight: 700;">Surprise Unlocked</h2>
+</div>
+
+<button class="option" id="tapToEnterBtn" style="padding: 16px; font-size: 16px; width:100%;">
+Tap To Enter
+</button>
+</div>
+
+<!-- ========================================== -->
+<!-- SURPRISE PASSWORD KEYPAD                   -->
+<!-- ========================================== -->
+
+<div class="card hidden" id="lock">
+<div class="title">CONGRATULATIONS</div>
+<div class="subtitle">Password Protected Surprise</div>
+
+<div style="font-size:14px; margin-bottom: 20px;">
+<span class="hintLabel">Hint:</span>
+<span style="display:block; margin-top:6px;">You have already seen the key once.</span>
+</div>
+
+<div class="dots">
+<div class="dot" id="d1"></div>
+<div class="dot" id="d2"></div>
+<div class="dot" id="d3"></div>
+</div>
+
+<div class="grid">
+<div class="key" onclick="add('P')">P</div><div class="key" onclick="add('H')">H</div><div class="key" onclick="add('Y')">Y</div>
+<div class="key" onclick="add('V')">V</div><div class="key" onclick="add('A')">A</div><div class="key" onclick="add('I')">I</div>
+<div class="key" onclick="add('S')">S</div><div class="key" onclick="add('U')">U</div><div class="key" onclick="add('N')">N</div>
+<div class="key" onclick="add('E')">E</div><div class="key" onclick="add('O')">O</div><div class="key" onclick="del()">⌫</div>
+</div>
+</div>
+
+<!-- ========================================== -->
+<!-- SURPRISE RESULT SECTION                    -->
+<!-- ========================================== -->
+
+<div class="card hidden" id="surpriseResult">
+<div class="title">CONGRATULATIONS</div>
+<div class="subtitle">You unlocked your surprise</div>
+
+<div class="photo"><img src="photo.jpg"></div>
+
+<div class="voice">Voice Note</div>
+<div class="from">From Piyush</div>
+
+<div class="player">
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="play-btn" id="playBtn">▶</div>
+</div>
+
+<audio id="audio"><source src="voice.mp3"></audio>
+<div class="download" onclick="downloadVoice()">Download Voice</div>
+</div>
+
+<!-- ========================================== -->
+<!-- SCRIPTS                                    -->
+<!-- ========================================== -->
+<script>
+const clickSound=document.getElementById("clickSound");
+const okSound=document.getElementById("okSound");
+const bgm=document.getElementById("bgm");
+bgm.volume=.15;
+
+function playOverlapSound(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        const clone = el.cloneNode();
+        clone.play().catch(()=>{});
+    }
+}
 
 document.addEventListener("click",function(e){
     if(["yesBtn","noBtn","prevBtn","nextBtn"].includes(e.target.id)) { clickSound.currentTime=0; clickSound.play().catch(()=>{}); }
@@ -414,7 +799,7 @@ function loadQ(){
     void qContent.offsetWidth; 
     qContent.classList.add("anim-slide");
 
-    // Headings update: Pura "Question 1", "Question 2" aayega
+        // Headings update: Pura "Question 1", "Question 2" aayega
     document.getElementById("qHeader").innerText = `Question ${index + 1}`;
     document.getElementById("question").innerText=questions[index].q;
     const optionsDiv = document.getElementById("options");
@@ -490,7 +875,7 @@ function triggerShake(elementId) {
     setTimeout(() => el.classList.remove("shake"), 350);
 }
 
-  // --- FIREWORKS & PARTICLES LOGIC ---
+// --- FIREWORKS & PARTICLES LOGIC ---
 let fwInterval;
 function startFireworks() {
     for(let i=0; i<4; i++) setTimeout(shootFirework, i*400);
@@ -499,16 +884,39 @@ function startFireworks() {
 function stopFireworks() { clearInterval(fwInterval); }
 
 function shootFirework() {
+    playOverlapSound('launchSound');
+    if(navigator.vibrate) navigator.vibrate(50);
+    
     const fw = document.createElement('div');
     fw.className = 'rocket';
     fw.style.left = (15 + Math.random() * 70) + 'vw';
     
-    // Upar (top half) me jaakar futenge taaki card block na kare
-    const height = 60 + Math.random() * 25; 
-    fw.style.setProperty('--end-y', height + 'vh');
+    // Find active card to know its exact top position dynamically
+    const activeCard = document.querySelector('.container:not(.hidden)') || document.querySelector('.card:not(.hidden)');
+    let cardTop = window.innerHeight * 0.3; // safe fallback
+    if(activeCard) {
+        cardTop = activeCard.getBoundingClientRect().top;
+    }
+    
+    // "Sirf card ke upar tak jaye aur position thodi upr neeche ho"
+    // Calculate burst point vertically above the card (gap of 10px to 70px above the card)
+    let burstGap = 10 + (Math.random() * 60); 
+    let explosionY = cardTop - burstGap;
+    
+    // "ekdum upar nhi" - strictly prevent from touching the very top edge of the screen
+    if (explosionY < 40) {
+        explosionY = 40 + (Math.random() * 20);
+    }
+    
+    // Rocket distance to travel upward from the bottom of the viewport
+    const travelDistance = window.innerHeight - explosionY;
+    
+    fw.style.setProperty('--end-y', travelDistance + 'px');
     document.getElementById('particles').appendChild(fw);
     
     setTimeout(() => {
+        playOverlapSound('explodeSound');
+        if(navigator.vibrate) navigator.vibrate(150);
         const rect = fw.getBoundingClientRect();
         explode(rect.left, rect.top);
         fw.remove();
@@ -516,7 +924,7 @@ function shootFirework() {
 }
 
 function explode(x, y) {
-    const colors =['#ff5f9e', '#00f2fe', '#4facfe', '#FFD54F', '#ffffff', '#ff99c8'];
+    const colors =['#ff5f9e', '#00f2fe', '#4facfe', '#FAFF00', '#ffffff', '#ff99c8'];
     const color = colors[Math.floor(Math.random() * colors.length)];
     
     for (let i = 0; i < 45; i++) {
