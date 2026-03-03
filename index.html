@@ -7,77 +7,108 @@
 
 <style>
 /* --- BASE STYLES --- */
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","SF Pro Text","Helvetica Neue",Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden}
 
 body{
 display:flex;justify-content:center;align-items:center;
 background:linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),url("bg.png") center/cover no-repeat;
-background-color: #8a8a8a; /* Fallback from Surprise HTML */
+background-color: #8a8a8a;
 color:#fff;
 }
 
 /* --- GLASS UI (GAME) --- */
 .container{
-width:90%;max-width:420px;padding:26px;border-radius:22px;
+width:90%;max-width:420px;padding:26px 20px;border-radius:22px;
 background:rgba(255,182,193,.18);backdrop-filter:blur(14px);
 border:1px solid rgba(255,255,255,.25);
-box-shadow:0 20px 40px rgba(0,0,0,.35);
+box-shadow:0 20px 40px rgba(0,0,0,.35); 
 text-align:center;position:relative;z-index:2;
 overflow:hidden;
+display:flex;flex-direction:column;justify-content:center;align-items:center;
+}
+
+/* Sirf Game Card ka size fixed rahega */
+#game {
+height: 520px; 
+justify-content: space-between;
 }
 
 .hidden{display:none !important;}
-p{font-size:14px;line-height:1.5;margin-bottom:18px}
+p{font-size:15px;line-height:1.5;margin-bottom:18px}
 
 .option,.navBtn{
-width:100%;padding:13px;margin-top:10px;border-radius:30px;
+width:100%;padding:13px;border-radius:30px;
 border:1px solid rgba(255,255,255,.35);
 background:rgba(255,255,255,.15);
 color:#fff;font-weight:600;cursor:pointer;
-transition: all 0.0s ease;
+transition: all 0.15s ease;
 }
-.option.active,.navBtn:active{background:#fff;color:#000}
+.option.active,.navBtn:active{
+background:#fff;color:#000;
+}
 
 #yesBtn,#noBtn{
-padding:16px 40px;border-radius:40px;font-weight:700;min-width:140px
+padding:16px 40px;border-radius:40px;font-weight:700;min-width:140px;
 }
 #yesBtn{background:#fff;color:#000;border:none}
 
 #noBtn{
 background:rgba(255,255,255,.15);
 border:1px solid rgba(255,255,255,.35);
-color:#fff;position:absolute;bottom:15px;left:50%;
+color:#fff;position:absolute;bottom:20px;left:50%;
 transform:translateX(-50%);
 transition:all .25s ease;
 }
 
-.button-zone{position:relative;height:260px}
-.nav{display:flex;gap:12px; margin-top: 15px;}
+.button-zone{position:relative;height:200px;width:100%;margin-top:20px;}
+.nav{display:flex;gap:12px;margin-top:15px;width:100%;}
 .navBtn{width:48%}
 
-/* --- GAME CARD LAYOUT (Ensures card never resizes) --- */
-#game {
-min-height: 420px;
-display: flex;
-flex-direction: column;
-}
-
+/* --- GAME CARD LAYOUT --- */
 #qContent {
-flex: 1;
-display: flex;
-flex-direction: column;
-justify-content: center;
+flex:1;display:flex;flex-direction:column;justify-content:flex-start;
+width:100%;padding:0 5px;
 }
 
-/* --- PARTICLES --- */
+#qHeader {
+font-size:13px;color:#FFD54F;font-weight:700;margin:0 auto 12px auto;
+padding:4px 14px;background:rgba(255,213,79,0.15);border-radius:12px;
+border:1px solid rgba(255,213,79,0.3);letter-spacing:1px;width:max-content;
+}
+
+#question {
+font-size:17px;font-weight:500;line-height:1.5;margin-bottom:20px;
+width:100%;text-align:center;word-wrap:break-word;
+}
+
+#options {
+display:flex;flex-direction:column;gap:10px;width:100%;
+}
+
+/* --- SLIDE PROGRESS INDICATORS --- */
+.prog-dots {
+display:flex;justify-content:center;gap:6px;margin-top:15px;
+padding:8px 12px;background:rgba(255,255,255,0.1);
+border-radius:20px;border:1px solid rgba(255,255,255,0.2);
+width:fit-content;margin-left:auto;margin-right:auto;
+}
+.prog-dot {
+width:7px;height:7px;border-radius:50%;
+background:rgba(255,255,255,0.3);transition:0.3s ease;
+}
+.prog-dot.active {
+background:#fff;
+transform:scale(1.2);
+}
+
+/* --- PARTICLES & FIREWORKS --- */
 #particles{position:fixed;inset:0;pointer-events:none;z-index:0}
 
 .particle{
 position:absolute;bottom:-40px;width:18px;height:18px;
 background:linear-gradient(145deg,#ff5f9e,#ff99c8);
-transform:rotate(45deg);
-animation:floatUp linear forwards;
+transform:rotate(45deg);animation:floatUp linear forwards;
 }
 .particle::before,.particle::after{
 content:"";position:absolute;width:18px;height:18px;
@@ -90,15 +121,26 @@ background:inherit;border-radius:50%;
 to{transform:translateY(-110vh) rotate(45deg);opacity:0}
 }
 
-.spark{
-position:absolute;width:4px;height:4px;background:#fff;
-border-radius:50%;animation:spark 1s ease-out forwards
+.rocket {
+position:fixed;bottom:-20px;width:3px;height:18px;
+background:#FFD54F;border-radius:5px;
+animation:shoot 1.2s ease-out forwards;z-index:1;
 }
-@keyframes spark{
-to{transform:translate(var(--x),var(--y));opacity:0}
+@keyframes shoot {
+0%{transform:translateY(0);opacity:1;}
+100%{transform:translateY(calc(-1 * var(--end-y)));opacity:0;}
 }
 
-/* --- SURPRISE GLASS UI (KEYPAD & RESULT) --- */
+.spark {
+position:fixed;width:4px;height:4px;border-radius:50%;
+animation:explode 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;z-index:1;
+}
+@keyframes explode {
+0%{transform:translate(0,0) scale(1);opacity:1;}
+100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}
+}
+
+/* --- SURPRISE KEYPAD & RESULT --- */
 .card{
 width:300px;padding:24px 18px;border-radius:26px;
 background:rgba(255,255,255,0.18);backdrop-filter:blur(25px);
@@ -107,10 +149,8 @@ text-align:center;color:white;position:relative;overflow:hidden;
 }
 
 .title{font-size:24px;font-weight:600;margin-bottom:4px;}
-.subtitle{margin-bottom:12px;}
-
+.subtitle{margin-bottom:12px;font-size:14px;}
 .hintLabel{color:#FFD54F;font-weight:700;}
-
 .dots{display:flex;justify-content:center;gap:10px;margin-bottom:20px;}
 .dot{width:14px;height:14px;border-radius:50%;border:2px solid white;}
 .fill{background:white;}
@@ -124,22 +164,17 @@ background:rgba(255,255,255,.15);cursor:pointer;transition:.15s;
 }
 .key:active{background:white;color:black;}
 
-/* ===== SMOOTH SOFT SHAKE ===== */
-@keyframes softShake {
-  0%,100% { transform: translateX(0); }
-  20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
-}
-  
-.shake {
-  animation: softShake 0.8s ease-in-out both;
+.shake{animation:shake .35s ease-in-out;}
+@keyframes shake{
+0%{transform:translateX(0)}
+25%{transform:translateX(-8px)}
+50%{transform:translateX(8px)}
+75%{transform:translateX(-8px)}
+100%{transform:translateX(0)}
 }
 
 .photo{width:150px;height:150px;margin:auto;border-radius:22px;overflow:hidden;}
 .photo img{width:100%;height:100%;object-fit:cover;}
-
 .voice{font-size:22px;font-weight:600;margin-top:14px;}
 .from{opacity:.8;margin-bottom:14px;}
 
@@ -167,20 +202,22 @@ cursor:pointer;background:rgba(255,255,255,.15);transition:.15s;
 .download:active{background:white;color:black;}
 
 /* --- ANIMATIONS --- */
-.anim-slide {
-animation: slideFade 0.4s ease-out forwards;
-}
+.anim-slide {animation: slideFade 0.4s ease-out forwards;}
 @keyframes slideFade {
 0% { opacity: 0; transform: translateX(15px); }
 100% { opacity: 1; transform: translateX(0); }
 }
 
-.fade-enter {
-animation: smoothEnter 0.5s ease-out forwards;
-}
+.fade-enter {animation: smoothEnter 0.5s ease-out forwards;}
 @keyframes smoothEnter {
 0% { opacity: 0; transform: translateY(15px) scale(0.98); }
 100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.pop-in {animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;}
+@keyframes popIn {
+0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 </style>
 </head>
@@ -199,9 +236,8 @@ animation: smoothEnter 0.5s ease-out forwards;
 
 <div class="container" id="start">
 <h1>HEY ANVI</h1>
-<p>I made a small game.<br>If you want to play, will you play it?</p>
+<p style="margin-top: 10px;">I made a small game.<br>If you want to play, will you play it?</p>
 <p id="extraMsg"></p>
-
 <div class="button-zone">
 <button id="yesBtn">YES</button>
 <button id="noBtn">NO</button>
@@ -211,37 +247,46 @@ animation: smoothEnter 0.5s ease-out forwards;
 <div class="container hidden" id="intro">
 <p>If you win the Game.</p>
 <p>You can unlock your Surprise.</p>
-<button id="okBtn" class="option">OK</button>
+<button id="okBtn" class="option" style="margin-top: 20px;">OK</button>
 </div>
 
 <div class="container hidden" id="rules">
 <p>You need to win at least<br>7 out of 11 questions.</p>
 <p>To unlock your Surprise</p>
-<button class="option" onclick="startGame()">Now start the game</button>
+<button class="option" onclick="startGame()" style="margin-top: 20px;">Now start the game</button>
 </div>
 
+<!-- Fix size card for questions -->
 <div class="container hidden" id="game">
-<!-- Wrapper for smooth question animation without resizing card -->
 <div id="qContent">
+<div id="qHeader"></div>
 <h2 id="question"></h2>
 <div id="options"></div>
 </div>
 
+<div style="width: 100%;">
 <div class="nav">
 <button class="navBtn" id="prevBtn">Previous</button>
 <button class="navBtn" id="nextBtn">Okay</button>
+</div>
+<div id="progressDots" class="prog-dots"></div>
 </div>
 </div>
 
 <div class="container hidden" id="result"></div>
 
 <!-- ========================================== -->
-<!-- UNLOCK SECTION                             -->
+<!-- SURPRISE UNLOCKED CARD                     -->
 <!-- ========================================== -->
-
 <div class="container hidden" id="unlockSection">
-<h1 style="font-size:24px; margin-bottom: 25px;">🔓 Surprise Unlocked</h1>
-<button class="option" id="tapToEnterBtn" style="padding: 16px; font-size: 16px;">
+<h1 style="font-size:28px; font-weight:800; margin-bottom: 8px; letter-spacing: 1px;">YOU WON!</h1>
+<p id="winScore" style="font-size:16px; margin-bottom:20px; color:#eee;"></p>
+
+<div style="background:rgba(255,213,79,0.15); border:1px solid rgba(255,213,79,0.3); border-radius:12px; padding:12px 20px; margin-bottom:25px; display:inline-block;">
+    <h2 style="color:#FFD54F; font-size:18px; letter-spacing:1px; font-weight: 700;">🔓 Surprise Unlocked</h2>
+</div>
+
+<button class="option" id="tapToEnterBtn" style="padding: 16px; font-size: 16px; width:100%;">
 Tap To Enter
 </button>
 </div>
@@ -254,10 +299,9 @@ Tap To Enter
 <div class="title">CONGRATULATIONS</div>
 <div class="subtitle">Password Protected Surprise</div>
 
-<div style="font-size:14px; margin-bottom: 15px;">
+<div style="font-size:14px; margin-bottom: 20px;">
 <span class="hintLabel">Hint:</span>
-You pressed this before everything started
-<span style="display:block; margin-top:8px;">You have already seen the key once.</span>
+<span style="display:block; margin-top:6px;">You have already seen the key once.</span>
 </div>
 
 <div class="dots">
@@ -267,21 +311,10 @@ You pressed this before everything started
 </div>
 
 <div class="grid">
-<div class="key" onclick="add('P')">P</div>
-<div class="key" onclick="add('H')">H</div>
-<div class="key" onclick="add('Y')">Y</div>
-
-<div class="key" onclick="add('V')">V</div>
-<div class="key" onclick="add('A')">A</div>
-<div class="key" onclick="add('I')">I</div>
-
-<div class="key" onclick="add('S')">S</div>
-<div class="key" onclick="add('U')">U</div>
-<div class="key" onclick="add('N')">N</div>
-
-<div class="key" onclick="add('E')">E</div>
-<div class="key" onclick="add('O')">O</div>
-<div class="key" onclick="del()">⌫</div>
+<div class="key" onclick="add('P')">P</div><div class="key" onclick="add('H')">H</div><div class="key" onclick="add('Y')">Y</div>
+<div class="key" onclick="add('V')">V</div><div class="key" onclick="add('A')">A</div><div class="key" onclick="add('I')">I</div>
+<div class="key" onclick="add('S')">S</div><div class="key" onclick="add('U')">U</div><div class="key" onclick="add('N')">N</div>
+<div class="key" onclick="add('E')">E</div><div class="key" onclick="add('O')">O</div><div class="key" onclick="del()">⌫</div>
 </div>
 </div>
 
@@ -293,49 +326,33 @@ You pressed this before everything started
 <div class="title">CONGRATULATIONS</div>
 <div class="subtitle">You unlocked your surprise</div>
 
-<div class="photo">
-<img src="photo.jpg">
-</div>
+<div class="photo"><img src="photo.jpg"></div>
 
 <div class="voice">Voice Note</div>
 <div class="from">From Piyush</div>
 
 <div class="player">
-<div class="progress">
-<div class="bar" id="bar"></div>
-</div>
+<div class="progress"><div class="bar" id="bar"></div></div>
 <div class="play-btn" id="playBtn">▶</div>
 </div>
 
-<audio id="audio">
-<source src="voice.mp3">
-</audio>
-
-<div class="download" onclick="downloadVoice()">
-Download Voice
+<audio id="audio"><source src="voice.mp3"></audio>
+<div class="download" onclick="downloadVoice()">Download Voice</div>
 </div>
-</div>
-
 
 <!-- ========================================== -->
 <!-- SCRIPTS                                    -->
 <!-- ========================================== -->
 <script>
-// --- AUDIO & GLOBAL EVENT LISTENERS ---
 const clickSound=document.getElementById("clickSound");
 const okSound=document.getElementById("okSound");
 const bgm=document.getElementById("bgm");
 bgm.volume=.15;
 
 document.addEventListener("click",function(e){
-    if(e.target.id==="yesBtn") clickSound.currentTime=0,clickSound.play().catch(()=>{});
-    if(e.target.id==="noBtn") clickSound.currentTime=0,clickSound.play().catch(()=>{});
-    if(e.target.id==="prevBtn") clickSound.currentTime=0,clickSound.play().catch(()=>{});
-    if(e.target.id==="nextBtn") clickSound.currentTime=0,clickSound.play().catch(()=>{});
-    if(e.target.id==="okBtn") okSound.currentTime=0,okSound.play().catch(()=>{});
-    if(e.target.id==="tapToEnterBtn") okSound.currentTime=0,okSound.play().catch(()=>{});
-    if(e.target.innerText==="Restart") clickSound.currentTime=0,clickSound.play().catch(()=>{});
-    if(e.target.innerText==="Try Again") clickSound.currentTime=0,clickSound.play().catch(()=>{});
+    if(["yesBtn","noBtn","prevBtn","nextBtn"].includes(e.target.id)) { clickSound.currentTime=0; clickSound.play().catch(()=>{}); }
+    if(["okBtn","tapToEnterBtn"].includes(e.target.id)) { okSound.currentTime=0; okSound.play().catch(()=>{}); }
+    if(e.target.innerText==="Try Again") { clickSound.currentTime=0; clickSound.play().catch(()=>{}); }
 });
 
 // --- NO BUTTON LOGIC ---
@@ -344,163 +361,68 @@ const yesBtn=document.getElementById("yesBtn");
 const extraMsg=document.getElementById("extraMsg");
 const buttonZone=document.querySelector(".button-zone");
 
-const noMessages=[
-"I can wait...", "Take your time, I’m not going anywhere.", "I’ll still be right here.",
-"Maybe you just need a little more time.", "I believe you’ll choose differently.",
-"I know there’s a Yes hiding somewhere.", "Don’t worry, I’m patient.",
-"I’ll wait as long as it takes.", "Your Yes will be worth it.", "I’m still hopeful.",
-"I’ll keep choosing you.", "It feels like you’re close to saying it.",
-"I’ll be here when you’re ready.", "No rush… just don’t forget me.",
-"I have faith in your answer.", "You can say it softly… I’ll hear it.",
-"I’m waiting for that one word.", "I know you want to press it.",
-"I’ll stop moving when you say Yes."
-];
-
+const noMessages=["I can wait...","Take your time, I’m not going anywhere.","I’ll still be right here.","Maybe you just need a little more time.","I believe you’ll choose differently.","I know there’s a Yes hiding somewhere.","Don’t worry, I’m patient.","I’ll wait as long as it takes.","Your Yes will be worth it.","I’m still hopeful."];
 let noClicks=0;
 
 noBtn.onclick=()=>{
-    clickSound.play().catch(()=>{});
-    if(noClicks<noMessages.length){
-        extraMsg.innerText=noMessages[noClicks++];
-    }else{
-        extraMsg.innerText="I’m still waiting for your Yes.";
-    }
+    if(noClicks<noMessages.length) extraMsg.innerText=noMessages[noClicks++];
+    else extraMsg.innerText="I’m still waiting for your Yes.";
 
-    const btnWidth=noBtn.offsetWidth;
-    const btnHeight=noBtn.offsetHeight;
-    const zoneRect=buttonZone.getBoundingClientRect();
-    const yesRect=yesBtn.getBoundingClientRect();
-    const maxX=buttonZone.clientWidth-btnWidth;
-    const maxY=buttonZone.clientHeight-btnHeight-20;
+    const btnWidth=noBtn.offsetWidth, btnHeight=noBtn.offsetHeight;
+    const zoneRect=buttonZone.getBoundingClientRect(), yesRect=yesBtn.getBoundingClientRect();
+    const maxX=buttonZone.clientWidth-btnWidth, maxY=buttonZone.clientHeight-btnHeight-20;
 
     let randomX,randomY,safe=false;
     while(!safe){
-        randomX=Math.random()*maxX;
-        randomY=Math.random()*maxY;
-        const newLeft=zoneRect.left+randomX;
-        const newTop=zoneRect.top+randomY;
-
-        if(
-            newLeft+btnWidth<yesRect.left-10||
-            newLeft>yesRect.right+10||
-            newTop+btnHeight<yesRect.top-10||
-            newTop>yesRect.bottom+10
-        ){
-            safe=true;
-        }
+        randomX=Math.random()*maxX; randomY=Math.random()*maxY;
+        const newLeft=zoneRect.left+randomX, newTop=zoneRect.top+randomY;
+        if(newLeft+btnWidth<yesRect.left-10 || newLeft>yesRect.right+10 || newTop+btnHeight<yesRect.top-10 || newTop>yesRect.bottom+10){ safe=true; }
     }
-    noBtn.style.left=randomX+"px";
-    noBtn.style.top=randomY+"px";
-    noBtn.style.bottom="auto";
-    noBtn.style.transform="none";
+    noBtn.style.left=randomX+"px"; noBtn.style.top=randomY+"px"; noBtn.style.bottom="auto"; noBtn.style.transform="none";
 };
 
 // --- START GAME FLOW ---
-yesBtn.onclick=()=>{
-    clickSound.play().catch(()=>{});
-    bgm.play().catch(()=>{});
-    start.classList.add("hidden");
-    intro.classList.remove("hidden");
-    intro.classList.add("fade-enter");
-};
-
-okBtn.onclick=()=>{
-    okSound.play().catch(()=>{});
-    intro.classList.add("hidden");
-    rules.classList.remove("hidden");
-    rules.classList.add("fade-enter");
-};
+yesBtn.onclick=()=>{ bgm.play().catch(()=>{}); start.classList.add("hidden"); intro.classList.remove("hidden"); intro.classList.add("fade-enter"); };
+okBtn.onclick=()=>{ intro.classList.add("hidden"); rules.classList.remove("hidden"); rules.classList.add("fade-enter"); };
 
 // --- QUIZ LOGIC ---
-let index=0;
-let score=0;
-let selected=null;
+let index=0, score=0, selected=null;
 const answered=new Array(11).fill(false);
 
 const questions=[
-    {
-        q:"Which action shows someone truly pays attention to you over time?",
-        o:["Replying quickly","Remembering small details about you","Sending messages daily","Liking your posts"],
-        a:"Remembering small details about you"
-    },
-    {
-        q:"When a person becomes quieter than usual, what is the most likely reason?",
-        o:["They are tired","They are thinking deeply","They are bored","They are distracted"],
-        a:"They are thinking deeply"
-    },
-    {
-        q:"Second letter of SUN + Last letter of MOON + First letter of STAR makes what?",
-        o:["URS","UNS","SNS","NNS"],
-        a:"UNS"
-    },
-    {
-        q:"Which situation shows the strongest level of comfort between two people?",
-        o:["Talking for hours","Sharing secrets","Sitting silently without awkwardness","Sending long messages"],
-        a:"Sitting silently without awkwardness"
-    },
-    {
-        q:"What makes a person more memorable after meeting only a few times?",
-        o:["Expensive clothes","Unique behavior or habits","Height or looks","Their phone"],
-        a:"Unique behavior or habits"
-    },
-    {
-        q:"If someone notices changes in your mood before you say anything, what does it most likely show?",
-        o:["Curiosity","Observation","Care and attention","Habit"],
-        a:"Care and attention"
-    },
-    {
-        q:"Which thing usually becomes stronger only after a long time?",
-        o:["Interest","Trust","Attraction","Curiosity"],
-        a:"Trust"
-    },
-    {
-        q:"When two people talk less but still stay close, what does it usually mean?",
-        o:["Boredom","Distance","Understanding","Habit"],
-        a:"Understanding"
-    },
-    {
-        q:"What makes a small moment stay in memory for a long time?",
-        o:["Music","Emotions felt in that moment","Time of day","Location"],
-        a:"Emotions felt in that moment"
-    },
-    {
-        q:"Which thing usually makes people feel closer without saying much?",
-        o:["Long chats","Shared experiences","Phone calls","Text messages"],
-        a:"Shared experiences"
-    },
-    {
-        q:"What usually reveals a person’s real nature the most?",
-        o:["First impression","Social media","Behavior over time","Appearance"],
-        a:"Behavior over time"
-    }
+    { q:"Which action shows someone truly pays attention to you over time?", o:["Replying quickly","Remembering small details about you","Sending messages daily","Liking your posts"], a:"Remembering small details about you" },
+    { q:"When a person becomes quieter than usual, what is the most likely reason?", o:["They are tired","They are thinking deeply","They are bored","They are distracted"], a:"They are thinking deeply" },
+    { q:"Second letter of SUN + Last letter of MOON + First letter of STAR makes what?", o:["URS","UNS","SNS","NNS"], a:"UNS" },
+    { q:"Which situation shows the strongest level of comfort between two people?", o:["Talking for hours","Sharing secrets","Sitting silently without awkwardness","Sending long messages"], a:"Sitting silently without awkwardness" },
+    { q:"What makes a person more memorable after meeting only a few times?", o:["Expensive clothes","Unique behavior or habits","Height or looks","Their phone"], a:"Unique behavior or habits" },
+    { q:"If someone notices changes in your mood before you say anything, what does it most likely show?", o:["Curiosity","Observation","Care and attention","Habit"], a:"Care and attention" },
+    { q:"Which thing usually becomes stronger only after a long time?", o:["Interest","Trust","Attraction","Curiosity"], a:"Trust" },
+    { q:"When two people talk less but still stay close, what does it usually mean?", o:["Boredom","Distance","Understanding","Habit"], a:"Understanding" },
+    { q:"What makes a small moment stay in memory for a long time?", o:["Music","Emotions felt in that moment","Time of day","Location"], a:"Emotions felt in that moment" },
+    { q:"Which thing usually makes people feel closer without saying much?", o:["Long chats","Shared experiences","Phone calls","Text messages"], a:"Shared experiences" },
+    { q:"What usually reveals a person’s real nature the most?", o:["First impression","Social media","Behavior over time","Appearance"], a:"Behavior over time" }
 ];
 
 function shuffle(arr){return arr.sort(()=>Math.random()-0.5)}
 
-function startGame(){
-    rules.classList.add("hidden");
-    game.classList.remove("hidden");
-    game.classList.add("fade-enter");
-    loadQ();
-}
+function startGame(){ rules.classList.add("hidden"); game.classList.remove("hidden"); game.classList.add("fade-enter"); loadQ(); }
 
 function loadQ(){
     selected=null;
     const qContent = document.getElementById("qContent");
-    
-    // Smooth question entry animation
     qContent.classList.remove("anim-slide");
-    void qContent.offsetWidth; // Trigger reflow
+    void qContent.offsetWidth; 
     qContent.classList.add("anim-slide");
 
+    // Headings update: Pura "Question 1", "Question 2" aayega
+    document.getElementById("qHeader").innerText = `Question ${index + 1}`;
     document.getElementById("question").innerText=questions[index].q;
     const optionsDiv = document.getElementById("options");
     optionsDiv.innerHTML="";
 
     shuffle([...questions[index].o]).forEach(op=>{
         const b=document.createElement("button");
-        b.className="option";
-        b.innerText=op;
+        b.className="option"; b.innerText=op;
         b.onclick=()=>{
             selected=op;
             document.querySelectorAll(".option").forEach(x=>x.classList.remove("active"));
@@ -508,62 +430,123 @@ function loadQ(){
         };
         optionsDiv.appendChild(b);
     });
+
+    const dots = document.getElementById("progressDots");
+    dots.innerHTML = "";
+    for(let i=0; i<questions.length; i++){
+        const d = document.createElement("div");
+        d.className = "prog-dot" + (i === index ? " active" : "");
+        dots.appendChild(d);
+    }
 }
 
 nextBtn.onclick=()=>{
     if(!selected)return;
-    if(!answered[index]){
-        if(selected===questions[index].a) score++;
-        answered[index]=true;
-    }
+    if(!answered[index]){ if(selected===questions[index].a) score++; answered[index]=true; }
     index++;
     index>=questions.length ? endGame() : loadQ();
 };
 
-prevBtn.onclick=()=>{
-    if(index>0){index--;loadQ();}
-};
+prevBtn.onclick=()=>{ if(index>0){index--;loadQ();} };
 
 function endGame(){
     game.classList.add("hidden");
-
     if(score>=7){
         winAnimation();
-        // Unlock Section System
+        document.getElementById("winScore").innerText = `You scored ${score} out of 11.`;
         const unlock = document.getElementById("unlockSection");
         unlock.classList.remove("hidden");
-        unlock.classList.add("fade-enter");
-    }
-    else{
+        unlock.classList.add("pop-in"); // Better bounce animation
+    } else {
         loseAnimation();
         result.classList.remove("hidden");
         result.classList.add("fade-enter");
         result.innerHTML=`
-            <h1>YOU LOST</h1>
+            <h1 style="margin-bottom:10px;">YOU LOST</h1>
             <p>You scored ${score} out of 11.</p>
-            <button class="option" onclick="location.reload()">Try Again</button>
+            <button class="option" onclick="location.reload()" style="margin-top:20px;">Try Again</button>
         `;
+        setTimeout(()=> triggerShake("result"), 100);
     }
 }
-// Tap To Enter -> Password Section Animation
-document.getElementById("tapToEnterBtn").onclick = () => {
-    const unlock = document.getElementById("unlockSection");
-    unlock.classList.add("hidden");
+
+// --- VIBRATIONS & SHAKE LOGIC ---
+function rightPassVibrate() { if(navigator.vibrate) navigator.vibrate([100, 50, 200]); }
+function winVibrate() { if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]); }
+
+function wrongFx(){
+    if(navigator.vibrate) navigator.vibrate([50, 40, 50, 40, 50]); // matches 5-step shake
+    let ctx=new (window.AudioContext||window.webkitAudioContext)();
+    let osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value=200; gain.gain.value=0.05;
+    osc.start(); setTimeout(()=>osc.stop(),120);
+}
+
+function triggerShake(elementId) {
+    wrongFx();
+    const el = document.getElementById(elementId);
+    el.classList.add("shake");
+    setTimeout(() => el.classList.remove("shake"), 350);
+}
+
+  // --- FIREWORKS & PARTICLES LOGIC ---
+let fwInterval;
+function startFireworks() {
+    for(let i=0; i<4; i++) setTimeout(shootFirework, i*400);
+    fwInterval = setInterval(shootFirework, 700);
+}
+function stopFireworks() { clearInterval(fwInterval); }
+
+function shootFirework() {
+    const fw = document.createElement('div');
+    fw.className = 'rocket';
+    fw.style.left = (15 + Math.random() * 70) + 'vw';
     
-    const lock = document.getElementById("lock");
-    lock.classList.remove("hidden");
-    lock.classList.add("fade-enter");
-};
+    // Upar (top half) me jaakar futenge taaki card block na kare
+    const height = 60 + Math.random() * 25; 
+    fw.style.setProperty('--end-y', height + 'vh');
+    document.getElementById('particles').appendChild(fw);
+    
+    setTimeout(() => {
+        const rect = fw.getBoundingClientRect();
+        explode(rect.left, rect.top);
+        fw.remove();
+    }, 1100);
+}
+
+function explode(x, y) {
+    const colors =['#ff5f9e', '#00f2fe', '#4facfe', '#FFD54F', '#ffffff', '#ff99c8'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    
+    for (let i = 0; i < 45; i++) {
+        const spark = document.createElement('div');
+        spark.className = 'spark';
+        spark.style.left = x + 'px'; spark.style.top = y + 'px';
+        spark.style.background = color;
+        
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 50 + Math.random() * 100;
+        spark.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+        
+        // Gravity effect - sparks thoda neeche ko flow karenge
+        const dy = Math.sin(angle) * distance;
+        spark.style.setProperty('--dy', (dy + 40) + 'px'); 
+        
+        document.getElementById('particles').appendChild(spark);
+        setTimeout(() => spark.remove(), 1000);
+    }
+}
 
 function winAnimation(){
+    winVibrate();
+    startFireworks();
     const layer=document.getElementById("particles");
-    for(let i=0;i<30;i++){
+    for(let i=0;i<25;i++){
         const p=document.createElement("div");
-        p.className="particle";
-        p.style.left=Math.random()*100+"vw";
+        p.className="particle"; p.style.left=Math.random()*100+"vw";
         p.style.animationDuration=3+Math.random()*2+"s";
-        layer.appendChild(p);
-        setTimeout(()=>p.remove(),5000);
+        layer.appendChild(p); setTimeout(()=>p.remove(),5000);
     }
 }
 
@@ -571,118 +554,74 @@ function loseAnimation(){
     const layer=document.getElementById("particles");
     for(let i=0;i<20;i++){
         const p=document.createElement("div");
-        p.className="particle";
-        p.style.background="linear-gradient(#444,#111)";
-        p.style.left=Math.random()*100+"vw";
-        p.style.animationDuration="4s";
-        layer.appendChild(p);
-        setTimeout(()=>p.remove(),5000);
+        p.className="particle"; p.style.background="linear-gradient(#444,#111)";
+        p.style.left=Math.random()*100+"vw"; p.style.animationDuration="4s";
+        layer.appendChild(p); setTimeout(()=>p.remove(),5000);
     }
 }
 
+// --- PASSWORD ENTER LOGIC ---
+document.getElementById("tapToEnterBtn").onclick = () => {
+    stopFireworks();
+    const unlock = document.getElementById("unlockSection");
+    unlock.classList.add("hidden");
+    const lock = document.getElementById("lock");
+    lock.classList.remove("hidden"); lock.classList.add("fade-enter");
+};
 
-// --- SURPRISE KEYPAD LOGIC ---
 let pass="";
-
 function clickFx(){
-    if(navigator.vibrate){ navigator.vibrate(10); }
     let ctx=new (window.AudioContext||window.webkitAudioContext)();
-    let osc=ctx.createOscillator();
-    let gain=ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value=800;
-    gain.gain.value=0.02;
-    osc.start();
-    setTimeout(()=>{ osc.stop(); },30);
+    let osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value=800; gain.gain.value=0.02;
+    osc.start(); setTimeout(()=>osc.stop(),30);
 }
 
-function wrongFx(){
-    if(navigator.vibrate){ navigator.vibrate([40,60,40]); }
-    let ctx=new (window.AudioContext||window.webkitAudioContext)();
-    let osc=ctx.createOscillator();
-    let gain=ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value=200;
-    gain.gain.value=0.05;
-    osc.start();
-    setTimeout(()=>{ osc.stop(); },120);
+function add(x){
+    if(pass.length<3){
+        clickFx(); pass+=x; update();
+    }
+}
+function del(){ clickFx(); pass=pass.slice(0,-1); update(); }
+
+function update(){
+    for(let i=1;i<=3;i++) document.getElementById("d"+i).classList.remove("fill");
+    for(let i=0;i<pass.length;i++) document.getElementById("d"+(i+1)).classList.add("fill");
+    if(pass.length==3) setTimeout(check, 100);
 }
 
 function check(){
-
     if(pass.toLowerCase()=="uns"){
-
-        if(navigator.vibrate){ navigator.vibrate(60); }
-
-        // STOP BACKGROUND MUSIC
+        rightPassVibrate();
         bgm.pause();
-        bgm.currentTime = 0;
-
+        
         document.getElementById("lock").classList.add("hidden");
-
         let sr = document.getElementById("surpriseResult");
-        sr.classList.remove("hidden");
-        sr.classList.add("fade-enter");
-
+        sr.classList.remove("hidden"); sr.classList.add("fade-enter");
     } else {
-
-        wrongFx();
-
-        let card = document.getElementById("lock");
-
-        card.classList.remove("shake");
-        void card.offsetWidth;
-
-        card.classList.add("shake");
-
-        setTimeout(()=>{
-            card.classList.remove("shake");
-        },800);
-
-        pass="";
-        update();
+        triggerShake("lock");
+        pass=""; update();
     }
 }
-// --- SURPRISE RESULT PLAYER ---
-let audio=document.getElementById("audio");
-let playBtn=document.getElementById("playBtn");
-let bar=document.getElementById("bar");
-let playing=false;
+
+// --- PLAYER LOGIC ---
+let audio=document.getElementById("audio"), playBtn=document.getElementById("playBtn");
+let bar=document.getElementById("bar"), playing=false;
 
 playBtn.onclick=function(){
     clickFx();
-    if(playing){
-        audio.pause();
-        playBtn.innerHTML="▶";
-        playing=false;
-    }
-    else{
-        audio.play();
-        playBtn.innerHTML="❚❚";
-        playing=true;
-    }
+    if(playing){ audio.pause(); playBtn.innerHTML="▶"; playing=false; }
+    else{ audio.play(); playBtn.innerHTML="❚❚"; playing=true; }
 };
-
-audio.ontimeupdate=function(){
-    bar.style.width=(audio.currentTime/audio.duration)*100+"%";
-};
-
-audio.onended=function(){
-    playBtn.innerHTML="▶";
-    playing=false;
-    bar.style.width="0%";
-};
+audio.ontimeupdate=function(){ bar.style.width=(audio.currentTime/audio.duration)*100+"%"; };
+audio.onended=function(){ playBtn.innerHTML="▶"; playing=false; bar.style.width="0%"; };
 
 function downloadVoice(){
     clickFx();
     let a=document.createElement("a");
-    a.href="voice.mp3";
-    a.download="VoiceNote.mp3";
-    a.click();
+    a.href="voice.mp3"; a.download="VoiceNote.mp3"; a.click();
 }
-
 </script>
 </body>
-</html>  
+</html>
