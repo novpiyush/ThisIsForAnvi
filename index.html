@@ -2,441 +2,702 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Memory Game & Surprise</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Memory Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <style>
-/* --- BASE STYLES --- */
-*{margin:0;padding:0;box-sizing:border-box;font-family:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;overflow:hidden}
-
-body{
-display:flex;justify-content:center;align-items:center;
-background:linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),url("bg.png") center/cover no-repeat;
-background-color: #8a8a8a;
-color:#fff;
+/* --- BASE STYLES & APPLE TYPOGRAPHY --- */
+* { 
+    margin: 0; padding: 0; box-sizing: border-box; 
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif; 
+    -webkit-tap-highlight-color: transparent; 
 }
+html, body { width: 100%; height: 100%; overflow: hidden; perspective: 1200px; }
 
-/* --- GLASS UI (GAME) --- */
-.container{
-width:90%;max-width:420px;padding:26px 20px;border-radius:22px;
-background:rgba(255,182,193,.18);backdrop-filter:blur(14px);
-border:1px solid rgba(255,255,255,.25);
-box-shadow:0 20px 40px rgba(0,0,0,.35); 
-text-align:center;position:relative;z-index:2;
-overflow:hidden;
-display:flex;flex-direction:column;justify-content:center;align-items:center;
+/* Clean Text Rendering for HD Look */
+body {
+    display: flex; justify-content: center; align-items: center;
+    background: linear-gradient(135deg, rgba(8, 20, 12, 0.8), rgba(2, 8, 4, 0.95)), url("bg.png") center/cover no-repeat;
+    background-color: #050a07;
+    color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
-/* Sirf Game Card ka size fixed rahega */
-#game {
-height: 520px; 
-justify-content: space-between;
+/* --- BACKGROUND PARTICLES LAYER --- */
+#particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; perspective: 1200px; }
+
+/* --- PREMIUM 3D GLASS CARDS (Z-INDEX 10) --- */
+.container, .card {
+    padding: 25px 20px; border-radius: 32px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+    backdrop-filter: blur(25px) saturate(200%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), inset 0 1.5px 2px rgba(255, 255, 255, 0.3);
+    text-align: center; position: relative; z-index: 10;
+    overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    transform-style: preserve-3d;
+    transform: translateZ(0); 
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+}
+.container { width: 90%; max-width: 340px; padding: 30px 20px; }
+.card { width: 88%; max-width: 320px; border-radius: 30px; }
+
+#start { height: 450px; justify-content: flex-start; }
+
+.hidden { display: none !important; }
+
+/* Text Styles */
+p { font-size: 15px; line-height: 1.5; margin-bottom: 20px; color: #f0f0f5; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+
+/* --- GLASS HEADING UI (Premium Gradients) --- */
+.glass-heading {
+    margin: 0 auto 15px auto; padding: 8px 20px; 
+    background: rgba(255, 255, 255, 0.06); border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.25); 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    text-transform: uppercase; letter-spacing: 1.5px;
+    flex-shrink: 0; text-shadow: none; display: flex; align-items: center; justify-content: center;
+    width: max-content; max-width: 100%;
 }
 
-.hidden{display:none !important;}
-p{font-size:15px;line-height:1.5;margin-bottom:18px}
-
-.option,.navBtn{
-width:100%;padding:13px;border-radius:30px;
-border:1px solid rgba(255,255,255,.35);
-background:rgba(255,255,255,.15);
-color:#fff;font-weight:600;cursor:pointer;
-transition: all 0.0s ease;
-}
-.option.active,.navBtn:active{
-background:#fff;color:#000;
+.glass-heading span {
+    font-size: 14.5px; font-weight: 800;
+    background: linear-gradient(90deg, #FFFFFF, #D8F8FF, #8AE4FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
 }
 
-#yesBtn,#noBtn{
-padding:16px 40px;border-radius:40px;font-weight:700;min-width:140px;
-}
-#yesBtn{background:#fff;color:#000;border:none}
+.glass-heading.small-heading { padding: 8px 16px; margin-bottom: 12px; }
+.glass-heading.small-heading span { font-size: 12px; letter-spacing: 1px; white-space: nowrap; }
 
-#noBtn{
-background:rgba(255,255,255,.15);
-border:1px solid rgba(255,255,255,.35);
-color:#fff;position:absolute;bottom:20px;left:50%;
-transform:translateX(-50%);
-transition:all .25s ease;
+.glass-heading.gold { border-color: rgba(255, 215, 0, 0.3); }
+.glass-heading.gold span {
+    background: linear-gradient(90deg, #FFFFFF, #FFF3C7, #FFD043);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
-.button-zone{position:relative;height:200px;width:100%;margin-top:20px;}
-.nav{display:flex;gap:12px;margin-top:15px;width:100%;}
-.navBtn{width:48%}
-
-/* --- GAME CARD LAYOUT --- */
-#qContent {
-flex:1;display:flex;flex-direction:column;justify-content:flex-start;
-width:100%;padding:0 5px;
+.glass-heading.lose { border-color: rgba(255, 168, 168, 0.3); }
+.glass-heading.lose span {
+    background: linear-gradient(90deg, #FFFFFF, #FFA8A8, #F56E6E);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
-#qHeader {
-font-size:13px;color:#FAFF00;font-weight:700;margin:0 auto 12px auto;
-padding:4px 14px;background:rgba(250,255,0,0.15);border-radius:12px;
-border:1px solid rgba(250,255,0,0.3);letter-spacing:1px;width:max-content;
+/* --- WHITE GLASS HEADING UI --- */
+.glass-heading-white {
+    margin: 0 auto 15px auto; padding: 8px 20px; 
+    background: rgba(255, 255, 255, 0.08); border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    text-transform: uppercase; letter-spacing: 1.5px;
+    display: flex; align-items: center; justify-content: center;
+    width: max-content; max-width: 100%;
+}
+.glass-heading-white span { font-size: 13px; font-weight: 800; color: #ffffff; text-align: center; white-space: nowrap; text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+
+/* --- 7 OUT OF 11 TARGET PILL --- */
+.target-pill {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 10px 24px;
+    margin: 5px auto 18px auto;
+    width: max-content;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.5);
+}
+.target-pill span {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 1.5px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
-#question {
-font-size:17px;font-weight:500;line-height:1.5;margin-bottom:20px;
-width:100%;text-align:center;word-wrap:break-word;
+/* --- WHITE SCORE PILL --- */
+.glass-pill-white {
+    background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    border-radius: 14px; padding: 10px 18px; margin: 0 auto 20px auto; 
+    font-size: 13px; color: #ffffff; font-weight: 800; text-transform: uppercase;
+    text-align: center; width: max-content; max-width: 100%; letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
-#options {
-display:flex;flex-direction:column;gap:10px;width:100%;
+/* --- BUTTONS --- */
+.option, .navBtn, #yesBtn, #noBtn, #okBtn, #tapToEnterBtn {
+    width: 100%; padding: 14px 15px; border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff; font-weight: 700; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+.option:active, .navBtn:active, #yesBtn:active, #noBtn:active, #okBtn:active, #tapToEnterBtn:active {
+    transform: scale(0.96); background: rgba(255, 255, 255, 0.3);
+}
+.option.active { background: #ffffff; color: #000000; border-color: #ffffff; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
 
-/* --- SLIDE PROGRESS INDICATORS --- */
-.prog-dots {
-display:flex;justify-content:center;gap:6px;margin-top:15px;
-padding:8px 12px;background:rgba(255,255,255,0.1);
-border-radius:20px;border:1px solid rgba(255,255,255,0.2);
-width:fit-content;margin-left:auto;margin-right:auto;
+.download-btn-heading {
+    margin: 15px auto 0 auto; padding: 14px 20px; 
+    background: rgba(255, 255, 255, 0.08); border-radius: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.3); 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.3);
+    text-transform: uppercase; letter-spacing: 1.5px;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; cursor: pointer; transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
 }
-.prog-dot {
-width:7px;height:7px;border-radius:50%;
-background:rgba(255,255,255,0.3);transition:0.3s ease;
+.download-btn-heading span {
+    font-size: 14px; font-weight: 800;
+    background: linear-gradient(90deg, #FFFFFF, #FFF3C7, #FFD043);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
-.prog-dot.active {
-background:#fff;
-transform:scale(1.2);
-}
+.download-btn-heading:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.15); }
 
-/* --- PARTICLES & FIREWORKS --- */
-/* Z-index changed to 3 so fireworks don't hide behind the card at all */
-#particles{position:fixed;inset:0;pointer-events:none;z-index:3}
+#yesBtn, #noBtn { width: 130px; border-radius: 26px; font-weight: 700; position: absolute; }
+#yesBtn { top: 205px; left: calc(50% - 65px); }
+#noBtn { top: 270px; left: calc(50% - 65px); transition: top 0.35s ease-out, left 0.35s ease-out, background 0.2s, transform 0.2s; }
 
-.particle{
-position:absolute;bottom:-40px;width:18px;height:18px;
-background:linear-gradient(145deg,#ff5f9e,#ff99c8);
-transform:rotate(45deg);animation:floatUp linear forwards;
+.extra-msg-container { height: 32px; width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 5px; }
+#extraMsg {
+    width: max-content; max-width: 95%; height: 100%; display: flex; justify-content: center; align-items: center;
+    background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 16px; padding: 0 14px; 
+    font-size: 10.5px; color: #FFF9D2; font-weight: 700; letter-spacing: 0.8px; 
+    text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); pointer-events: none; opacity: 0; transform: translateY(8px) scale(0.96);
+    transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.particle::before,.particle::after{
-content:"";position:absolute;width:18px;height:18px;
-background:inherit;border-radius:50%;
-}
-.particle::before{top:-9px}
-.particle::after{left:-9px}
+#extraMsg.show { opacity: 1; transform: translateY(0) scale(1); }
 
-@keyframes floatUp{
-to{transform:translateY(-110vh) rotate(45deg);opacity:0}
-}
+/* --- UI LOCKED GAME CARD LAYOUT --- */
+#game { height: 530px; justify-content: space-between; padding: 25px 20px; }
+#qContent { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; width: 100%; height: 100%; position: relative; }
+#question { font-size: 17px; font-weight: 600; line-height: 1.4; margin: 0 0 20px 0; width: 100%; text-align: center; word-wrap: break-word; min-height: 75px; display: flex; align-items: center; justify-content: center; text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+#options { display: flex; flex-direction: column; gap: 12px; width: 100%; min-height: 230px; justify-content: flex-start; }
+.option { min-height: 48px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 13px; }
 
-.rocket {
-position:fixed;bottom:-20px;width:3px;height:18px;
-background:#FAFF00;border-radius:5px;
-animation:shoot 1.2s ease-out forwards;
-}
-@keyframes shoot {
-0%{transform:translateY(0);opacity:1;}
-100%{transform:translateY(calc(-1 * var(--end-y)));opacity:0;}
-}
+.bottom-controls { width: 100%; margin-top: auto; padding-top: 10px; }
+.nav { display: flex; gap: 12px; width: 100%; }
+.navBtn { width: 48%; border-radius: 18px; }
 
-.spark {
-position:fixed;width:4px;height:4px;border-radius:50%;
-animation:explode 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-}
-@keyframes explode {
-0%{transform:translate(0,0) scale(1);opacity:1;}
-100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}
-}
+.prog-dots { display: flex; justify-content: center; gap: 6px; margin-top: 15px; padding: 8px 16px; background: rgba(0, 0, 0, 0.2); border-radius: 20px; width: fit-content; margin-left: auto; margin-right: auto; box-shadow: inset 0 1px 3px rgba(0,0,0,0.3); }
+.prog-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); transition: 0.3s; }
+.prog-dot.active { background: #ffffff; transform: scale(1.6); box-shadow: 0 0 6px rgba(255, 255, 255, 0.6); }
 
 /* --- SURPRISE KEYPAD & RESULT --- */
-.card{
-width:300px;padding:24px 18px;border-radius:26px;
-background:rgba(255,255,255,0.18);backdrop-filter:blur(25px);
-border:1px solid rgba(255,255,255,0.35);box-shadow:0 25px 60px rgba(0,0,0,0.3);
-text-align:center;color:white;position:relative;overflow:hidden;z-index:2;
+.glass-pill {
+    background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    border-radius: 14px; padding: 8px 16px; margin-bottom: 10px; 
+    font-size: 13px; color: #ffffff; font-weight: 600; text-align: center; width: max-content; max-width: 100%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.2);
 }
 
-.title{font-size:24px;font-weight:600;margin-bottom:4px;}
-.subtitle{margin-bottom:12px;font-size:14px;}
-.hintLabel{color:#FAFF00;font-weight:700;}
-.dots{display:flex;justify-content:center;gap:10px;margin-bottom:20px;}
-.dot{width:14px;height:14px;border-radius:50%;border:2px solid white;}
-.fill{background:white;}
-
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;justify-items:center;}
-.key{
-width:70px;height:70px;border-radius:50%;border:1px solid rgba(255,255,255,.6);
-display:flex;align-items:center;justify-content:center;font-size:22px;
-background:rgba(255,255,255,.15);cursor:pointer;transition:.15s;
--webkit-tap-highlight-color:transparent;outline:none;
-}
-.key:active{background:white;color:black;}
-
-.shake{animation:shake .35s ease-in-out;}
-@keyframes shake{
-0%{transform:translateX(0)}
-25%{transform:translateX(-8px)}
-50%{transform:translateX(8px)}
-75%{transform:translateX(-8px)}
-100%{transform:translateX(0)}
+.hint-box { 
+    width: 100%; margin-bottom: 25px; 
+    font-size: 11px; white-space: nowrap; 
+    padding: 10px 15px; text-align: center;
+    letter-spacing: 0.2px; overflow: hidden; text-overflow: ellipsis;
 }
 
-.photo{width:150px;height:150px;margin:auto;border-radius:22px;overflow:hidden;}
-.photo img{width:100%;height:100%;object-fit:cover;}
-.voice{font-size:22px;font-weight:600;margin-top:14px;}
-.from{opacity:.8;margin-bottom:14px;}
+.dots { display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; }
+.dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.5); transition: 0.3s; }
+.fill { background: #ffffff; border-color: #ffffff; transform: scale(1.2); box-shadow: 0 0 6px rgba(255, 255, 255, 0.6); }
 
-.player{
-height:65px;border-radius:35px;background:rgba(255,255,255,0.15);
-border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;
-padding:0 10px;gap:10px;
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; justify-items: center; }
+.key {
+    width: 64px; height: 64px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.35); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); cursor: pointer; transition: all 0.15s; outline: none; box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 4px 10px rgba(0,0,0,0.1);
 }
-.progress{flex:1;height:6px;border-radius:5px;background:rgba(255,255,255,.45);overflow:hidden;}
-.bar{height:100%;width:0%;background:white;}
+.key:active { transform: scale(0.85); background: #ffffff; color: #000000; text-shadow: none; }
 
-.play-btn{
-width:50px;height:50px;border-radius:50%;border:1px solid rgba(255,255,255,.6);
-display:flex;align-items:center;justify-content:center;font-size:22px;
-background:rgba(255,255,255,0.15);cursor:pointer;
--webkit-tap-highlight-color:transparent;outline:none;transition:.15s;
+.photo { width: 140px; height: 140px; margin: auto; border-radius: 22px; overflow: hidden; border: 1px solid rgba(255,255,255,0.3); }
+.photo img { width: 100%; height: 100%; object-fit: cover; }
+
+.voice { font-size: 20px; font-weight: 800; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 5px rgba(0,0,0,0.4); }
+.from { opacity: 0.8; margin-bottom: 20px; font-size: 13px; font-weight: 500; }
+
+/* Audio Player Layout */
+.player-wrapper { 
+    width: 100%; background: rgba(0,0,0,0.25); border-radius: 20px; 
+    padding: 16px 20px; border: 1px solid rgba(255,255,255,0.15); 
+    margin-bottom: 5px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); 
 }
-.play-btn:active{background:white;color:black;}
-
-.download{
-margin-top:15px;padding:12px;border-radius:25px;border:1px solid rgba(255,255,255,.5);
-cursor:pointer;background:rgba(255,255,255,.15);transition:.15s;
--webkit-tap-highlight-color:transparent;
-}
-.download:active{background:white;color:black;}
-
-/* --- ANIMATIONS --- */
-.anim-slide {animation: slideFade 0.4s ease-out forwards;}
-@keyframes slideFade {
-0% { opacity: 0; transform: translateX(15px); }
-100% { opacity: 1; transform: translateX(0); }
+.player-content { 
+    display: flex; flex-direction: row; align-items: center; 
+    width: 100%; gap: 15px; 
 }
 
-.fade-enter {animation: smoothEnter 0.5s ease-out forwards;}
-@keyframes smoothEnter {
-0% { opacity: 0; transform: translateY(15px) scale(0.98); }
-100% { opacity: 1; transform: translateY(0) scale(1); }
+/* Play Button */
+.play-btn-glass {
+    width: 46px; height: 46px; border-radius: 50%; 
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff; cursor: pointer; transition: 0.2s;
+    flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.play-btn-glass:active { 
+    transform: scale(0.9); background: rgba(255, 255, 255, 0.3); 
 }
 
-.pop-in {animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;}
-@keyframes popIn {
-0% { opacity: 0; transform: scale(0.8) translateY(20px); }
-100% { opacity: 1; transform: scale(1) translateY(0); }
+.progress-info { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+.progress-bar-bg { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.2); border-radius: 4px; overflow: hidden; position: relative; box-shadow: inset 0 1px 2px rgba(0,0,0,0.3); }
+.progress-bar-fill { height: 100%; width: 0%; background: #ffffff; border-radius: 4px; transition: width 0.1s linear; box-shadow: 0 0 5px rgba(255,255,255,0.8); }
+.time-text { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #cccccc; letter-spacing: 0.5px; }
+
+/* --- SMOOTH HARDWARE-ACCELERATED ANIMATIONS (LAG FIXED) --- */
+.heart-wrapper { 
+    position: absolute; bottom: -80px; width: 60px; height: 60px; 
+    animation: floatUpHeart linear forwards; pointer-events: none;
+    will-change: transform; transform: translateZ(0); 
 }
+/* Removed double will-change to completely eliminate lag/hang */
+.heart-3d { 
+    width: 100%; height: 100%; position: relative; 
+    transform-style: preserve-3d; animation: spinHeart 3s linear infinite; 
+}
+.heart-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; justify-content: center; align-items: center; }
+.heart-face.front { transform: rotateY(0deg); } .heart-face.back { transform: rotateY(180deg); }
+
+/* Extremely optimized slight glow so it does NOT hang */
+.heart-face svg { position: absolute; width: 100%; height: 100%; filter: drop-shadow(0 0 6px rgba(255, 30, 30, 0.4)); }
+
+.heart-text { position: relative; z-index: 2; color: #ffffff; font-size: 10px; font-weight: 800; text-shadow: 0 2px 5px rgba(0,0,0,0.8); transform: translateY(-3px); letter-spacing: 0.5px; }
+
+@keyframes spinHeart { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+
+/* 3D Translation for Butter Smooth 60fps Movement */
+@keyframes floatUpHeart { 
+    0% { transform: translate3d(0, 0, 0) scale(var(--s)); opacity: 0; } 
+    10% { opacity: 1; transform: translate3d(0, -10vh, 0) scale(var(--s)); } 
+    90% { opacity: 1; } 
+    100% { transform: translate3d(0, -120vh, 0) scale(var(--s)); opacity: 0; } 
+}
+
+.dust-wrapper { position: absolute; bottom: -50px; width: 25px; height: 25px; animation: floatUpDust linear forwards; pointer-events: none; }
+.dust-particle { width: 100%; height: 100%; background: radial-gradient(circle, rgba(168, 200, 255, 0.8) 0%, transparent 70%); border-radius: 50%; filter: blur(2px); }
+@keyframes floatUpDust { 0% { transform: translateY(0) scale(var(--s)); opacity: 0; } 20% { opacity: var(--o); transform: translateY(-15vh) scale(var(--s)) translateX(var(--x)); } 80% { opacity: var(--o); } 100% { transform: translateY(-100vh) scale(var(--s)) translateX(calc(var(--x) * -1)); opacity: 0; } }
+
+.card-enter { animation: iOSSpring 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards; }
+@keyframes iOSSpring { 0% { opacity: 0; transform: translateY(30px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+.swipe-shake { animation: errShake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes errShake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-12px); } 40% { transform: translateX(10px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); } }
+.anim-slide-in { animation: slideIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.anim-slide-out { animation: slideOut 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+@keyframes slideIn { 0% { opacity: 0; transform: translateX(25px); } 100% { opacity: 1; transform: translateX(0); } }
+@keyframes slideOut { 0% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: translateX(-25px); } }
+.grid .key { animation: popKey 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+.grid .key:nth-child(1) { animation-delay: 0.05s; } .grid .key:nth-child(2) { animation-delay: 0.1s; } .grid .key:nth-child(3) { animation-delay: 0.15s; } .grid .key:nth-child(4) { animation-delay: 0.2s; } .grid .key:nth-child(5) { animation-delay: 0.25s; } .grid .key:nth-child(6) { animation-delay: 0.3s; } .grid .key:nth-child(7) { animation-delay: 0.35s; } .grid .key:nth-child(8) { animation-delay: 0.4s; } .grid .key:nth-child(9) { animation-delay: 0.45s; } .grid .key:nth-child(10) { animation-delay: 0.5s; } .grid .key:nth-child(11) { animation-delay: 0.55s; } .grid .key:nth-child(12) { animation-delay: 0.6s; }
+@keyframes popKey { 0% { opacity: 0; transform: scale(0.6); } 100% { opacity: 1; transform: scale(1); } }
 </style>
 </head>
 
 <body>
 
-<audio id="clickSound" src="click.mp3"></audio>
-<audio id="okSound" src="ok.mp3"></audio>
-<audio id="bgm" src="pretty_bgm.mp3" loop></audio>
-<audio id="launchSound" src="launch.mp3" preload="auto"></audio>
-<audio id="explodeSound" src="explode.mp3" preload="auto"></audio>
+<audio id="bgm" src="bgm.mp3" loop></audio>
 
 <div id="particles"></div>
 
 <!-- ========================================== -->
-<!-- GAME SECTIONS                              -->
+<!-- INTRO SECTIONS                             -->
 <!-- ========================================== -->
 
-<div class="container" id="start">
-<h1>HEY ANVI</h1>
-<p style="margin-top: 10px;">I made a small game.<br>If you want to play, will you play it?</p>
-<p id="extraMsg"></p>
-<div class="button-zone">
-<button id="yesBtn">YES</button>
-<button id="noBtn">NO</button>
-</div>
+<div class="container card-enter" id="start">
+    <div class="glass-heading" style="margin-top: 10px; margin-bottom: 10px;"><span>HEY ANVI</span></div>
+    <p class="desc-text" style="margin-top: 5px;">I made a small game.<br>If you want to play, will you play it?</p>
+    
+    <div class="extra-msg-container">
+        <div id="extraMsg"></div>
+    </div>
+    
+    <button id="yesBtn">YES</button>
+    <button id="noBtn">NO</button>
 </div>
 
 <div class="container hidden" id="intro">
-<p>If you win the Game.</p>
-<p>You can unlock your Surprise.</p>
-<button id="okBtn" class="option" style="margin-top: 20px;">OK</button>
+    <div class="glass-heading"><span>IF YOU WIN THE GAME</span></div>
+    <p style="font-size: 16px; font-weight:600; margin-top: 10px;">You can unlock your surprise.</p>
+    <button id="okBtn" class="option" style="margin-top: 25px;">OKAY</button>
 </div>
 
 <div class="container hidden" id="rules">
-<p>You need to win at least<br>7 out of 11 questions.</p>
-<p>To unlock your Surprise</p>
-<button class="option" onclick="startGame()" style="margin-top: 20px;">Now start the game</button>
+    <div class="glass-heading small-heading"><span>YOU NEED TO WIN AT LEAST</span></div>
+    
+    <div class="target-pill">
+        <span>7 OUT OF 11</span>
+    </div>
+    
+    <p>To unlock your surprise</p>
+    <button id="startGameBtn" class="option" style="margin-top: 20px;">NOW START THE GAME</button>
 </div>
 
-<!-- Fix size card for questions -->
+<!-- ========================================== -->
+<!-- GAME SECTION (LOCKED UI, VERTICAL OPTIONS) -->
+<!-- ========================================== -->
+
 <div class="container hidden" id="game">
-<div id="qContent">
-<div id="qHeader"></div>
-<h2 id="question"></h2>
-<div id="options"></div>
-</div>
+    <div id="qContent">
+        <div class="glass-heading" id="qHeader"></div>
+        <h2 id="question"></h2>
+        <div id="options"></div>
+    </div>
 
-<div style="width: 100%;">
-<div class="nav">
-<button class="navBtn" id="prevBtn">Previous</button>
-<button class="navBtn" id="nextBtn">Okay</button>
-</div>
-<div id="progressDots" class="prog-dots"></div>
-</div>
+    <div class="bottom-controls">
+        <div class="nav">
+            <button class="navBtn" id="prevBtn">PREVIOUS</button>
+            <button class="navBtn" id="nextBtn">OKAY</button>
+        </div>
+        <div id="progressDots" class="prog-dots"></div>
+    </div>
 </div>
 
 <div class="container hidden" id="result"></div>
 
 <!-- ========================================== -->
-<!-- SURPRISE UNLOCKED CARD                     -->
+<!-- WIN SECTION                                -->
 <!-- ========================================== -->
+
 <div class="container hidden" id="unlockSection">
-<h1 style="font-size:28px; font-weight:800; margin-bottom: 8px; letter-spacing: 1px;">YOU WON!</h1>
-<p id="winScore" style="font-size:16px; margin-bottom:20px; color:#eee;"></p>
+    <div class="glass-heading gold" style="margin-bottom: 15px;"><span>YOU WON</span></div>
+    <div class="glass-pill-white" id="winScore"></div>
 
-<div style="background:rgba(250,255,0,0.15); border:1px solid rgba(250,255,0,0.3); border-radius:12px; padding:12px 20px; margin-bottom:25px; display:inline-block;">
-    <h2 style="color:#FAFF00; font-size:18px; letter-spacing:1px; font-weight: 700;">Surprise Unlocked</h2>
-</div>
+    <div class="glass-heading-white" style="margin-bottom: 25px;">
+        <span>SURPRISE UNLOCKED</span>
+    </div>
 
-<button class="option" id="tapToEnterBtn" style="padding: 16px; font-size: 16px; width:100%;">
-Tap To Enter
-</button>
+    <button class="option" id="tapToEnterBtn" style="font-weight:800;">
+        TAP TO ENTER
+    </button>
 </div>
 
 <!-- ========================================== -->
-<!-- SURPRISE PASSWORD KEYPAD                   -->
+<!-- PASSWORD KEYPAD                            -->
 <!-- ========================================== -->
 
 <div class="card hidden" id="lock">
-<div class="title">CONGRATULATIONS</div>
-<div class="subtitle">Password Protected Surprise</div>
+    <div class="glass-heading gold" style="margin-bottom: 20px;"><span>CONGRATULATIONS</span></div>
+    
+    <div class="glass-pill">Password Protected Surprise</div>
+    
+    <div class="glass-pill hint-box">
+        <span style="color:#FAFF00; font-weight:800;">HINT:</span> Remember the key you saw once.
+    </div>
 
-<div style="font-size:14px; margin-bottom: 20px;">
-<span class="hintLabel">Hint:</span>
-<span style="display:block; margin-top:6px;">You have already seen the key once.</span>
-</div>
+    <div class="dots">
+        <div class="dot" id="d1"></div>
+        <div class="dot" id="d2"></div>
+        <div class="dot" id="d3"></div>
+    </div>
 
-<div class="dots">
-<div class="dot" id="d1"></div>
-<div class="dot" id="d2"></div>
-<div class="dot" id="d3"></div>
-</div>
-
-<div class="grid">
-<div class="key" onclick="add('P')">P</div><div class="key" onclick="add('H')">H</div><div class="key" onclick="add('Y')">Y</div>
-<div class="key" onclick="add('V')">V</div><div class="key" onclick="add('A')">A</div><div class="key" onclick="add('I')">I</div>
-<div class="key" onclick="add('S')">S</div><div class="key" onclick="add('U')">U</div><div class="key" onclick="add('N')">N</div>
-<div class="key" onclick="add('E')">E</div><div class="key" onclick="add('O')">O</div><div class="key" onclick="del()">⌫</div>
-</div>
+    <div class="grid">
+        <div class="key" onclick="add('P')">P</div><div class="key" onclick="add('H')">H</div><div class="key" onclick="add('Y')">Y</div>
+        <div class="key" onclick="add('V')">V</div><div class="key" onclick="add('A')">A</div><div class="key" onclick="add('I')">I</div>
+        <div class="key" onclick="add('S')">S</div><div class="key" onclick="add('U')">U</div><div class="key" onclick="add('N')">N</div>
+        <div class="key" onclick="add('E')">E</div><div class="key" onclick="add('O')">O</div>
+        <div class="key" style="background:rgba(255,255,255,0.15);" onclick="del()">⌫</div>
+    </div>
 </div>
 
 <!-- ========================================== -->
-<!-- SURPRISE RESULT SECTION                    -->
+<!-- FINAL SURPRISE                             -->
 <!-- ========================================== -->
 
 <div class="card hidden" id="surpriseResult">
-<div class="title">CONGRATULATIONS</div>
-<div class="subtitle">You unlocked your surprise</div>
+    <div class="glass-heading gold" style="margin-bottom: 15px;"><span>CONGRATULATIONS</span></div>
+    
+    <div class="glass-heading-white" style="margin-bottom: 25px;">
+        <span>YOU UNLOCKED YOUR SURPRISE</span>
+    </div>
 
-<div class="photo"><img src="photo.jpg"></div>
+    <div class="photo"><img src="photo.jpg" alt="Surprise Image"></div>
 
-<div class="voice">Voice Note</div>
-<div class="from">From Piyush</div>
+    <div class="voice">VOICE NOTE</div>
+    <div class="from">From Piyush</div>
 
-<div class="player">
-<div class="progress"><div class="bar" id="bar"></div></div>
-<div class="play-btn" id="playBtn">▶</div>
-</div>
+    <div class="player-wrapper">
+        <div class="player-content">
+            <!-- Transparent Play Button with Centered Icons -->
+            <button class="play-btn-glass" id="playBtn" style="padding-left: 3px;">▶</button>
+            <div class="progress-info">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="bar"></div>
+                </div>
+                <div class="time-text">
+                    <span id="currentTime">0:00</span>
+                    <span id="totalTime">0:00</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<audio id="audio"><source src="voice.mp3"></audio>
-<div class="download" onclick="downloadVoice()">Download Voice</div>
+    <audio id="audio" preload="metadata"><source src="voice.mp3"></audio>
+    
+    <div class="download-btn-heading" onclick="downloadVoice()">
+        <span>DOWNLOAD VOICE</span>
+    </div>
 </div>
 
 <!-- ========================================== -->
-<!-- SCRIPTS                                    -->
+<!-- SCRIPTS & HIGH VOLUME AUDIO                -->
 <!-- ========================================== -->
 <script>
-const clickSound=document.getElementById("clickSound");
-const okSound=document.getElementById("okSound");
-const bgm=document.getElementById("bgm");
-bgm.volume=.15;
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
 
-function playOverlapSound(id) {
-    const el = document.getElementById(id);
-    if (el) {
-        const clone = el.cloneNode();
-        clone.play().catch(()=>{});
+function initAudio() {
+    if (!audioCtx) audioCtx = new AudioContext();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+const unlockAudio = () => { initAudio(); };
+document.addEventListener('touchstart', unlockAudio, {once: true, passive: true});
+document.addEventListener('pointerdown', unlockAudio, {once: true});
+document.addEventListener('click', unlockAudio, {once: true});
+
+function playSynthSound(type) {
+    initAudio(); 
+    if (!audioCtx) return;
+    const t = audioCtx.currentTime;
+    
+    if (type === 'click') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1400, t);
+        osc.frequency.exponentialRampToValueAtTime(2000, t + 0.05);
+        gain.gain.setValueAtTime(1.8, t); 
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
+        osc.start(t); osc.stop(t + 0.12);
+    } 
+    else if (type === 'ok') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(900, t);
+        osc.frequency.setValueAtTime(1100, t + 0.1);
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(1.5, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+        osc.start(t); osc.stop(t + 0.3);
+    }
+    else if (type === 'error') {
+        if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
+        const playPremiumThump = (delay) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(120, t + delay);
+            osc.frequency.exponentialRampToValueAtTime(30, t + delay + 0.15);
+            
+            gain.gain.setValueAtTime(0, t + delay);
+            // Increased Volume dramatically for the thump
+            gain.gain.linearRampToValueAtTime(1.5, t + delay + 0.01); 
+            gain.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.15);
+            
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(t + delay); osc.stop(t + delay + 0.15);
+
+            // Added higher frequency knock so it sounds clear on mobile speakers
+            const knock = audioCtx.createOscillator();
+            const knockGain = audioCtx.createGain();
+            knock.type = 'triangle'; 
+            knock.frequency.setValueAtTime(800, t + delay);
+            knock.frequency.exponentialRampToValueAtTime(100, t + delay + 0.05);
+            
+            knockGain.gain.setValueAtTime(0, t + delay);
+            // Increased Volume dramatically for the clear sharp tick
+            knockGain.gain.linearRampToValueAtTime(0.8, t + delay + 0.005); 
+            knockGain.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.05);
+            
+            knock.connect(knockGain); knockGain.connect(audioCtx.destination);
+            knock.start(t + delay); knock.stop(t + delay + 0.05);
+        };
+        playPremiumThump(0); 
+        playPremiumThump(0.15); 
+    }
+    else if (type === 'win') {
+        const freqs =[523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98, 2093.00]; 
+        freqs.forEach((freq, i) => {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'sine'; o.frequency.value = freq;
+            o.connect(g); g.connect(audioCtx.destination);
+            g.gain.setValueAtTime(0, t + i*0.08);
+            g.gain.linearRampToValueAtTime(0.6, t + i*0.08 + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.01, t + i*0.08 + 1.2);
+            o.start(t + i*0.08); o.stop(t + i*0.08 + 1.2);
+        });
+        const chord =[523.25, 659.25, 783.99];
+        chord.forEach(freq => {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'triangle'; o.frequency.value = freq / 2;
+            o.connect(g); g.connect(audioCtx.destination);
+            g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.2, t + 0.5);
+            g.gain.exponentialRampToValueAtTime(0.01, t + 3.0);
+            o.start(t); o.stop(t + 3.0);
+        });
+    }
+    else if (type === 'lose') {
+        const freqs =[659.25, 587.33, 523.25, 466.16]; 
+        freqs.forEach((freq, i) => {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'triangle'; o.frequency.value = freq;
+            o.connect(g); g.connect(audioCtx.destination);
+            g.gain.setValueAtTime(0, t + i*0.3);
+            g.gain.linearRampToValueAtTime(0.6, t + i*0.3 + 0.1);
+            g.gain.exponentialRampToValueAtTime(0.01, t + i*0.3 + 1.5);
+            o.start(t + i*0.3); o.stop(t + i*0.3 + 1.5);
+        });
+        const bass = audioCtx.createOscillator();
+        const bassG = audioCtx.createGain();
+        bass.type = 'sine'; bass.frequency.setValueAtTime(110, t);
+        bass.frequency.exponentialRampToValueAtTime(55, t + 1.5);
+        bass.connect(bassG); bassG.connect(audioCtx.destination);
+        bassG.gain.setValueAtTime(0, t);
+        bassG.gain.linearRampToValueAtTime(0.7, t + 0.2);
+        bassG.gain.exponentialRampToValueAtTime(0.01, t + 2.5);
+        bass.start(t); bass.stop(t + 2.5);
     }
 }
 
-document.addEventListener("click",function(e){
-    if(["yesBtn","noBtn","prevBtn","nextBtn"].includes(e.target.id)) { clickSound.currentTime=0; clickSound.play().catch(()=>{}); }
-    if(["okBtn","tapToEnterBtn"].includes(e.target.id)) { okSound.currentTime=0; okSound.play().catch(()=>{}); }
-    if(e.target.innerText==="Try Again") { clickSound.currentTime=0; clickSound.play().catch(()=>{}); }
+document.addEventListener("click", function(e) {
+    if(["yesBtn","prevBtn","nextBtn","tapToEnterBtn","startGameBtn"].includes(e.target.id)) { 
+        playSynthSound('click'); 
+    }
+    if(["okBtn"].includes(e.target.id)) { playSynthSound('ok'); }
 });
 
-// --- NO BUTTON LOGIC ---
-const noBtn=document.getElementById("noBtn");
-const yesBtn=document.getElementById("yesBtn");
-const extraMsg=document.getElementById("extraMsg");
-const buttonZone=document.querySelector(".button-zone");
-
-const noMessages=["I can wait...","Take your time, I’m not going anywhere.","I’ll still be right here.","Maybe you just need a little more time.","I believe you’ll choose differently.","I know there’s a Yes hiding somewhere.","Don’t worry, I’m patient.","I’ll wait as long as it takes.","Your Yes will be worth it.","I’m still hopeful."];
-let noClicks=0;
-
-noBtn.onclick=()=>{
-    if(noClicks<noMessages.length) extraMsg.innerText=noMessages[noClicks++];
-    else extraMsg.innerText="I’m still waiting for your Yes.";
-
-    const btnWidth=noBtn.offsetWidth, btnHeight=noBtn.offsetHeight;
-    const zoneRect=buttonZone.getBoundingClientRect(), yesRect=yesBtn.getBoundingClientRect();
-    const maxX=buttonZone.clientWidth-btnWidth, maxY=buttonZone.clientHeight-btnHeight-20;
-
-    let randomX,randomY,safe=false;
-    while(!safe){
-        randomX=Math.random()*maxX; randomY=Math.random()*maxY;
-        const newLeft=zoneRect.left+randomX, newTop=zoneRect.top+randomY;
-        if(newLeft+btnWidth<yesRect.left-10 || newLeft>yesRect.right+10 || newTop+btnHeight<yesRect.top-10 || newTop>yesRect.bottom+10){ safe=true; }
-    }
-    noBtn.style.left=randomX+"px"; noBtn.style.top=randomY+"px"; noBtn.style.bottom="auto"; noBtn.style.transform="none";
+window.handleTryAgain = function() {
+    playSynthSound('click');
+    clearInterval(loseAnimInterval);
+    document.getElementById("particles").innerHTML = "";
+    setTimeout(() => { location.reload(); }, 200); 
 };
 
-// --- START GAME FLOW ---
-yesBtn.onclick=()=>{ bgm.play().catch(()=>{}); start.classList.add("hidden"); intro.classList.remove("hidden"); intro.classList.add("fade-enter"); };
-okBtn.onclick=()=>{ intro.classList.add("hidden"); rules.classList.remove("hidden"); rules.classList.add("fade-enter"); };
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const extraMsgBox = document.getElementById("extraMsg");
+const startCard = document.getElementById("start");
 
-// --- QUIZ LOGIC ---
-let index=0, score=0, selected=null;
-const answered=new Array(11).fill(false);
+const noMessages =[
+    "I made this for you", "Please don't walk away", "You are breaking my heart", "Just give it a chance", "Don't let my effort fade",
+    "I put love into this", "Play it once for me", "Please stay a little longer", "Your choice matters to me", "Let my hard work win",
+    "Please don't ignore my effort", "Just trust me on this", "I was waiting for you", "Make my day right now", "Don't let me down today",
+    "I did this with love", "Please don't close this game", "Your smile is my goal", "I really want you to", "Don't break my little hope",
+    "Just one favor for me", "I am begging you please", "You mean the world here", "I only made this once", "I really need this now",
+    "Please reward my hard work", "Just a small tap please", "I crave your sweet attention", "Please don't reject my game", "You are my only player"
+];
+let noIndex = 0;
 
-const questions=[
-    { q:"Which action shows someone truly pays attention to you over time?", o:["Replying quickly","Remembering small details about you","Sending messages daily","Liking your posts"], a:"Remembering small details about you" },
-    { q:"When a person becomes quieter than usual, what is the most likely reason?", o:["They are tired","They are thinking deeply","They are bored","They are distracted"], a:"They are thinking deeply" },
-    { q:"Second letter of SUN + Last letter of MOON + First letter of STAR makes what?", o:["URS","UNS","SNS","NNS"], a:"UNS" },
-    { q:"Which situation shows the strongest level of comfort between two people?", o:["Talking for hours","Sharing secrets","Sitting silently without awkwardness","Sending long messages"], a:"Sitting silently without awkwardness" },
-    { q:"What makes a person more memorable after meeting only a few times?", o:["Expensive clothes","Unique behavior or habits","Height or looks","Their phone"], a:"Unique behavior or habits" },
-    { q:"If someone notices changes in your mood before you say anything, what does it most likely show?", o:["Curiosity","Observation","Care and attention","Habit"], a:"Care and attention" },
-    { q:"Which thing usually becomes stronger only after a long time?", o:["Interest","Trust","Attraction","Curiosity"], a:"Trust" },
-    { q:"When two people talk less but still stay close, what does it usually mean?", o:["Boredom","Distance","Understanding","Habit"], a:"Understanding" },
-    { q:"What makes a small moment stay in memory for a long time?", o:["Music","Emotions felt in that moment","Time of day","Location"], a:"Emotions felt in that moment" },
-    { q:"Which thing usually makes people feel closer without saying much?", o:["Long chats","Shared experiences","Phone calls","Text messages"], a:"Shared experiences" },
-    { q:"What usually reveals a person’s real nature the most?", o:["First impression","Social media","Behavior over time","Appearance"], a:"Behavior over time" }
+const handleNoBtnMovement = (e) => {
+    e.preventDefault();
+    initAudio(); 
+    playSynthSound('click');
+    
+    extraMsgBox.classList.remove("show");
+    
+    setTimeout(() => {
+        extraMsgBox.innerText = noMessages[noIndex];
+        noIndex = (noIndex + 1) % noMessages.length;
+        extraMsgBox.classList.add("show");
+    }, 250);
+
+    const cardRect = startCard.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
+    const yesRect = yesBtn.getBoundingClientRect();
+    
+    const currentBtnLeft = noBtn.offsetLeft;
+    const currentBtnTop = noBtn.offsetTop;
+
+    const minX = 15; 
+    const maxX = cardRect.width - btnRect.width - 15;
+    const minY = (yesRect.bottom - cardRect.top) + 15; 
+    const maxY = cardRect.height - btnRect.height - 15;
+
+    let newX, newY, safe = false, attempts = 0;
+
+    while (!safe && attempts < 200) {
+        attempts++;
+        newX = minX + Math.random() * (maxX - minX);
+        newY = minY + Math.random() * (maxY - minY);
+
+        let dist = Math.hypot(newX - currentBtnLeft, newY - currentBtnTop);
+        if (dist >= 75) { safe = true; }
+    }
+
+    noBtn.style.left = newX + "px";
+    noBtn.style.top = newY + "px";
+};
+
+noBtn.addEventListener('touchstart', handleNoBtnMovement, {passive: false});
+noBtn.addEventListener('mousedown', handleNoBtnMovement);
+
+function showCard(hideId, showId) {
+    document.getElementById(hideId).classList.add("hidden");
+    const showEl = document.getElementById(showId);
+    showEl.classList.remove("hidden");
+    showEl.classList.add("card-enter");
+}
+
+yesBtn.onclick = () => showCard("start", "intro");
+okBtn.onclick = () => showCard("intro", "rules");
+document.getElementById("startGameBtn").onclick = () => { showCard("rules", "game"); loadQ(); };
+
+let index = 0, score = 0, selected = null;
+const userAnswers = new Array(11).fill(null); 
+let isAnimating = false; 
+
+const questions =[
+    { q:"How does genuine long-term devotion manifest without words?", o:["Grand Gestures", "Unwavering Consistency", "Endless Conversations", "Constant Closeness"], a:"Unwavering Consistency" },
+    { q:"What reveals the true depth of someone's empathy for you?", o:["Mirroring Emotions", "Predicting Triggers", "Giving Advice", "Silent Presence"], a:"Predicting Triggers" },
+    { q:"In a profound connection, total silence feels exactly like what?", o:["Uncomfortable Tension", "Peaceful Solitude", "Shared Sanctuary", "Heavy Expectation"], a:"Shared Sanctuary" },
+    { q:"What heals deeply rooted emotional and trust issues?", o:["Grand Promises", "Radical Transparency", "Time Away", "Immediate Fixes"], a:"Radical Transparency" },
+    { q:"What is the absolute rarest form of human intimacy?", o:["Physical Touch", "Intellectual Debate", "Emotional Nakedness", "Shared Hobbies"], a:"Emotional Nakedness" },
+    { q:"Second letter of SUN + Last letter of MOON + First letter of STAR makes what?", o:["URS", "UNS", "SNS", "NNS"], a:"UNS" },
+    { q:"The most profound apologies are delivered strictly through what?", o:["Sincere Words", "Expensive Gifts", "Altered Behavior", "Public Declarations"], a:"Altered Behavior" },
+    { q:"What is the highest form of unselfish, secure love?", o:["Constant Sacrifice", "Fostering Independence", "Overwhelming Affection", "Fierce Protection"], a:"Fostering Independence" },
+    { q:"True emotional maturity during a deep conflict looks like what?", o:["Winning Debates", "Regulating Nervous Systems", "Suppressing Anger", "Seeking Peace"], a:"Regulating Nervous Systems" },
+    { q:"What signifies absolute, unbreakable emotional safety with someone?", o:["Total Vulnerability", "Constant Reassurance", "Unspoken Understanding", "Perfect Harmony"], a:"Total Vulnerability" },
+    { q:"What is the ultimate proof that someone sees your true soul?", o:["Constant Compliments", "Complete Acceptance", "Financial Support", "Shared Dreams"], a:"Complete Acceptance" }
 ];
 
-function shuffle(arr){return arr.sort(()=>Math.random()-0.5)}
-
-function startGame(){ rules.classList.add("hidden"); game.classList.remove("hidden"); game.classList.add("fade-enter"); loadQ(); }
-
 function loadQ(){
-    selected=null;
     const qContent = document.getElementById("qContent");
-    qContent.classList.remove("anim-slide");
-    void qContent.offsetWidth; 
-    qContent.classList.add("anim-slide");
-
-        // Headings update: Pura "Question 1", "Question 2" aayega
-    document.getElementById("qHeader").innerText = `Question ${index + 1}`;
-    document.getElementById("question").innerText=questions[index].q;
+    
+    document.getElementById("qHeader").innerHTML = `<span>QUESTION ${index + 1}</span>`;
+    document.getElementById("question").innerText = questions[index].q;
+    
     const optionsDiv = document.getElementById("options");
-    optionsDiv.innerHTML="";
+    optionsDiv.innerHTML = "";
+    selected = userAnswers[index]; 
 
-    shuffle([...questions[index].o]).forEach(op=>{
-        const b=document.createElement("button");
-        b.className="option"; b.innerText=op;
-        b.onclick=()=>{
-            selected=op;
-            document.querySelectorAll(".option").forEach(x=>x.classList.remove("active"));
+    if (!questions[index].shuffledOptions) {
+        questions[index].shuffledOptions =[...questions[index].o].sort(()=>Math.random()-0.5);
+    }
+
+    questions[index].shuffledOptions.forEach(op => {
+        const b = document.createElement("button");
+        b.className = "option" + (selected === op ? " active" : "");
+        b.innerText = op;
+        b.onclick = () => {
+            if(isAnimating) return;
+            playSynthSound('click'); 
+            selected = op;
+            userAnswers[index] = op; 
+            document.querySelectorAll(".option").forEach(x => x.classList.remove("active"));
             b.classList.add("active");
         };
         optionsDiv.appendChild(b);
@@ -449,212 +710,227 @@ function loadQ(){
         d.className = "prog-dot" + (i === index ? " active" : "");
         dots.appendChild(d);
     }
+
+    qContent.classList.remove("anim-slide-out", "anim-slide-in");
+    void qContent.offsetWidth; 
+    qContent.classList.add("anim-slide-in");
+
+    setTimeout(() => { isAnimating = false; }, 200); 
 }
 
-nextBtn.onclick=()=>{
-    if(!selected)return;
-    if(!answered[index]){ if(selected===questions[index].a) score++; answered[index]=true; }
-    index++;
-    index>=questions.length ? endGame() : loadQ();
+nextBtn.onclick = () => {
+    if(!selected || isAnimating) return; 
+    isAnimating = true;
+    
+    const qContent = document.getElementById("qContent");
+    qContent.classList.remove("anim-slide-in");
+    qContent.classList.add("anim-slide-out");
+    
+    setTimeout(() => {
+        index++; 
+        if(index >= questions.length) endGame();
+        else loadQ();
+    }, 150); 
 };
 
-prevBtn.onclick=()=>{ if(index>0){index--;loadQ();} };
+prevBtn.onclick = () => { 
+    if(index <= 0 || isAnimating) return; 
+    isAnimating = true;
+    const qContent = document.getElementById("qContent");
+    qContent.classList.remove("anim-slide-in");
+    qContent.classList.add("anim-slide-out");
+    setTimeout(() => { index--; loadQ(); }, 150); 
+};
 
 function endGame(){
-    game.classList.add("hidden");
-    if(score>=7){
-        winAnimation();
-        document.getElementById("winScore").innerText = `You scored ${score} out of 11.`;
-        const unlock = document.getElementById("unlockSection");
-        unlock.classList.remove("hidden");
-        unlock.classList.add("pop-in"); // Better bounce animation
+    document.getElementById("game").classList.add("hidden");
+    
+    score = 0;
+    userAnswers.forEach((ans, i) => { if(ans === questions[i].a) score++; });
+
+    if(score >= 7){
+        playSynthSound('win'); 
+        startHeartWinAnim();
+        document.getElementById("winScore").innerText = `YOU SCORED ${score} OUT OF 11`;
+        showCard("game", "unlockSection");
     } else {
-        loseAnimation();
-        result.classList.remove("hidden");
-        result.classList.add("fade-enter");
-        result.innerHTML=`
-            <h1 style="margin-bottom:10px;">YOU LOST</h1>
-            <p>You scored ${score} out of 11.</p>
-            <button class="option" onclick="location.reload()" style="margin-top:20px;">Try Again</button>
+        playSynthSound('lose');
+        startLoseAnim();
+        
+        const result = document.getElementById("result");
+        result.classList.remove("hidden"); result.classList.add("card-enter");
+        result.innerHTML = `
+            <div class="glass-heading lose" style="margin-bottom: 20px;"><span>YOU LOST</span></div>
+            <div class="glass-pill-white">YOU SCORED ${score} OUT OF 11</div>
+            <button class="option" onclick="handleTryAgain()" style="margin-top:20px;">TRY AGAIN</button>
         `;
-        setTimeout(()=> triggerShake("result"), 100);
+        triggerShake("result"); 
     }
-}
-
-// --- VIBRATIONS & SHAKE LOGIC ---
-function rightPassVibrate() { if(navigator.vibrate) navigator.vibrate([100, 50, 200]); }
-function winVibrate() { if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]); }
-
-function wrongFx(){
-    if(navigator.vibrate) navigator.vibrate([50, 40, 50, 40, 50]); // matches 5-step shake
-    let ctx=new (window.AudioContext||window.webkitAudioContext)();
-    let osc=ctx.createOscillator(), gain=ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.frequency.value=200; gain.gain.value=0.05;
-    osc.start(); setTimeout(()=>osc.stop(),120);
 }
 
 function triggerShake(elementId) {
-    wrongFx();
+    playSynthSound('error'); 
     const el = document.getElementById(elementId);
-    el.classList.add("shake");
-    setTimeout(() => el.classList.remove("shake"), 350);
+    el.classList.remove("swipe-shake"); void el.offsetWidth;
+    el.classList.add("swipe-shake");
 }
 
-// --- FIREWORKS & PARTICLES LOGIC ---
-let fwInterval;
-function startFireworks() {
-    for(let i=0; i<4; i++) setTimeout(shootFirework, i*400);
-    fwInterval = setInterval(shootFirework, 700);
-}
-function stopFireworks() { clearInterval(fwInterval); }
+let winAnimInterval;
+let lastHeartX = -100; // Track last position to prevent overlapping
 
-function shootFirework() {
-    playOverlapSound('launchSound');
-    if(navigator.vibrate) navigator.vibrate(50);
-    
-    const fw = document.createElement('div');
-    fw.className = 'rocket';
-    fw.style.left = (15 + Math.random() * 70) + 'vw';
-    
-    // Find active card to know its exact top position dynamically
-    const activeCard = document.querySelector('.container:not(.hidden)') || document.querySelector('.card:not(.hidden)');
-    let cardTop = window.innerHeight * 0.3; // safe fallback
-    if(activeCard) {
-        cardTop = activeCard.getBoundingClientRect().top;
-    }
-    
-    // "Sirf card ke upar tak jaye aur position thodi upr neeche ho"
-    // Calculate burst point vertically above the card (gap of 10px to 70px above the card)
-    let burstGap = 10 + (Math.random() * 60); 
-    let explosionY = cardTop - burstGap;
-    
-    // "ekdum upar nhi" - strictly prevent from touching the very top edge of the screen
-    if (explosionY < 40) {
-        explosionY = 40 + (Math.random() * 20);
-    }
-    
-    // Rocket distance to travel upward from the bottom of the viewport
-    const travelDistance = window.innerHeight - explosionY;
-    
-    fw.style.setProperty('--end-y', travelDistance + 'px');
-    document.getElementById('particles').appendChild(fw);
-    
-    setTimeout(() => {
-        playOverlapSound('explodeSound');
-        if(navigator.vibrate) navigator.vibrate(150);
-        const rect = fw.getBoundingClientRect();
-        explode(rect.left, rect.top);
-        fw.remove();
-    }, 1100);
-}
+function startHeartWinAnim() {
+    const layer = document.getElementById("particles");
+    const heartSVG = `
+    <svg viewBox="0 0 32 29.6">
+        <defs>
+            <radialGradient id="grad" cx="30%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#ff6b6b"/>
+                <stop offset="100%" stop-color="#cc0000"/>
+            </radialGradient>
+        </defs>
+        <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" fill="url(#grad)"/>
+    </svg>`;
 
-function explode(x, y) {
-    const colors =['#ff5f9e', '#00f2fe', '#4facfe', '#FAFF00', '#ffffff', '#ff99c8'];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    
-    for (let i = 0; i < 45; i++) {
-        const spark = document.createElement('div');
-        spark.className = 'spark';
-        spark.style.left = x + 'px'; spark.style.top = y + 'px';
-        spark.style.background = color;
+    winAnimInterval = setInterval(() => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "heart-wrapper";
         
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 50 + Math.random() * 100;
-        spark.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+        // Randomly generate X keeping distance from edges (15vw to 85vw)
+        let randomX;
+        do {
+            randomX = 15 + Math.random() * 70;
+        } while (Math.abs(randomX - lastHeartX) < 15); // Ensure they don't overlap
+        lastHeartX = randomX;
         
-        // Gravity effect - sparks thoda neeche ko flow karenge
-        const dy = Math.sin(angle) * distance;
-        spark.style.setProperty('--dy', (dy + 40) + 'px'); 
+        wrapper.style.left = randomX + "vw";
         
-        document.getElementById('particles').appendChild(spark);
-        setTimeout(() => spark.remove(), 1000);
-    }
+        // Random sizes (small, medium, slightly large)
+        const scale = (Math.random() * 0.5) + 0.35; 
+        wrapper.style.setProperty('--s', scale);
+        
+        const duration = 3.5 + Math.random() * 3;
+        wrapper.style.animationDuration = duration + "s";
+        
+        wrapper.innerHTML = `
+            <div class="heart-3d">
+                <div class="heart-face front">${heartSVG}<span class="heart-text">ANVI</span></div>
+                <div class="heart-face back">${heartSVG}<span class="heart-text">ANVI</span></div>
+            </div>
+        `;
+        layer.appendChild(wrapper);
+        setTimeout(() => wrapper.remove(), duration * 1000);
+    }, 450); 
 }
 
-function winAnimation(){
-    winVibrate();
-    startFireworks();
-    const layer=document.getElementById("particles");
-    for(let i=0;i<25;i++){
-        const p=document.createElement("div");
-        p.className="particle"; p.style.left=Math.random()*100+"vw";
-        p.style.animationDuration=3+Math.random()*2+"s";
-        layer.appendChild(p); setTimeout(()=>p.remove(),5000);
-    }
+let loseAnimInterval;
+function startLoseAnim() {
+    const layer = document.getElementById("particles");
+    loseAnimInterval = setInterval(() => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "dust-wrapper";
+        wrapper.style.left = (Math.random() * 100) + "vw";
+        
+        const scale = (Math.random() * 0.8) + 0.4;
+        const opacity = (Math.random() * 0.5) + 0.3;
+        const drift = (Math.random() * 40 - 20) + "px"; 
+        
+        wrapper.style.setProperty('--s', scale);
+        wrapper.style.setProperty('--o', opacity);
+        wrapper.style.setProperty('--x', drift);
+        
+        const duration = 4 + Math.random() * 4;
+        wrapper.style.animationDuration = duration + "s";
+        
+        wrapper.innerHTML = `<div class="dust-particle"></div>`;
+        layer.appendChild(wrapper);
+        setTimeout(() => wrapper.remove(), duration * 1000);
+    }, 300);
 }
 
-function loseAnimation(){
-    const layer=document.getElementById("particles");
-    for(let i=0;i<20;i++){
-        const p=document.createElement("div");
-        p.className="particle"; p.style.background="linear-gradient(#444,#111)";
-        p.style.left=Math.random()*100+"vw"; p.style.animationDuration="4s";
-        layer.appendChild(p); setTimeout(()=>p.remove(),5000);
-    }
-}
-
-// --- PASSWORD ENTER LOGIC ---
 document.getElementById("tapToEnterBtn").onclick = () => {
-    stopFireworks();
-    const unlock = document.getElementById("unlockSection");
-    unlock.classList.add("hidden");
-    const lock = document.getElementById("lock");
-    lock.classList.remove("hidden"); lock.classList.add("fade-enter");
+    clearInterval(winAnimInterval); 
+    document.getElementById("particles").innerHTML = "";
+    showCard("unlockSection", "lock");
 };
 
-let pass="";
-function clickFx(){
-    let ctx=new (window.AudioContext||window.webkitAudioContext)();
-    let osc=ctx.createOscillator(), gain=ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.frequency.value=800; gain.gain.value=0.02;
-    osc.start(); setTimeout(()=>osc.stop(),30);
-}
-
-function add(x){
-    if(pass.length<3){
-        clickFx(); pass+=x; update();
-    }
-}
-function del(){ clickFx(); pass=pass.slice(0,-1); update(); }
+let pass = "";
+function add(x){ if(pass.length < 3){ playSynthSound('click'); pass += x; update(); } }
+function del(){ playSynthSound('click'); pass = pass.slice(0,-1); update(); }
 
 function update(){
-    for(let i=1;i<=3;i++) document.getElementById("d"+i).classList.remove("fill");
-    for(let i=0;i<pass.length;i++) document.getElementById("d"+(i+1)).classList.add("fill");
-    if(pass.length==3) setTimeout(check, 100);
+    for(let i=1; i<=3; i++) document.getElementById("d"+i).classList.remove("fill");
+    for(let i=0; i<pass.length; i++) document.getElementById("d"+(i+1)).classList.add("fill");
+    if(pass.length == 3) setTimeout(check, 200);
 }
 
 function check(){
-    if(pass.toLowerCase()=="uns"){
-        rightPassVibrate();
-        bgm.pause();
-        
-        document.getElementById("lock").classList.add("hidden");
-        let sr = document.getElementById("surpriseResult");
-        sr.classList.remove("hidden"); sr.classList.add("fade-enter");
+    if(pass.toLowerCase() == "uns"){
+        playSynthSound('win');
+        const bgm = document.getElementById("bgm"); if(bgm) bgm.pause();
+        showCard("lock", "surpriseResult");
     } else {
-        triggerShake("lock");
-        pass=""; update();
+        triggerShake("lock"); 
+        setTimeout(() => { pass = ""; update(); }, 400);
     }
 }
 
-// --- PLAYER LOGIC ---
-let audio=document.getElementById("audio"), playBtn=document.getElementById("playBtn");
-let bar=document.getElementById("bar"), playing=false;
+const audio = document.getElementById("audio");
+const playBtn = document.getElementById("playBtn");
+const bar = document.getElementById("bar");
+const currTimeEl = document.getElementById("currentTime");
+const totalTimeEl = document.getElementById("totalTime");
+let playing = false;
 
-playBtn.onclick=function(){
-    clickFx();
-    if(playing){ audio.pause(); playBtn.innerHTML="▶"; playing=false; }
-    else{ audio.play(); playBtn.innerHTML="❚❚"; playing=true; }
+// Using perfectly centered custom shapes for Pause & Play so they never shift
+const playHTML = `▶`;
+const pauseHTML = `
+<div style="display:flex; justify-content:center; align-items:center; gap:4px; height:100%; width:100%;">
+    <div style="width:4px; height:15px; background:#ffffff; border-radius:1px;"></div>
+    <div style="width:4px; height:15px; background:#ffffff; border-radius:1px;"></div>
+</div>`;
+
+function formatTime(secs) {
+    if(isNaN(secs)) return "0:00";
+    const minutes = Math.floor(secs / 60);
+    const seconds = Math.floor(secs % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
+
+audio.addEventListener("loadedmetadata", () => { totalTimeEl.innerText = formatTime(audio.duration); });
+
+playBtn.onclick = function(){
+    playSynthSound('click');
+    if(playing){ 
+        audio.pause(); 
+        playBtn.innerHTML = playHTML; 
+        playBtn.style.paddingLeft = "3px"; // Triangle is optically slightly left, padding fixes it
+        playing = false; 
+    }
+    else { 
+        audio.play(); 
+        playBtn.innerHTML = pauseHTML; 
+        playBtn.style.paddingLeft = "0"; // Pause lines are dead center
+        playing = true; 
+    }
 };
-audio.ontimeupdate=function(){ bar.style.width=(audio.currentTime/audio.duration)*100+"%"; };
-audio.onended=function(){ playBtn.innerHTML="▶"; playing=false; bar.style.width="0%"; };
+
+audio.ontimeupdate = function(){ 
+    const progress = (audio.currentTime / audio.duration) * 100;
+    bar.style.width = progress + "%"; 
+    currTimeEl.innerText = formatTime(audio.currentTime);
+};
+
+audio.onended = function(){ 
+    playBtn.innerHTML = playHTML; 
+    playBtn.style.paddingLeft = "3px"; 
+    playing = false; 
+    bar.style.width = "0%"; currTimeEl.innerText = "0:00";
+};
 
 function downloadVoice(){
-    clickFx();
-    let a=document.createElement("a");
-    a.href="voice.mp3"; a.download="VoiceNote.mp3"; a.click();
+    playSynthSound('click');
+    let a = document.createElement("a");
+    a.href = "voice.mp3"; a.download = "VoiceNote.mp3"; a.click();
 }
 </script>
 </body>
