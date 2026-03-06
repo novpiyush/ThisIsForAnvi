@@ -14,10 +14,11 @@
 }
 html, body { width: 100%; height: 100%; overflow: hidden; perspective: 1200px; }
 
-/* Clean Text Rendering for HD Look */
+/* Clean Text Rendering for HD Look & CLEARER BACKGROUND */
 body {
     display: flex; justify-content: center; align-items: center;
-    background: linear-gradient(135deg, rgba(8, 20, 12, 0.8), rgba(2, 8, 4, 0.95)), url("bg.png") center/cover no-repeat;
+    /* Opacity reduced from 0.8/0.95 to 0.4/0.6 so the background photo is CLEARLY visible */
+    background: linear-gradient(135deg, rgba(8, 20, 12, 0.4), rgba(2, 8, 4, 0.6)), url("bg.png") center/cover no-repeat;
     background-color: #050a07;
     color: #ffffff;
     -webkit-font-smoothing: antialiased;
@@ -216,6 +217,19 @@ p { font-size: 15px; line-height: 1.5; margin-bottom: 20px; color: #f0f0f5; font
 }
 .key:active { transform: scale(0.85); background: #ffffff; color: #000000; text-shadow: none; }
 
+/* Custom Backspace key matching the YOU LOST colors */
+.key.delete-key {
+    background: rgba(255, 168, 168, 0.1);
+    border: 1px solid rgba(255, 168, 168, 0.35);
+    color: #FFA8A8;
+}
+.key.delete-key:active {
+    background: linear-gradient(90deg, #FFA8A8, #F56E6E);
+    color: #ffffff;
+    border-color: transparent;
+    text-shadow: none;
+}
+
 .photo { width: 140px; height: 140px; margin: auto; border-radius: 22px; overflow: hidden; border: 1px solid rgba(255,255,255,0.3); }
 .photo img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -259,27 +273,26 @@ p { font-size: 15px; line-height: 1.5; margin-bottom: 20px; color: #f0f0f5; font
     animation: floatUpHeart linear forwards; pointer-events: none;
     will-change: transform; transform: translateZ(0); 
 }
-/* Removed double will-change to completely eliminate lag/hang */
 .heart-3d { 
     width: 100%; height: 100%; position: relative; 
-    transform-style: preserve-3d; animation: spinHeart 3s linear infinite; 
+    transform-style: preserve-3d; animation: spinHeart 4s linear infinite; 
 }
 .heart-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; justify-content: center; align-items: center; }
 .heart-face.front { transform: rotateY(0deg); } .heart-face.back { transform: rotateY(180deg); }
 
-/* Extremely optimized slight glow so it does NOT hang */
-.heart-face svg { position: absolute; width: 100%; height: 100%; filter: drop-shadow(0 0 6px rgba(255, 30, 30, 0.4)); }
+/* Removed filter drop-shadow to completely eliminate lag/hang issues */
+.heart-face svg { position: absolute; width: 100%; height: 100%; }
 
 .heart-text { position: relative; z-index: 2; color: #ffffff; font-size: 10px; font-weight: 800; text-shadow: 0 2px 5px rgba(0,0,0,0.8); transform: translateY(-3px); letter-spacing: 0.5px; }
 
 @keyframes spinHeart { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
 
-/* 3D Translation for Butter Smooth 60fps Movement */
+/* 3D Translation with drift variable for Smooth Float */
 @keyframes floatUpHeart { 
     0% { transform: translate3d(0, 0, 0) scale(var(--s)); opacity: 0; } 
-    10% { opacity: 1; transform: translate3d(0, -10vh, 0) scale(var(--s)); } 
-    90% { opacity: 1; } 
-    100% { transform: translate3d(0, -120vh, 0) scale(var(--s)); opacity: 0; } 
+    10% { opacity: 1; transform: translate3d(calc(var(--x-drift) * 0.2), -10vh, 0) scale(var(--s)); } 
+    80% { opacity: 1; } 
+    100% { transform: translate3d(var(--x-drift), -120vh, 0) scale(var(--s)); opacity: 0; } 
 }
 
 .dust-wrapper { position: absolute; bottom: -50px; width: 25px; height: 25px; animation: floatUpDust linear forwards; pointer-events: none; }
@@ -302,6 +315,7 @@ p { font-size: 15px; line-height: 1.5; margin-bottom: 20px; color: #f0f0f5; font
 
 <body>
 
+<!-- Added Background Music Element -->
 <audio id="bgm" src="bgm.mp3" loop></audio>
 
 <div id="particles"></div>
@@ -387,8 +401,9 @@ p { font-size: 15px; line-height: 1.5; margin-bottom: 20px; color: #f0f0f5; font
     
     <div class="glass-pill">Password Protected Surprise</div>
     
+    <!-- All Caps Hint -->
     <div class="glass-pill hint-box">
-        <span style="color:#FAFF00; font-weight:800;">HINT:</span> Remember the key you saw once.
+        <span style="color:#FAFF00; font-weight:800;">HINT:</span> REMEMBER THE KEY YOU SAW ONCE.
     </div>
 
     <div class="dots">
@@ -397,12 +412,13 @@ p { font-size: 15px; line-height: 1.5; margin-bottom: 20px; color: #f0f0f5; font
         <div class="dot" id="d3"></div>
     </div>
 
+    <!-- Randomly Scattered Letters so UNS is not clustered -->
     <div class="grid">
-        <div class="key" onclick="add('P')">P</div><div class="key" onclick="add('H')">H</div><div class="key" onclick="add('Y')">Y</div>
-        <div class="key" onclick="add('V')">V</div><div class="key" onclick="add('A')">A</div><div class="key" onclick="add('I')">I</div>
-        <div class="key" onclick="add('S')">S</div><div class="key" onclick="add('U')">U</div><div class="key" onclick="add('N')">N</div>
-        <div class="key" onclick="add('E')">E</div><div class="key" onclick="add('O')">O</div>
-        <div class="key" style="background:rgba(255,255,255,0.15);" onclick="del()">⌫</div>
+        <div class="key" onclick="add('S')">S</div><div class="key" onclick="add('H')">H</div><div class="key" onclick="add('Y')">Y</div>
+        <div class="key" onclick="add('V')">V</div><div class="key" onclick="add('N')">N</div><div class="key" onclick="add('I')">I</div>
+        <div class="key" onclick="add('P')">P</div><div class="key" onclick="add('A')">A</div><div class="key" onclick="add('E')">E</div>
+        <div class="key" onclick="add('U')">U</div><div class="key" onclick="add('O')">O</div>
+        <div class="key delete-key" onclick="del()">⌫</div>
     </div>
 </div>
 
@@ -424,7 +440,6 @@ p { font-size: 15px; line-height: 1.5; margin-bottom: 20px; color: #f0f0f5; font
 
     <div class="player-wrapper">
         <div class="player-content">
-            <!-- Transparent Play Button with Centered Icons -->
             <button class="play-btn-glass" id="playBtn" style="padding-left: 3px;">▶</button>
             <div class="progress-info">
                 <div class="progress-bar-bg">
@@ -498,32 +513,24 @@ function playSynthSound(type) {
             osc.type = 'sine';
             osc.frequency.setValueAtTime(120, t + delay);
             osc.frequency.exponentialRampToValueAtTime(30, t + delay + 0.15);
-            
             gain.gain.setValueAtTime(0, t + delay);
-            // Increased Volume dramatically for the thump
             gain.gain.linearRampToValueAtTime(1.5, t + delay + 0.01); 
             gain.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.15);
-            
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(t + delay); osc.stop(t + delay + 0.15);
 
-            // Added higher frequency knock so it sounds clear on mobile speakers
             const knock = audioCtx.createOscillator();
             const knockGain = audioCtx.createGain();
             knock.type = 'triangle'; 
             knock.frequency.setValueAtTime(800, t + delay);
             knock.frequency.exponentialRampToValueAtTime(100, t + delay + 0.05);
-            
             knockGain.gain.setValueAtTime(0, t + delay);
-            // Increased Volume dramatically for the clear sharp tick
             knockGain.gain.linearRampToValueAtTime(0.8, t + delay + 0.005); 
             knockGain.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.05);
-            
             knock.connect(knockGain); knockGain.connect(audioCtx.destination);
             knock.start(t + delay); knock.stop(t + delay + 0.05);
         };
-        playPremiumThump(0); 
-        playPremiumThump(0.15); 
+        playPremiumThump(0); playPremiumThump(0.15); 
     }
     else if (type === 'win') {
         const freqs =[523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98, 2093.00]; 
@@ -574,7 +581,7 @@ function playSynthSound(type) {
 }
 
 document.addEventListener("click", function(e) {
-    if(["yesBtn","prevBtn","nextBtn","tapToEnterBtn","startGameBtn"].includes(e.target.id)) { 
+    if(["prevBtn","nextBtn","tapToEnterBtn","startGameBtn"].includes(e.target.id)) { 
         playSynthSound('click'); 
     }
     if(["okBtn"].includes(e.target.id)) { playSynthSound('ok'); }
@@ -652,7 +659,17 @@ function showCard(hideId, showId) {
     showEl.classList.add("card-enter");
 }
 
-yesBtn.onclick = () => showCard("start", "intro");
+/* YES BUTTON CLICK - START BGM */
+yesBtn.onclick = () => {
+    playSynthSound('click');
+    const bgMusic = document.getElementById("bgm");
+    if(bgMusic) {
+        bgMusic.volume = 0.35; // Increased volume so it's clearer
+        bgMusic.play().catch(e => console.log("BGM autoplay prevented:", e));
+    }
+    showCard("start", "intro");
+};
+
 okBtn.onclick = () => showCard("intro", "rules");
 document.getElementById("startGameBtn").onclick = () => { showCard("rules", "game"); loadQ(); };
 
@@ -776,7 +793,9 @@ function triggerShake(elementId) {
 }
 
 let winAnimInterval;
-let lastHeartX = -100; // Track last position to prevent overlapping
+let lastLane = -1;
+// Dividied screen into 4 safe lanes to cover left, middle, right perfectly without overlap
+const lanes =[15, 35, 55, 75]; 
 
 function startHeartWinAnim() {
     const layer = document.getElementById("particles");
@@ -795,20 +814,27 @@ function startHeartWinAnim() {
         const wrapper = document.createElement("div");
         wrapper.className = "heart-wrapper";
         
-        // Randomly generate X keeping distance from edges (15vw to 85vw)
-        let randomX;
+        // Ensure Hearts come from all over but don't overlap vertically too much
+        let laneIndex;
         do {
-            randomX = 15 + Math.random() * 70;
-        } while (Math.abs(randomX - lastHeartX) < 15); // Ensure they don't overlap
-        lastHeartX = randomX;
-        
+            laneIndex = Math.floor(Math.random() * lanes.length);
+        } while (laneIndex === lastLane);
+        lastLane = laneIndex;
+
+        // Add slight randomness within the lane (+/- 3vw) so it looks natural
+        const randomX = lanes[laneIndex] + (Math.random() * 6 - 3);
         wrapper.style.left = randomX + "vw";
         
-        // Random sizes (small, medium, slightly large)
-        const scale = (Math.random() * 0.5) + 0.35; 
+        // Drift thoda sa left ya right hoga movement ke waqt
+        const drift = (Math.random() * 8 - 4) + "vw";
+        wrapper.style.setProperty('--x-drift', drift);
+
+        // Scale (Size thoda bada aur normal rahega)
+        const scale = (Math.random() * 0.4) + 0.45; 
         wrapper.style.setProperty('--s', scale);
         
-        const duration = 3.5 + Math.random() * 3;
+        // Extra smooth aur slow float animation (7 se 10.5 seconds tak)
+        const duration = 7 + Math.random() * 3.5;
         wrapper.style.animationDuration = duration + "s";
         
         wrapper.innerHTML = `
@@ -819,7 +845,7 @@ function startHeartWinAnim() {
         `;
         layer.appendChild(wrapper);
         setTimeout(() => wrapper.remove(), duration * 1000);
-    }, 450); 
+    }, 800); 
 }
 
 let loseAnimInterval;
@@ -866,7 +892,11 @@ function update(){
 function check(){
     if(pass.toLowerCase() == "uns"){
         playSynthSound('win');
-        const bgm = document.getElementById("bgm"); if(bgm) bgm.pause();
+        
+        // PAUSE BGM INSTANTLY JAISE HI SAHI PASSWORD ACCEPT HOTA HAI
+        const bgMusic = document.getElementById("bgm"); 
+        if(bgMusic) bgMusic.pause();
+        
         showCard("lock", "surpriseResult");
     } else {
         triggerShake("lock"); 
